@@ -1,0 +1,92 @@
+/**
+ * Technical Blueprint — design tokens.
+ *
+ * Colour carries meaning here, it is not decoration:
+ *   dev      → anything interactive, live, or belonging to the engineering domain
+ *   creative → exclusively the 3D / design domain
+ *   ink      → content
+ * Nothing else is allowed to introduce a hue.
+ */
+
+@theme {
+  /* -- surfaces ------------------------------------------------------- */
+  --color-void: #05070b;
+  --color-panel: #0a0e15;
+  --color-raised: #0e131c;
+
+  /* -- hairlines ------------------------------------------------------ */
+  --color-line: rgb(143 178 212 / 0.12);
+  --color-line-strong: rgb(143 178 212 / 0.26);
+  --color-line-live: rgb(46 232 255 / 0.4);
+
+  /* -- ink ------------------------------------------------------------ */
+  --color-ink: #e9eef6;
+  --color-ink-muted: #93a3b8;
+  --color-ink-faint: #56657c;
+
+  /* -- signal --------------------------------------------------------- */
+  --color-dev: #2ee8ff;
+  --color-dev-dim: #0e7d91;
+  --color-creative: #9a86f5;
+  --color-creative-dim: #56499c;
+  --color-shipped: #34d399;
+  --color-building: #f0b429;
+
+  /* -- type ----------------------------------------------------------- */
+  --font-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', monospace;
+
+  /* Metadata is set in mono at a deliberately small, wide-tracked size —
+     it should read as instrumentation, not as body copy. */
+  --text-meta: 0.6875rem;
+  --text-meta--line-height: 1.2;
+  --text-meta--letter-spacing: 0.16em;
+
+  --text-display: clamp(2.75rem, 8vw, 6.5rem);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.035em;
+
+  --text-section: clamp(1.75rem, 4vw, 3rem);
+  --text-section--line-height: 1.02;
+  --text-section--letter-spacing: -0.02em;
+
+  /* -- rhythm --------------------------------------------------------- */
+  --spacing-gutter: 1.5rem;
+  --spacing-section: 8rem;
+
+  /* -- motion --------------------------------------------------------- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+/**
+ * Values the utility generator has no use for, but the components do.
+ */
+:root {
+  /* Blueprint backdrop */
+  --nx-grid-cell: 56px;
+  --nx-grid-opacity: 0.55;
+
+  /* Corner ticks: the length of the mark drawn at each panel corner */
+  --nx-tick: 10px;
+  --nx-hairline: 1px;
+
+  /* Panels are cut, never rounded */
+  --nx-cut: 12px;
+
+  /* Motion budget — every animated component reads these so that
+     `prefers-reduced-motion` can zero them out in exactly one place. */
+  --nx-dur-fast: 160ms;
+  --nx-dur: 320ms;
+  --nx-dur-slow: 720ms;
+  --nx-parallax: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --nx-dur-fast: 1ms;
+    --nx-dur: 1ms;
+    --nx-dur-slow: 1ms;
+    --nx-parallax: 0;
+  }
+}

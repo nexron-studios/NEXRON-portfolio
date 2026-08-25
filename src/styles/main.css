@@ -1,0 +1,150 @@
+@import 'tailwindcss';
+@import './tokens.css';
+@import './transitions.css';
+@import './debug.css';
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* The fixed header must not cover a section when jumping to its anchor. */
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-void);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure {
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Focus is part of the design language, not an afterthought: the same
+     cyan tick that marks interactive panels marks the focused element. */
+  :focus-visible {
+    outline: var(--nx-hairline) solid var(--color-dev);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background-color: var(--color-dev);
+    color: var(--color-void);
+  }
+
+  /* Scrollbar reads as a measuring rule down the edge of the sheet. */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-void);
+    border-left: var(--nx-hairline) solid var(--color-line);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line-strong);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-dev-dim);
+  }
+}
+
+@layer components {
+  /**
+   * Mono metadata label — used for section indices, field names, status lines.
+   */
+  .nx-meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    line-height: var(--text-meta--line-height);
+    letter-spacing: var(--text-meta--letter-spacing);
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+
+  /**
+   * The blueprint sheet the whole site sits on. Two superimposed line grids
+   * (coarse + fine) drawn with gradients — no image request, no canvas.
+   */
+  .nx-blueprint {
+    background-image:
+      linear-gradient(to right, var(--color-line) var(--nx-hairline), transparent var(--nx-hairline)),
+      linear-gradient(to bottom, var(--color-line) var(--nx-hairline), transparent var(--nx-hairline));
+    background-size: var(--nx-grid-cell) var(--nx-grid-cell);
+    opacity: var(--nx-grid-opacity);
+  }
+
+  /**
+   * The Blender easter egg on a skill chip: a wireframe cube that spins once
+   * on hover. Lives here rather than in the component because the rotation is
+   * driven by a `.group:hover` descendant selector and has to be pinned under
+   * `prefers-reduced-motion` — neither is expressible as a utility class.
+   */
+  .nx-cube {
+    transform: rotateX(-22deg) rotateY(28deg);
+    transition: transform var(--nx-dur-slow) var(--ease-out-expo);
+  }
+
+  .group:hover .nx-cube {
+    transform: rotateX(-22deg) rotateY(388deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nx-cube,
+    .group:hover .nx-cube {
+      transition: none;
+      transform: rotateX(-22deg) rotateY(28deg);
+    }
+  }
+
+  /**
+   * A cut-corner panel. Rounded corners are banned in this design language;
+   * the corner is chamfered instead, like a drawn part.
+   */
+  .nx-panel {
+    background-color: var(--color-panel);
+    border: var(--nx-hairline) solid var(--color-line);
+    clip-path: polygon(
+      var(--nx-cut) 0,
+      100% 0,
+      100% calc(100% - var(--nx-cut)),
+      calc(100% - var(--nx-cut)) 100%,
+      0 100%,
+      0 var(--nx-cut)
+    );
+  }
+}
+
+@utility nx-hide-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

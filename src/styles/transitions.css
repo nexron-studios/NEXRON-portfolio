@@ -1,0 +1,47 @@
+/**
+ * Shared Vue <Transition> definitions.
+ *
+ * Every duration reads from the motion budget in tokens.css, so
+ * `prefers-reduced-motion` collapses all of them at once.
+ */
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--nx-dur) var(--ease-out-expo);
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.rise-enter-active,
+.rise-leave-active {
+  transition:
+    opacity var(--nx-dur) var(--ease-out-expo),
+    transform var(--nx-dur) var(--ease-out-expo);
+}
+.rise-enter-from,
+.rise-leave-to {
+  opacity: 0;
+  transform: translateY(0.75rem);
+}
+
+/* Panels arrive by unmasking left-to-right, like a plot being drawn. */
+.plot-enter-active {
+  transition:
+    opacity var(--nx-dur-slow) var(--ease-out-expo),
+    clip-path var(--nx-dur-slow) var(--ease-out-expo);
+}
+.plot-enter-from {
+  opacity: 0;
+  clip-path: inset(0 100% 0 0);
+}
+
+.route-enter-active,
+.route-leave-active {
+  transition: opacity var(--nx-dur) var(--ease-out-expo);
+}
+.route-enter-from,
+.route-leave-to {
+  opacity: 0;
+}

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm install vue vue-router pinia vue-i18n three axios vue-sonner \"@fontsource-variable/space-grotesk\" \"@fontsource-variable/jetbrains-mono\" 2>&1)",
+      "PowerShell(npm install -D vite \"@vitejs/plugin-vue\" typescript vue-tsc \"@types/three\" tailwindcss \"@tailwindcss/vite\" vitest \"@vue/test-utils\" jsdom 2>&1)",
+      "PowerShell(npm ls vue vue-router pinia vue-i18n three vite tailwindcss vitest --depth=0 2>&1)",
+      "Bash(python -c ' *)",
+      "Bash(node -p \"const d=require\\('./package.json'\\).dependencies;JSON.stringify\\({'@respeak/lucide-motion-vue':d['@respeak/lucide-motion-vue'],'motion-v':d['motion-v']},null,1\\)\")",
+      "Bash(node -p \"const p=require\\('./node_modules/@respeak/lucide-motion-vue/package.json'\\);p.name+' @ '+p.version+'  ->  '+\\(p.homepage||p.repository&&p.repository.url||''\\)\")",
+      "Bash(netstat -ano)",
+      "Bash(curl -s --max-time 5 \"http://localhost:5173/\")",
+      "Bash(curl -s --max-time 5 \"http://localhost:5174/\")"
+    ]
+  }
+}
