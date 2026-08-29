@@ -8,7 +8,6 @@ import { useTilt } from '@/composables/useTilt'
 import { useLocalizedText } from '@/composables/useLocalizedText'
 import { useIconMotion } from '@/composables/useIconMotion'
 import NxrBlueprintVisual from '@/components/ui/NxrBlueprintVisual.vue'
-import NxrCornerTicks from '@/components/ui/NxrCornerTicks.vue'
 import NxrStatusBadge from '@/components/ui/NxrStatusBadge.vue'
 
 const { project } = defineProps<{ project: ProjectProps }>()
@@ -18,7 +17,10 @@ const { localized } = useLocalizedText()
 const { iconMotion } = useIconMotion()
 const card = ref<HTMLElement | null>(null)
 
-useTilt(card, { maxAngle: 3.5 })
+// Steeper than the old 3.5°: with the holo sheen on top the card is meant to
+// read as a foil card being turned in the hand, and a barely-there tilt made
+// the sweep look like a bug rather than a reflection.
+useTilt(card, { maxAngle: 8 })
 
 const primaryCategory = computed(() => project.categories[0] ?? 'web')
 /** Long stacks turn the card into a tag cloud — the rest lives in the detail view. */
@@ -27,9 +29,15 @@ const hiddenStackCount = computed(() => Math.max(project.stack.length - visibleS
 </script>
 
 <template>
+  <!--
+    `nx-holo` adds the foil sheen and the scale pattern as two pseudo-elements,
+    both driven by the same `--nx-px` / `--nx-py` that `useTilt` writes here.
+    It is a component class rather than utilities because pseudo-elements and
+    `mix-blend-mode` have no utility form — see `main.css`.
+  -->
   <article
     ref="card"
-    class="nx-panel group relative flex flex-col transition-colors duration-[--nx-dur] hover:border-line-strong"
+    class="nx-panel nx-holo group relative flex flex-col overflow-hidden transition-colors duration-[--nx-dur] hover:border-line-strong"
     style="
       transform: perspective(900px) rotateX(var(--nx-tilt-x, 0deg)) rotateY(var(--nx-tilt-y, 0deg));
       transform-style: preserve-3d;
@@ -38,7 +46,6 @@ const hiddenStackCount = computed(() => Math.max(project.stack.length - visibleS
         border-color var(--nx-dur);
     "
   >
-    <NxrCornerTicks />
 
     <!-- Pointer-tracked highlight: the card reacts to where the cursor is,
          not merely to the fact that it is somewhere on it. -->
@@ -48,7 +55,7 @@ const hiddenStackCount = computed(() => Math.max(project.stack.length - visibleS
       style="
         background: radial-gradient(
           22rem circle at var(--nx-px, 50%) var(--nx-py, 50%),
-          rgb(46 232 255 / 0.06),
+          color-mix(in oklab, var(--color-dev) 8%, transparent),
           transparent 70%
         );
       "

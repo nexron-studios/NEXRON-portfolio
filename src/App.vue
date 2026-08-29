@@ -5,6 +5,7 @@ import { usePreferredReducedMotion } from '@vueuse/core'
 import { Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
 import { useUiStore } from '@/stores/ui'
+import LiquidGlassFilter from '@/components/layout/LiquidGlassFilter.vue'
 
 const uiStore = useUiStore()
 
@@ -19,12 +20,17 @@ watchEffect(() => {
   uiStore.setPrefersReducedMotion(preferredMotion.value === 'reduce')
 })
 
+// The store resolved both of these before the app mounted; this is where they
+// reach the document.
 onMounted(() => {
   document.documentElement.lang = uiStore.locale
+  uiStore.setTheme(uiStore.theme)
 })
 </script>
 
 <template>
+  <LiquidGlassFilter />
+
   <RouterView v-slot="{ Component }">
     <Transition name="route" mode="out-in">
       <component :is="Component" />

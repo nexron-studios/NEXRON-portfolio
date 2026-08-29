@@ -3,10 +3,10 @@ import { defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ArrowUpRight } from '@respeak/lucide-motion-vue'
 import { identity, socials } from '@/data/socials'
+import { brandIcons, isMotionBrand } from '@/components/ui/brand'
 import { useLocalizedText } from '@/composables/useLocalizedText'
 import { useIconMotion } from '@/composables/useIconMotion'
 import NxrButton from '@/components/ui/NxrButton.vue'
-import NxrCornerTicks from '@/components/ui/NxrCornerTicks.vue'
 
 const { t } = useI18n()
 const { localized } = useLocalizedText()
@@ -15,18 +15,28 @@ const { iconMotion } = useIconMotion()
 // three lives in its own chunk — the hero text paints without waiting for it.
 const HeroScene = defineAsyncComponent(() => import('@/components/three/HeroScene.vue'))
 
-/** The website link is the page itself — listing it here would be circular. */
-const externalSocials = socials.filter((entry) => entry.id !== 'website')
+/**
+ * Only the three that belong above the fold. The full set — both Instagram
+ * accounts, Spotify — gets its own card grid above the footer, and repeating
+ * all six here would turn the spec strip into a link dump.
+ */
+const HERO_SOCIAL_IDS = ['github', 'linkedin', 'mail']
+
+const heroSocials = socials.filter((entry) => HERO_SOCIAL_IDS.includes(entry.id))
 </script>
 
 <template>
-  <section id="index" class="relative flex min-h-svh items-center pt-16 pb-10">
+  <section id="index" class="relative flex min-h-svh items-center pt-32 pb-10 sm:pt-28 lg:pt-16">
     <div class="mx-auto grid w-full max-w-[88rem] gap-8 px-gutter lg:grid-cols-12">
       <!-- Identity block, offset off-centre against the 12-column grid -->
       <div class="lg:col-span-7 lg:pt-8 xl:col-span-6">
-        <p class="nx-meta flex items-center gap-3">
+        <!-- Says what this is before the name does: a founder portfolio, not
+             a CV page. -->
+        <p class="nx-meta flex flex-wrap items-center gap-x-3 gap-y-1.5">
           <span class="text-dev">01</span>
           <span class="h-px w-8 bg-line-strong" />
+          <span class="text-dev">{{ t('hero.kicker') }}</span>
+          <span aria-hidden="true" class="text-ink-faint">·</span>
           <span>{{ identity.brand }}</span>
         </p>
 
@@ -47,21 +57,8 @@ const externalSocials = socials.filter((entry) => entry.id !== 'website')
           <NxrButton href="#about" variant="ghost">{{ t('hero.about_me') }}</NxrButton>
         </div>
 
-        <!-- Spec strip: the two facts a visitor actually wants up front -->
+        <!-- Compact location and contact strip -->
         <dl class="mt-8 flex flex-wrap gap-x-10 gap-y-4 border-t border-line pt-5 lg:mt-12 lg:pt-6">
-          <div>
-            <dt class="nx-meta">{{ t('hero.status') }}</dt>
-            <dd class="mt-1.5 flex items-center gap-2 font-mono text-sm text-ink">
-              <span class="relative flex h-1.5 w-1.5">
-                <span
-                  class="absolute inline-flex h-full w-full animate-ping bg-building opacity-60"
-                />
-                <span class="relative inline-flex h-1.5 w-1.5 bg-building" />
-              </span>
-              {{ t('hero.status_building') }}
-            </dd>
-          </div>
-
           <div>
             <dt class="nx-meta">{{ t('hero.location') }}</dt>
             <dd class="mt-1.5 font-mono text-sm text-ink">{{ identity.location }}</dd>
@@ -71,13 +68,20 @@ const externalSocials = socials.filter((entry) => entry.id !== 'website')
             <dt class="nx-meta sr-only">{{ t('hero.links_label') }}</dt>
             <dd class="mt-1.5 flex items-center gap-4">
               <a
-                v-for="social in externalSocials"
+                v-for="social in heroSocials"
                 :key="social.id"
                 :href="social.href"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="group inline-flex items-center gap-1 font-mono text-sm text-ink-muted underline-offset-4 transition-colors hover:text-dev"
               >
+                <component
+                  :is="brandIcons[social.brand]"
+                  v-bind="isMotionBrand(social.brand) ? iconMotion : {}"
+                  :trigger-target="isMotionBrand(social.brand) ? 'parent' : undefined"
+                  class="mr-0.5 size-4 shrink-0 transition-transform duration-[--nx-dur] ease-[--ease-out-expo] group-hover:scale-110"
+                  aria-hidden="true"
+                />
                 <span class="group-hover:underline">{{ social.label }}</span>
                 <ArrowUpRight
                   v-bind="iconMotion"
@@ -95,8 +99,7 @@ const externalSocials = socials.filter((entry) => entry.id !== 'website')
       <div class="relative lg:col-span-5 xl:col-span-6">
         <!-- Sized in svh so the figure is never cropped by mobile browser
              chrome the way a vh-based stage would be. -->
-        <div class="relative h-[36svh] min-h-56 w-full lg:h-[clamp(30rem,68vh,44rem)]">
-          <NxrCornerTicks tone="dev" />
+        <div class="relative h-64 w-full sm:h-[36svh] sm:min-h-56 lg:h-[clamp(30rem,68vh,44rem)]">
           <Suspense>
             <HeroScene />
             <template #fallback>

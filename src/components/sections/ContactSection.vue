@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { ArrowUpRight, LoaderCircle, Send } from '@respeak/lucide-motion-vue'
-import { identity, socials } from '@/data/socials'
+import { identity } from '@/data/socials'
 import { useContactForm } from '@/composables/useContactForm'
 import { useIconMotion } from '@/composables/useIconMotion'
 import ContactFormField from '@/components/sections/ContactFormField.vue'
@@ -24,46 +24,9 @@ const { values, errors, isSubmitting, isConfigured, handleBlur, revalidate, subm
         <span class="text-dev">{{ t('contact.heading_accent') }}</span>
       </h3>
 
-      <dl class="mt-10 flex flex-col gap-px border-t border-line">
-        <div
-          v-for="social in socials"
-          :key="social.id"
-          class="flex items-baseline justify-between gap-4 border-b border-line py-3.5"
-        >
-          <dt class="nx-meta">{{ social.label }}</dt>
-          <dd>
-            <a
-              :href="social.href"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="group inline-flex items-center gap-1.5 font-mono text-sm text-ink-muted transition-colors hover:text-dev"
-            >
-              {{ social.handle }}
-              <ArrowUpRight
-                v-bind="iconMotion"
-                triggerTarget="parent"
-                class="size-3.5 shrink-0"
-                aria-hidden="true"
-              />
-            </a>
-          </dd>
-        </div>
-
-        <div
-          v-if="identity.email"
-          class="flex items-baseline justify-between gap-4 border-b border-line py-3.5"
-        >
-          <dt class="nx-meta">{{ t('contact.mail') }}</dt>
-          <dd>
-            <a
-              :href="`mailto:${identity.email}`"
-              class="font-mono text-sm text-ink-muted transition-colors hover:text-dev"
-            >
-              {{ identity.email }}
-            </a>
-          </dd>
-        </div>
-      </dl>
+      <p class="mt-6 max-w-md leading-relaxed text-ink-muted text-pretty">
+        {{ t('contact.intro') }}
+      </p>
     </div>
 
     <div class="lg:col-span-6 lg:col-start-7">

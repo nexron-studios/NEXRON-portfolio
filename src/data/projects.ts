@@ -12,6 +12,42 @@ const GITHUB_OWNER = 'https://github.com/nexron-studios'
  */
 export const projects: ProjectProps[] = [
   {
+    slug: 'spw-sport',
+    name: 'SPW Sport App',
+    tagline: {
+      de: 'Fitness-Tracking als Full-Stack-Anwendung, vorbereitet als PWA.',
+      en: 'Fitness tracking as a full-stack application, prepared as a PWA.'
+    },
+    categories: ['fullstack', 'web'],
+    stack: ['Vue 3', 'Tailwind CSS', 'shadcn-vue', 'vue-router', 'NestJS', 'PostgreSQL', 'Docker'],
+    year: 2025,
+    visibility: 'private',
+    repoUrl: null,
+    liveUrl: null,
+    status: 'shipped',
+    image: null,
+    detail: {
+      overview: {
+        de: 'Moderne Fitness-Tracking-Web-App mit Authentifizierung und CRUD-Funktionen, als Progressive Web App für Mobil und Desktop vorbereitet.',
+        en: 'Modern fitness tracking web app with authentication and CRUD features, prepared as a Progressive Web App for mobile and desktop.'
+      },
+      problem: {
+        de: 'Das größte der Projekte — hier ging es darum, Frontend, API und Datenbank sauber getrennt und trotzdem als ein Produkt zu betreiben.',
+        en: 'The largest of the projects — the point here was keeping frontend, API and database cleanly separated while still running them as one product.'
+      },
+      idea: {
+        de: 'Eine vollständige Full-Stack-Anwendung von der Datenbank bis zur installierbaren App durchziehen.',
+        en: 'Carry a complete full-stack application all the way from database to installable app.'
+      },
+      implementation: {
+        de: 'Vue 3 mit Tailwind, shadcn-vue und vue-router im Frontend; NestJS mit PostgreSQL im Backend; Docker für den Betrieb.',
+        en: 'Vue 3 with Tailwind, shadcn-vue and vue-router on the frontend; NestJS with PostgreSQL on the backend; Docker for running it.'
+      },
+      challenges: [],
+      learnings: []
+    }
+  },
+  {
     slug: 'tokenscope',
     name: 'NEXRON-TokenScope',
     tagline: {
@@ -160,42 +196,6 @@ export const projects: ProjectProps[] = [
       implementation: {
         de: 'pnpm-Monorepo: packages/game-core enthält die reine Durak-Engine samt Typen, mit Vitest getestet und ohne jede UI- oder DB-Abhängigkeit. Der Express-Server validiert jeden Zug gegen diese Engine, persistiert Stand und Zug in PostgreSQL über Prisma und broadcastet jedem Spieler nur seine sichtbare Ansicht — die Gegnerhand bleibt verdeckt. Dadurch sind Reload und Resume möglich. Der Tischhintergrund ist eine Three.js-Szene, die auf das gewählte Theme und auf prefers-reduced-motion reagiert.',
         en: 'pnpm monorepo: packages/game-core holds the pure Durak engine and its types, tested with Vitest and free of any UI or DB dependency. The Express server validates every move against that engine, persists state and moves to PostgreSQL through Prisma, and broadcasts each player only their visible view — the opponent hand stays hidden. That makes reload and resume possible. The table background is a Three.js scene that reacts to the selected theme and to prefers-reduced-motion.'
-      },
-      challenges: [],
-      learnings: []
-    }
-  },
-  {
-    slug: 'creator-tracki',
-    name: 'NEXRON-creator-tracki',
-    tagline: {
-      de: 'Fitness-Tracking als Full-Stack-Anwendung, vorbereitet als PWA.',
-      en: 'Fitness tracking as a full-stack application, prepared as a PWA.'
-    },
-    categories: ['fullstack', 'web'],
-    stack: ['Vue 3', 'Tailwind CSS', 'shadcn-vue', 'vue-router', 'NestJS', 'PostgreSQL', 'Docker'],
-    year: 2025,
-    visibility: 'private',
-    repoUrl: null,
-    liveUrl: null,
-    status: 'shipped',
-    image: null,
-    detail: {
-      overview: {
-        de: 'Moderne Fitness-Tracking-Web-App mit Authentifizierung und CRUD-Funktionen, als Progressive Web App für Mobil und Desktop vorbereitet.',
-        en: 'Modern fitness tracking web app with authentication and CRUD features, prepared as a Progressive Web App for mobile and desktop.'
-      },
-      problem: {
-        de: 'Das größte der Projekte — hier ging es darum, Frontend, API und Datenbank sauber getrennt und trotzdem als ein Produkt zu betreiben.',
-        en: 'The largest of the projects — the point here was keeping frontend, API and database cleanly separated while still running them as one product.'
-      },
-      idea: {
-        de: 'Eine vollständige Full-Stack-Anwendung von der Datenbank bis zur installierbaren App durchziehen.',
-        en: 'Carry a complete full-stack application all the way from database to installable app.'
-      },
-      implementation: {
-        de: 'Vue 3 mit Tailwind, shadcn-vue und vue-router im Frontend; NestJS mit PostgreSQL im Backend; Docker für den Betrieb.',
-        en: 'Vue 3 with Tailwind, shadcn-vue and vue-router on the frontend; NestJS with PostgreSQL on the backend; Docker for running it.'
       },
       challenges: [],
       learnings: []

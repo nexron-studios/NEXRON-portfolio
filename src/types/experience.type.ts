@@ -6,22 +6,21 @@ export type ExperienceKind = (typeof experienceKindList)[number]
 export interface ExperienceProps {
   id: string
   kind: ExperienceKind
-  /** Institution or company. Never guessed — see `isVerified`. */
+  /** Institution or company. */
   organization: string
-  /** Null wherever the exact title could not be confirmed. */
-  role: LocalizedText | null
-  location: string | null
-  /** ISO `YYYY-MM`. Null means the date is not confirmed yet. */
-  startedAt: string | null
+  role: LocalizedText
+  location: string
+  /** ISO `YYYY-MM`. */
+  startedAt: string
   /** ISO `YYYY-MM`, or null for "ongoing" — disambiguated by `isOngoing`. */
   endedAt: string | null
   isOngoing: boolean
-  summary: LocalizedText | null
-  technologies: string[]
+  summary: LocalizedText
+  /** Optional canonical page for the programme or position. */
+  href?: string
   /**
-   * False for entries whose details could not be confirmed from a source.
-   * The timeline renders these as an explicit gap to be filled rather than
-   * inventing a plausible-looking title, company or date.
+   * Path to a logo under `public/logos/`. Null falls back to a generated
+   * monogram, so an entry never waits on an asset to render.
    */
-  isVerified: boolean
+  logo: string | null
 }

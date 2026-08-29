@@ -1,12 +1,10 @@
 export default {
   global: {
     loading: 'Loading',
-    close: 'Close',
     back: 'Back',
     open_repository: 'Open repository',
     open_live: 'Live demo',
     private_repository: 'Private repository',
-    to_be_added: 'to be added',
     skip_to_content: 'Skip to content'
   },
   nav: {
@@ -14,10 +12,12 @@ export default {
     about: 'About',
     projects: 'Projects',
     journey: 'Journey',
-    stack: 'Stack',
-    lab: 'Lab',
+    stack: 'Tech stack',
     contact: 'Contact',
     language: 'Language',
+    theme: 'Appearance',
+    theme_dark: 'Dark',
+    theme_light: 'Light',
     menu_open: 'Open menu',
     menu_close: 'Close menu'
   },
@@ -29,23 +29,33 @@ export default {
     location: 'Location',
     scroll_hint: 'Scroll',
     links_label: 'Links',
-    scene_alt: 'Procedurally generated voxel developer character',
-    scene_alt_model: 'Voxel character of Jonas Glatz'
+    kicker: 'Founder portfolio',
+    scene_alt: 'Rotating cube in polished violet — the NEXRON object'
   },
   about: {
     title: 'About',
-    heading: "Hey, I'm Jonas.",
+    heading: "Hey, I'm Jonas —",
+    lead: 'I build software, train models and make things move in 3D.',
+    fact_focus: 'Focus',
+    fact_since: 'Studying since',
+    fact_location: 'Location',
+    terminal_hint: 'typing allowed',
+    terminal_label: 'Terminal input',
     body_1:
       "I'm an Applied Artificial Intelligence student and developer from Baden-Württemberg who enjoys turning ideas into working software.",
     body_2:
       'My projects range from small productivity tools to AI applications, full-stack platforms and interactive 3D experiences.',
     body_3:
-      'Besides development, I work with 3D and visual design — which is why I enjoy projects where technology and creativity meet.'
+      'Besides development, I work with 3D and visual design — which is why I enjoy projects where technology and creativity meet.',
+    studio_label: 'The trade',
+    services_label: 'What I offer',
+    mark_alt: 'Rotating chrome mark of NEXRON Studios'
   },
   projects: {
     title: 'Projects',
     filter_all: 'All',
     filter_label: 'Filter by category',
+    clients_label: 'Clients',
     view_detail: 'Open project',
     empty: 'No projects in this category.',
     status_shipped: 'shipped',
@@ -69,25 +79,24 @@ export default {
   journey: {
     title: 'Journey',
     ongoing: 'ongoing',
-    unverified_hint: 'Details still to be added',
     kind_education: 'Education',
     kind_work: 'Work',
     kind_studio: 'Studio'
   },
   stack: {
-    title: 'Stack',
-    orbs_hint: 'Move the cursor through the field',
-    core: 'core'
-  },
-  lab: {
-    title: 'Lab',
-    intro: 'Small experiments. The site is one of them.',
-    regenerate: 'Regenerate'
+    title: 'Tech stack',
+    show_all: 'All technologies',
+    core: 'core',
+    domain_dev: 'Development',
+    domain_ai: 'AI & Data',
+    domain_creative: '3D & Creative',
+    domain_infra: 'Infrastructure'
   },
   contact: {
     title: 'Contact',
     heading: 'Have an idea?',
     heading_accent: "Let's build something.",
+    intro: 'Write to me if you have an idea, want to talk through a project, or just want to ask how any of this was built.',
     mail: 'Mail',
     name: 'Name',
     email: 'Email',
@@ -103,8 +112,12 @@ export default {
     error_message_required: 'Please enter a message.',
     error_message_short: 'A few more words would help.'
   },
+  socials: {
+    heading: 'Also findable here.'
+  },
   footer: {
     built_with: 'Built with Vue, TypeScript and Three.js',
-    source: 'Source'
+    imprint: 'Imprint',
+    privacy: 'Privacy'
   }
 }

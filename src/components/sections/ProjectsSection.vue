@@ -4,6 +4,13 @@ import { useI18n } from 'vue-i18n'
 import { projects } from '@/data/projects'
 import { projectCategoryList, type ProjectCategory } from '@/types/project.type'
 import ProjectCard from '@/components/ui/ProjectCard.vue'
+import ClientsStrip from '@/components/sections/ClientsStrip.vue'
+
+/**
+ * The client strip is built and wired but not shown yet — `src/data/clients.ts`
+ * is empty on purpose. Flip this once there are names to put there.
+ */
+const IS_CLIENTS_VISIBLE = false
 
 const { t } = useI18n()
 
@@ -82,5 +89,7 @@ const setCategory = (category: ProjectCategory | null): void => {
     <p v-if="visibleProjects.length === 0" class="nx-meta mt-10">
       {{ t('projects.empty') }}
     </p>
+
+    <ClientsStrip v-if="IS_CLIENTS_VISIBLE" />
   </div>
 </template>

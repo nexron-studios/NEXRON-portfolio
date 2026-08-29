@@ -9,7 +9,7 @@ const { t } = useI18n()
 
 <template>
   <div
-    class="flex items-center gap-px border border-line"
+    class="flex items-center gap-px overflow-hidden rounded-lg border border-line"
     role="group"
     :aria-label="t('nav.language')"
   >
@@ -17,7 +17,7 @@ const { t } = useI18n()
       v-for="locale in localeList"
       :key="locale"
       type="button"
-      class="px-2 py-1 font-mono text-meta tracking-[0.16em] uppercase transition-colors duration-[--nx-dur-fast]"
+      class="flex size-8 items-center justify-center font-mono text-meta tracking-[0.12em] uppercase transition-colors duration-[--nx-dur-fast] sm:h-9 sm:w-10 sm:tracking-[0.16em]"
       :class="
         uiStore.locale === locale
           ? 'bg-dev text-void'

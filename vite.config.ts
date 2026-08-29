@@ -29,6 +29,11 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // jsdom defaults to about:blank, an opaque origin — a real one keeps
+    // anything origin-sensitive behaving the way it does in a browser.
+    environmentOptions: {
+      jsdom: { url: 'http://localhost' }
+    },
     include: ['src/**/__test__/**/*.spec.ts']
   }
 })

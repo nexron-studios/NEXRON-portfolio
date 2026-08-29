@@ -7,9 +7,8 @@ import { getProjectBySlug } from '@/data/projects'
 import { useLocalizedText } from '@/composables/useLocalizedText'
 import { useIconMotion } from '@/composables/useIconMotion'
 import AppFooter from '@/components/layout/AppFooter.vue'
-import BlueprintBackdrop from '@/components/layout/BlueprintBackdrop.vue'
+import TetrisBackdrop from '@/components/layout/TetrisBackdrop.vue'
 import NxrBlueprintVisual from '@/components/ui/NxrBlueprintVisual.vue'
-import NxrCornerTicks from '@/components/ui/NxrCornerTicks.vue'
 import NxrStatusBadge from '@/components/ui/NxrStatusBadge.vue'
 
 const { slug } = defineProps<{ slug: string }>()
@@ -58,7 +57,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="relative min-h-screen">
-    <BlueprintBackdrop />
+    <TetrisBackdrop />
 
     <div class="mx-auto w-full max-w-[68rem] px-gutter py-16">
       <RouterLink
@@ -134,7 +133,6 @@ onBeforeUnmount(() => {
         </header>
 
         <div class="relative mt-10 aspect-[21/9] max-h-80 overflow-hidden border border-line">
-          <NxrCornerTicks />
           <img
             v-if="project.image"
             :src="project.image"

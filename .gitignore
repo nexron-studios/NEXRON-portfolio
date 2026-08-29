@@ -146,3 +146,6 @@ vite.config.ts.timestamp-*
 # .claude/rules/ and CLAUDE.md are versioned on purpose — only local state is ignored
 .claude/settings.local.json
 .claude/local/
+
+# Local Obsidian vault link
+.obsidian-vault

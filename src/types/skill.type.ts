@@ -1,10 +1,15 @@
 import type { LocalizedText } from '@/types/i18n.type'
 
 /**
- * Which half of the profile a technology belongs to. Drives colour:
- * `dev` renders cyan, `creative` renders violet. Nothing else sets a hue.
+ * Which part of the profile a technology belongs to — one per chamber of the
+ * tech-stack pit.
+ *
+ * Drives colour, and does so without widening the palette: `dev` is the cyan
+ * signal, `creative` the violet one, and the two additions sit *between* them
+ * on the same axis — `ai` is a dev/creative blend, `infra` a desaturated dev.
+ * Four readable chambers, still only two hues. See `tokens.css`.
  */
-export const skillDomainList = ['dev', 'creative'] as const
+export const skillDomainList = ['dev', 'ai', 'creative', 'infra'] as const
 export type SkillDomain = (typeof skillDomainList)[number]
 
 export interface SkillProps {
@@ -35,4 +40,6 @@ export interface OrbSkillProps {
   domain: SkillDomain
   /** Relative size, 0.6–1.4. Bigger = more central to the profile. */
   weight: number
+  /** One line shown on hover — what it is and what Jonas uses it for. */
+  blurb: LocalizedText
 }

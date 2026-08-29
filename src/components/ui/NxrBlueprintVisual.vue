@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ProjectCategory } from '@/types/project.type'
+import {
+  BLUEPRINT_BAR_BASELINE_Y,
+  buildBars,
+  buildRings,
+  hashSeed
+} from '@/utils/blueprint'
 
 /**
  * Stand-in artwork for projects that have no screenshot yet.
@@ -9,43 +15,22 @@ import type { ProjectCategory } from '@/types/project.type'
  * technical drawing derived from its own slug — deterministic, so a project
  * always looks the same, and distinct, so the grid does not read as repeated
  * placeholders. Replace by setting `image` on the project.
+ *
+ * The geometry itself lives in `utils/blueprint.ts`, which is where its specs
+ * point; this component only draws what that returns.
  */
 const { seed, category } = defineProps<{
   seed: string
   category: ProjectCategory
 }>()
 
-/** Cheap deterministic hash — only needs to be stable, not uniform. */
-const hash = computed(() => {
-  let value = 0
-  for (let index = 0; index < seed.length; index += 1) {
-    value = (value * 31 + seed.charCodeAt(index)) % 100_000
-  }
-  return value
-})
-
-const random = (offset: number, min: number, max: number): number => {
-  const value = Math.sin(hash.value * (offset + 1) * 12.9898) * 43_758.5453
-  return min + (value - Math.floor(value)) * (max - min)
-}
+const hash = computed(() => hashSeed(seed))
 
 const isCreative = computed(() => category === '3d')
 const stroke = computed(() => (isCreative.value ? 'var(--color-creative)' : 'var(--color-dev)'))
 
-const rings = computed(() =>
-  Array.from({ length: 3 }, (_, index) => ({
-    cx: random(index * 3 + 1, 60, 240),
-    cy: random(index * 3 + 2, 40, 120),
-    r: random(index * 3 + 3, 14, 46)
-  }))
-)
-
-const bars = computed(() =>
-  Array.from({ length: 5 }, (_, index) => ({
-    x: 24 + index * 20,
-    height: random(index + 11, 10, 54)
-  }))
-)
+const rings = computed(() => buildRings(hash.value))
+const bars = computed(() => buildBars(hash.value))
 </script>
 
 <template>
@@ -86,7 +71,7 @@ const bars = computed(() =>
         v-for="(bar, index) in bars"
         :key="index"
         :x="bar.x"
-        :y="140 - bar.height"
+        :y="BLUEPRINT_BAR_BASELINE_Y - bar.height"
         width="9"
         :height="bar.height"
       />

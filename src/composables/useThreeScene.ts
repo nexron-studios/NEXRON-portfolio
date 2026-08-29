@@ -96,6 +96,8 @@ export const useThreeScene = (options: UseThreeSceneOptions) => {
 
   const uiStore = useUiStore()
   const isReady = shallowRef(false)
+  /** True when this browser could not give us a WebGL context at all. */
+  const isUnavailable = shallowRef(false)
   const documentVisibility = useDocumentVisibility()
 
   let renderer: WebGLRenderer | null = null
@@ -182,12 +184,23 @@ export const useThreeScene = (options: UseThreeSceneOptions) => {
     const width = clientWidth || 1
     const height = clientHeight || 1
 
-    renderer = new WebGLRenderer({
-      canvas: canvasElement,
-      antialias: true,
-      alpha: true,
-      powerPreference: 'high-performance'
-    })
+    // Not every visitor has WebGL: it can be switched off, blocked by an
+    // extension, or unavailable on a blacklisted driver. The constructor
+    // throws in that case, and an unhandled error in `mounted` takes the
+    // section down with it. The scene simply does not appear instead —
+    // every one of them is decoration over content that stands on its own.
+    try {
+      renderer = new WebGLRenderer({
+        canvas: canvasElement,
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance'
+      })
+    } catch {
+      isUnavailable.value = true
+      return
+    }
+
     renderer.outputColorSpace = SRGBColorSpace
     renderer.setClearColor(0x000000, 0)
 
@@ -239,5 +252,5 @@ export const useThreeScene = (options: UseThreeSceneOptions) => {
     clock = null
   })
 
-  return { isReady }
+  return { isReady, isUnavailable }
 }

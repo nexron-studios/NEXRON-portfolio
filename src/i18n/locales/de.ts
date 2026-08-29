@@ -1,12 +1,10 @@
 export default {
   global: {
     loading: 'Lädt',
-    close: 'Schließen',
     back: 'Zurück',
     open_repository: 'Repository öffnen',
     open_live: 'Live-Demo',
     private_repository: 'Privates Repository',
-    to_be_added: 'wird ergänzt',
     skip_to_content: 'Zum Inhalt springen'
   },
   nav: {
@@ -14,10 +12,12 @@ export default {
     about: 'Über mich',
     projects: 'Projekte',
     journey: 'Werdegang',
-    stack: 'Stack',
-    lab: 'Lab',
+    stack: 'Techstack',
     contact: 'Kontakt',
     language: 'Sprache',
+    theme: 'Darstellung',
+    theme_dark: 'Dunkel',
+    theme_light: 'Hell',
     menu_open: 'Menü öffnen',
     menu_close: 'Menü schließen'
   },
@@ -29,23 +29,33 @@ export default {
     location: 'Standort',
     scroll_hint: 'Scrollen',
     links_label: 'Links',
-    scene_alt: 'Prozedural erzeugte Voxel-Figur eines Entwicklers',
-    scene_alt_model: 'Voxel-Figur von Jonas Glatz'
+    kicker: 'Founder Portfolio',
+    scene_alt: 'Rotierender Würfel in poliertem Violett — das NEXRON-Objekt'
   },
   about: {
     title: 'Über mich',
-    heading: 'Hey, ich bin Jonas.',
+    heading: 'Hey, ich bin Jonas —',
+    lead: 'ich baue Software, trainiere Modelle und lasse Dinge in 3D laufen.',
+    fact_focus: 'Fokus',
+    fact_since: 'Studium seit',
+    fact_location: 'Standort',
+    terminal_hint: 'tippen erlaubt',
+    terminal_label: 'Terminal-Eingabe',
     body_1:
       'Ich studiere Angewandte Künstliche Intelligenz und entwickle aus Baden-Württemberg heraus — am liebsten, indem ich Ideen in funktionierende Software übersetze.',
     body_2:
       'Meine Projekte reichen von kleinen Produktivitäts-Tools über KI-Anwendungen und Full-Stack-Plattformen bis zu interaktiven 3D-Erlebnissen.',
     body_3:
-      'Neben der Entwicklung arbeite ich mit 3D und visuellem Design — deshalb mag ich Projekte, in denen Technik und Gestaltung aufeinandertreffen.'
+      'Neben der Entwicklung arbeite ich mit 3D und visuellem Design — deshalb mag ich Projekte, in denen Technik und Gestaltung aufeinandertreffen.',
+    studio_label: 'Das Gewerbe',
+    services_label: 'Was ich anbiete',
+    mark_alt: 'Rotierendes Chrom-Zeichen von NEXRON Studios'
   },
   projects: {
     title: 'Projekte',
     filter_all: 'Alle',
     filter_label: 'Nach Kategorie filtern',
+    clients_label: 'Kunden',
     view_detail: 'Projekt öffnen',
     empty: 'Keine Projekte in dieser Kategorie.',
     status_shipped: 'ausgeliefert',
@@ -69,25 +79,24 @@ export default {
   journey: {
     title: 'Werdegang',
     ongoing: 'laufend',
-    unverified_hint: 'Details werden noch ergänzt',
-    kind_education: 'Ausbildung',
+    kind_education: 'Bildung',
     kind_work: 'Arbeit',
     kind_studio: 'Studio'
   },
   stack: {
-    title: 'Stack',
-    orbs_hint: 'Cursor durch das Feld bewegen',
-    core: 'Kern'
-  },
-  lab: {
-    title: 'Lab',
-    intro: 'Kleine Experimente. Diese Seite ist eines davon.',
-    regenerate: 'Neu generieren'
+    title: 'Techstack',
+    show_all: 'Alle Technologien',
+    core: 'Kern',
+    domain_dev: 'Development',
+    domain_ai: 'AI & Data',
+    domain_creative: '3D & Creative',
+    domain_infra: 'Infrastructure'
   },
   contact: {
     title: 'Kontakt',
     heading: 'Eine Idee?',
     heading_accent: 'Lass uns etwas bauen.',
+    intro: 'Schreib mir, wenn du eine Idee hast, ein Projekt besprechen willst oder einfach fragen möchtest, wie etwas davon gebaut ist.',
     mail: 'Mail',
     name: 'Name',
     email: 'E-Mail',
@@ -103,8 +112,12 @@ export default {
     error_message_required: 'Bitte schreib eine Nachricht.',
     error_message_short: 'Ein paar Worte mehr wären hilfreich.'
   },
+  socials: {
+    heading: 'Sonst noch hier zu finden.'
+  },
   footer: {
     built_with: 'Gebaut mit Vue, TypeScript und Three.js',
-    source: 'Quellcode'
+    imprint: 'Impressum',
+    privacy: 'Datenschutz'
   }
 }

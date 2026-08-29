@@ -3,50 +3,72 @@ import type { ExperienceProps } from '@/types/experience.type'
 /**
  * Journey / experience timeline.
  *
- * LinkedIn (linkedin.com/in/jonasglatz) could not be read programmatically —
- * it answers automated requests with HTTP 429 behind a login wall. Rather
- * than inventing job titles, dates or responsibilities, every unconfirmed
- * value below is `null` and the entry is flagged `isVerified: false`.
- * The timeline renders those as an explicit "to be filled in" state.
+ * Dates and titles come straight from Jonas, not from a scraped profile.
+ * Array order is display order: newest first.
  *
- * TO FILL IN — copy the values straight off the LinkedIn profile:
- *   · role, startedAt, endedAt and summary for `avenit`
- *   · startedAt / endedAt for `hs-offenburg`
+ * NEXRON Studios is deliberately not an entry here — it is the brand the whole
+ * site is written under and already has its own block in "Über mich"; listing
+ * it again as a station would read as padding.
  *
- * Array order is display order. Do not sort by date — several are null.
+ * `logo` points at `public/logos/`. Company and university marks are
+ * trademarks, so nothing is checked in here that Jonas has not put there
+ * himself — until then every entry renders the generated monogram.
  */
 export const experience: ExperienceProps[] = [
   {
-    id: 'nexron',
-    kind: 'studio',
-    organization: 'NEXRON Studios',
+    id: 'hs-offenburg-master-informatik',
+    kind: 'education',
+    organization: 'Hochschule Offenburg',
     role: {
-      de: 'Persönliche Entwickler- und Creative-Marke',
-      en: 'Personal development & creative brand'
+      de: 'M.Sc. Informatik',
+      en: 'M.Sc. Computer Science'
     },
-    location: 'Baden-Württemberg, DE',
-    startedAt: null,
-    endedAt: null,
-    isOngoing: true,
+    location: 'Offenburg, DE',
+    startedAt: '2027-03',
+    endedAt: '2028-09',
+    isOngoing: false,
     summary: {
-      de: 'Eigene Projekte zwischen Software, KI, Web, 3D und Design — von kleinen Desktop-Werkzeugen über Full-Stack-Anwendungen bis zu interaktiven 3D-Oberflächen.',
-      en: 'Own projects across software, AI, web, 3D and design — from small desktop tools through full-stack applications to interactive 3D interfaces.'
+      de: 'Geplanter Masterstart mit Vertiefungen in Künstlicher Intelligenz und Advanced Software Engineering.',
+      en: 'Planned master’s start with focus areas in artificial intelligence and advanced software engineering.'
     },
-    technologies: ['Vue 3', 'TypeScript', 'Tauri', 'Rust', 'Three.js', 'PostgreSQL', 'Docker'],
-    isVerified: true
+    href: 'https://www.hs-offenburg.de/studium/master/informatik',
+    logo: null
   },
   {
-    id: 'avenit',
+    id: 'avenit-werkstudent',
     kind: 'work',
     organization: 'avenit AG',
-    role: null,
-    location: null,
-    startedAt: null,
-    endedAt: null,
+    role: {
+      de: 'Junior Webentwickler · Werkstudent',
+      en: 'Junior web developer · working student'
+    },
+    location: 'Offenburg, DE',
+    startedAt: '2026-04',
+    endedAt: '2026-06',
     isOngoing: false,
-    summary: null,
-    technologies: [],
-    isVerified: false
+    summary: {
+      de: 'Webentwicklung neben dem Studium — Features umsetzen, Bestehendes pflegen, im Team arbeiten.',
+      en: 'Web development alongside my studies — building features, maintaining what exists, working in a team.'
+    },
+    logo: null
+  },
+  {
+    id: 'avenit-praxissemester',
+    kind: 'work',
+    organization: 'avenit AG',
+    role: {
+      de: 'Junior Webentwickler · Praxissemester',
+      en: 'Junior web developer · practical semester'
+    },
+    location: 'Offenburg, DE',
+    startedAt: '2025-10',
+    endedAt: '2026-03',
+    isOngoing: false,
+    summary: {
+      de: 'Sechs Monate als Junior Webentwickler: von der Anforderung bis zum Release, an echten Kundenprojekten.',
+      en: 'Six months as a junior web developer: from requirement to release, on real client work.'
+    },
+    logo: null
   },
   {
     id: 'hs-offenburg',
@@ -57,14 +79,68 @@ export const experience: ExperienceProps[] = [
       en: 'B.Sc. Applied Artificial Intelligence'
     },
     location: 'Offenburg, DE',
-    startedAt: null,
+    startedAt: '2023-09',
     endedAt: null,
+    isOngoing: true,
+    summary: {
+      de: 'Schwerpunkte in Machine Learning, Deep Learning, Natural Language Processing, Computer Vision und Reinforcement Learning — dazu alles rund um Sprachmodelle, Agents und Multiagentensysteme.',
+      en: 'Focus areas in machine learning, deep learning, natural language processing, computer vision and reinforcement learning — plus everything around language models, agents and multi-agent systems.'
+    },
+    href: 'https://www.hs-offenburg.de/studium/bachelor/angewandte-kuenstliche-intelligenz',
+    logo: null
+  },
+  {
+    id: 'fachhochschulreife-lahr',
+    kind: 'education',
+    organization: 'Fachhochschulreife',
+    role: {
+      de: 'Abschluss in Lahr',
+      en: 'Qualification completed in Lahr'
+    },
+    location: 'Lahr, DE',
+    startedAt: '2022-09',
+    endedAt: '2023-07',
     isOngoing: false,
     summary: {
-      de: 'Schwerpunkte in Machine Learning, Deep Learning, Natural Language Processing, Computer Vision und Reinforcement Learning.',
-      en: 'Focus areas in machine learning, deep learning, natural language processing, computer vision and reinforcement learning.'
+      de: '',
+      en: ''
     },
-    technologies: ['PyTorch', 'TensorFlow', 'scikit-learn', 'NumPy', 'Pandas', 'MATLAB'],
-    isVerified: false
+    logo: null
+  },
+  {
+    id: 'design-praktikum',
+    kind: 'work',
+    organization: '2D-/3D-Design',
+    role: {
+      de: 'Praktikum 2D-/3D-Design',
+      en: 'Internship in 2D/3D design'
+    },
+    location: 'DE',
+    startedAt: '2022-03',
+    endedAt: '2022-08',
+    isOngoing: false,
+    summary: {
+      de: 'Gestaltung und 3D hatte ich zu dem Zeitpunkt schon lange nebenher gemacht — hier wurde es professionell vertieft. Später habe ich damit die Social-Media-Kampagne eines Clubs gestalterisch begleitet.',
+      en: 'I had been doing design and 3D on my own for a long time by then — this is where it was deepened professionally. Later I used it to support the design of a club’s social media campaign.'
+    },
+    logo: null
+  },
+  {
+    id: 'mechatronik',
+    kind: 'education',
+    organization: 'Ausbildung Kältetechnik',
+    role: {
+      de: 'Mechatroniker für Kältetechnik',
+      en: 'Mechatronics technician for refrigeration'
+    },
+    location: 'DE',
+    startedAt: '2018-08',
+    endedAt: '2022-01',
+    isOngoing: false,
+    summary: {
+      de: 'Dreieinhalb Jahre an realen Anlagen: messen, Fehler suchen, reparieren. Das Debuggen habe ich hier gelernt, lange bevor es Code war.',
+      en: 'Three and a half years on real installations: measuring, fault-finding, repairing. I learned to debug here, long before it was code.'
+    },
+    logo: null
   }
 ]
