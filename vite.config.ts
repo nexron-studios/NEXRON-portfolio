@@ -5,6 +5,15 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
+  // A Cloudflare quick tunnel serves the site from a random *.trycloudflare.com
+  // host, which Vite's host check would otherwise reject as a DNS-rebinding
+  // attempt. Only the wildcard is allowed, never `true`.
+  server: {
+    allowedHosts: ['.trycloudflare.com']
+  },
+  preview: {
+    allowedHosts: ['.trycloudflare.com']
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
