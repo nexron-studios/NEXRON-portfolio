@@ -74,7 +74,10 @@ export const useTetrisField = ({ canvas, container }: OptionsProps): void => {
   }
 
   const spawn = (): void => {
-    piece.value = createPiece(pickTetromino(Math.random()), spawnColumn(columns.value, Math.random()))
+    piece.value = createPiece(
+      pickTetromino(Math.random()),
+      spawnColumn(columns.value, Math.random())
+    )
 
     // A quarter of the pieces arrive already turned, so the field does not
     // read as the same seven silhouettes over and over.
@@ -110,11 +113,7 @@ export const useTetrisField = ({ canvas, container }: OptionsProps): void => {
     driftingPieces = Array.from({ length: driftingCount }, (_, index) => {
       const laneCenter = Math.floor(((index + 0.5) * columns.value) / driftingCount)
       const laneColumn = Math.max(1, Math.min(columns.value - 3, laneCenter))
-      let driftingPiece = createPiece(
-        pickTetromino(Math.random()),
-        laneColumn,
-        -3
-      )
+      let driftingPiece = createPiece(pickTetromino(Math.random()), laneColumn, -3)
       const turns = Math.floor(Math.random() * 4)
       for (let turn = 0; turn < turns; turn += 1) {
         driftingPiece = rotatePiece(driftingPiece)
@@ -184,7 +183,13 @@ export const useTetrisField = ({ canvas, container }: OptionsProps): void => {
     context.globalAlpha = alpha
     context.beginPath()
     // Rounded, like every other surface on the page.
-    context.roundRect(x * size + inset, y * size + inset, size - inset * 2, size - inset * 2, radius)
+    context.roundRect(
+      x * size + inset,
+      y * size + inset,
+      size - inset * 2,
+      size - inset * 2,
+      radius
+    )
 
     if (isFilled) {
       context.fill()
@@ -257,13 +262,7 @@ export const useTetrisField = ({ canvas, container }: OptionsProps): void => {
       occupiedCells(piece.value).forEach((cell) => {
         const y = cell.y + glideOffset
         if (y <= -1) return
-        drawCell(
-          context,
-          cell.x,
-          y,
-          Math.min(1, fieldOpacity.value * 1.3),
-          true
-        )
+        drawCell(context, cell.x, y, Math.min(1, fieldOpacity.value * 1.3), true)
       })
     }
 

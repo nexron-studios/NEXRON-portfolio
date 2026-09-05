@@ -30,7 +30,6 @@ const { iconMotion } = useIconMotion()
           rel="me noopener noreferrer"
           class="nx-panel group relative flex h-full items-center gap-4 p-5 transition-colors duration-[--nx-dur-fast] hover:border-line-strong"
         >
-
           <!--
             Brand marks are simple-icons paths, not Lucide — Lucide has none.
             They animate on the group's hover through a plain CSS transition;
@@ -48,7 +47,9 @@ const { iconMotion } = useIconMotion()
             <span class="block truncate font-display text-sm font-bold text-ink">
               {{ social.label }}
             </span>
-            <span class="nx-meta block truncate normal-case">{{ social.handle }}</span>
+            <span v-if="social.handle" class="nx-meta block truncate normal-case">
+              {{ social.handle }}
+            </span>
             <span class="nx-meta mt-1 block truncate text-ink-faint">
               {{ localized(social.note) }}
             </span>

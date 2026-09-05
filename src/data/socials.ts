@@ -6,8 +6,11 @@ export type Brand = (typeof brandList)[number]
 export interface SocialLinkProps {
   id: string
   label: string
-  /** Shown next to the label in mono — the handle, not the full URL. */
-  handle: string
+  /**
+   * Shown next to the label in mono — the handle, not the full URL. Omitted
+   * where the account name says more about the person than about the work.
+   */
+  handle?: string
   href: string
   /** Picks the mark rendered on the card. */
   brand: Brand
@@ -49,10 +52,12 @@ export const socials: SocialLinkProps[] = [
     note: { de: 'Privat', en: 'Personal' }
   },
   {
+    // No handle, and the `?si=` share token is stripped from the URL: both name
+    // the private account rather than the studio, and a share token identifies
+    // whoever the link was copied from.
     id: 'spotify',
     label: 'Spotify',
-    handle: 'mr_funnykuchen',
-    href: 'https://open.spotify.com/user/mr_funnykuchen?si=b9df74e44444464f',
+    href: 'https://open.spotify.com/user/mr_funnykuchen',
     brand: 'spotify',
     note: { de: 'Was beim Bauen läuft', en: 'What plays while building' }
   },
@@ -81,8 +86,8 @@ export const identity: IdentityProps = {
   location: 'Baden-Württemberg, DE',
   email: 'nexronstudios@gmail.com',
   role: {
-    de: 'Developer · KI · Creative Technology',
-    en: 'Developer · AI · Creative Technology'
+    de: 'Developer · KI · 3D & Design',
+    en: 'Developer · AI · 3D & Design'
   },
   tagline: {
     de: 'Projekte bauen, Technologie erkunden, durch Machen lernen.',

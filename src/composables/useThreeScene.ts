@@ -118,6 +118,18 @@ export const useThreeScene = (options: UseThreeSceneOptions) => {
 
   const { pause, resume, isActive } = useRafFn(renderFrame, { immediate: false })
 
+  /**
+   * Draws a single frame outside the loop.
+   *
+   * A scene whose content arrives asynchronously needs this: under reduced
+   * motion the loop never starts, so the one frame drawn on mount is the only
+   * one there is — and a model that lands after it would never be shown.
+   */
+  const renderOnce = (): void => {
+    if (isActive.value) return
+    renderFrame()
+  }
+
   const start = (): void => {
     // The observers below attach as soon as the container ref fills, which can
     // be before `onMounted` has built the renderer. Starting the loop then
@@ -252,5 +264,5 @@ export const useThreeScene = (options: UseThreeSceneOptions) => {
     clock = null
   })
 
-  return { isReady, isUnavailable }
+  return { isReady, isUnavailable, renderOnce }
 }

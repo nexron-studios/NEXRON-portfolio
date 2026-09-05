@@ -28,14 +28,12 @@ const cubeFaceTransforms = [
     :tabindex="skill.quip ? 0 : undefined"
     :class="[
       skill.isCore ? 'border-line-strong text-ink-muted' : 'border-line text-ink-faint',
-      domain === 'creative' ? 'hover:border-creative hover:text-creative' : 'hover:border-dev hover:text-dev'
+      domain === 'creative'
+        ? 'hover:border-creative hover:text-creative'
+        : 'hover:border-dev hover:text-dev'
     ]"
   >
-    <span
-      v-if="hasCube"
-      aria-hidden="true"
-      class="inline-block size-3 [perspective:60px]"
-    >
+    <span v-if="hasCube" aria-hidden="true" class="inline-block size-3 [perspective:60px]">
       <span class="nx-cube relative block size-3 [transform-style:preserve-3d]">
         <span
           v-for="(transform, index) in cubeFaceTransforms"
@@ -55,7 +53,7 @@ const cubeFaceTransforms = [
     <span
       v-if="skill.quip"
       aria-hidden="true"
-      class="pointer-events-none absolute bottom-full left-0 z-10 mb-1.5 hidden whitespace-nowrap border border-dev/40 bg-void px-2 py-1 text-[0.625rem] text-dev opacity-0 transition-opacity duration-[--nx-dur] group-hover/skill:opacity-100 group-focus-visible/skill:opacity-100 md:block"
+      class="pointer-events-none absolute bottom-full left-0 z-10 mb-1.5 hidden border border-dev/40 bg-void px-2 py-1 text-[0.625rem] whitespace-nowrap text-dev opacity-0 transition-opacity duration-[--nx-dur] group-hover/skill:opacity-100 group-focus-visible/skill:opacity-100 md:block"
     >
       {{ skill.quip }}
     </span>

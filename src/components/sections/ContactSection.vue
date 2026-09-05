@@ -24,7 +24,7 @@ const { values, errors, isSubmitting, isConfigured, handleBlur, revalidate, subm
         <span class="text-dev">{{ t('contact.heading_accent') }}</span>
       </h3>
 
-      <p class="mt-6 max-w-md leading-relaxed text-ink-muted text-pretty">
+      <p class="mt-6 max-w-md leading-relaxed text-pretty text-ink-muted">
         {{ t('contact.intro') }}
       </p>
     </div>

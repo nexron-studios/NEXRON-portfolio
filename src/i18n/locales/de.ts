@@ -5,7 +5,8 @@ export default {
     open_repository: 'Repository öffnen',
     open_live: 'Live-Demo',
     private_repository: 'Privates Repository',
-    skip_to_content: 'Zum Inhalt springen'
+    skip_to_content: 'Zum Inhalt springen',
+    close: 'Schließen'
   },
   nav: {
     index: 'Index',
@@ -24,8 +25,6 @@ export default {
   hero: {
     explore_projects: 'Projekte ansehen',
     about_me: 'Über mich',
-    status: 'Status',
-    status_building: 'am Bauen',
     location: 'Standort',
     scroll_hint: 'Scrollen',
     links_label: 'Links',
@@ -35,25 +34,58 @@ export default {
   about: {
     title: 'Über mich',
     heading: 'Hey, ich bin Jonas —',
-    lead: 'ich baue Software, trainiere Modelle und lasse Dinge in 3D laufen.',
-    fact_focus: 'Fokus',
-    fact_since: 'Studium seit',
-    fact_location: 'Standort',
+    lead: 'ich entwickle Software, trainiere Modelle und beschäftige mich mit Gestaltung.',
     terminal_hint: 'tippen erlaubt',
     terminal_label: 'Terminal-Eingabe',
+    /** `{study}` is filled by a slot — the degree renders as a link. */
     body_1:
-      'Ich studiere Angewandte Künstliche Intelligenz und entwickle aus Baden-Württemberg heraus — am liebsten, indem ich Ideen in funktionierende Software übersetze.',
+      'Ich studiere {study} an der Hochschule Offenburg und schreibe gerade meine Bachelorarbeit.',
+
+    study_link: 'Angewandte Künstliche Intelligenz',
+
     body_2:
-      'Meine Projekte reichen von kleinen Produktivitäts-Tools über KI-Anwendungen und Full-Stack-Plattformen bis zu interaktiven 3D-Erlebnissen.',
+      'Mit dem Adobe-Stack arbeite ich schon seit mehreren Jahren. Über Blender bin ich dann auch immer mehr in 3D reingekommen — vertieft im Praktikum und durch Designs für Clubs.',
+
     body_3:
-      'Neben der Entwicklung arbeite ich mit 3D und visuellem Design — deshalb mag ich Projekte, in denen Technik und Gestaltung aufeinandertreffen.',
+      'Am spannendsten finde ich Projekte, bei denen KI, Design und Entwicklung zusammenkommen. Genau diese Mischung macht für mich am meisten Spaß, statt mich nur auf einen Bereich festzulegen.',
     studio_label: 'Das Gewerbe',
     services_label: 'Was ich anbiete',
-    mark_alt: 'Rotierendes Chrom-Zeichen von NEXRON Studios'
+    mark_alt: 'Rotierendes NEXRON-Studios-Schild in Chrom'
+  },
+  /**
+   * The terminal transcript stays untranslated — a prompt is a prompt in
+   * either language — but the game it opens is ordinary UI and is not.
+   */
+  tetris: {
+    title: 'Tetris',
+    close: 'Spiel schließen',
+    score: 'Punkte',
+    best: 'Bestwert',
+    level: 'Level',
+    lines: 'Reihen',
+    next: 'Als Nächstes',
+    paused: 'Pausiert',
+    game_over: 'Game over',
+    final_score: '{score} Punkte',
+    restart: 'Nochmal',
+    move_left: 'Nach links',
+    move_right: 'Nach rechts',
+    rotate: 'Drehen',
+    soft_drop: 'Sanft fallen',
+    hard_drop: 'Sofort ablegen',
+    pause: 'Pausieren',
+    settings: 'Einstellungen',
+    sound_on: 'Ton an',
+    sound_off: 'Ton aus',
+    volume: 'Lautstärke'
   },
   projects: {
     title: 'Projekte',
     filter_all: 'Alle',
+    enlarge: '{screen} vergrößern',
+    gallery_label: 'Screens von {project}',
+    previous_screen: 'Vorheriger Screen',
+    next_screen: 'Nächster Screen',
     filter_label: 'Nach Kategorie filtern',
     clients_label: 'Kunden',
     view_detail: 'Projekt öffnen',
@@ -85,7 +117,7 @@ export default {
   },
   stack: {
     title: 'Techstack',
-    show_all: 'Alle Technologien',
+    show_all: 'Alle Technologien der vier Bereiche',
     core: 'Kern',
     domain_dev: 'Development',
     domain_ai: 'AI & Data',
@@ -96,7 +128,8 @@ export default {
     title: 'Kontakt',
     heading: 'Eine Idee?',
     heading_accent: 'Lass uns etwas bauen.',
-    intro: 'Schreib mir, wenn du eine Idee hast, ein Projekt besprechen willst oder einfach fragen möchtest, wie etwas davon gebaut ist.',
+    intro:
+      'Für Geschäftsanfragen, Kooperationen oder ein Projekt, das du umgesetzt haben möchtest: schreib mir. Und wenn du einfach wissen willst, wie etwas hier gebaut ist, auch.',
     mail: 'Mail',
     name: 'Name',
     email: 'E-Mail',

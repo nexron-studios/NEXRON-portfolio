@@ -12,8 +12,8 @@ import ThemeSwitcher from '@/components/layout/ThemeSwitcher.vue'
 import NxrLogo from '@/components/ui/NxrLogo.vue'
 import LiquidGlass from '@/components/ui/LiquidGlass.vue'
 
-/** Past this the bar tightens up and the glass gains contrast. */
-const CONDENSE_AFTER_PX = 24
+/** Past this the bar settles closer to the edge and the glass gains contrast. */
+const SCROLLED_AFTER_PX = 24
 
 const uiStore = useUiStore()
 const { t } = useI18n()
@@ -25,7 +25,7 @@ const { y: scrollY } = useWindowScroll()
 // assignment did not — navigating away with the menu open left it locked.
 const isBodyLocked = useScrollLock(document.body)
 
-const isCondensed = computed(() => scrollY.value > CONDENSE_AFTER_PX)
+const isScrolled = computed(() => scrollY.value > SCROLLED_AFTER_PX)
 
 const closeMenu = (): void => {
   uiStore.setMenuOpen(false)
@@ -49,23 +49,30 @@ watch(
     -->
     <LiquidGlass
       :radius="18"
-      :frost="0.06"
+      :frost="isScrolled ? 0.12 : 0.06"
       :container-class="[
         'relative mx-auto w-full max-w-[88rem] transition-all duration-[--nx-dur] ease-[--ease-out-expo]',
-        isCondensed ? 'mt-2' : 'mt-4'
+        isScrolled ? 'mt-2' : 'mt-4'
       ]"
     >
-      <div
-        class="flex w-full items-center gap-2 px-3 transition-all duration-[--nx-dur] sm:gap-6 sm:px-6"
-        :class="isCondensed ? 'h-16' : 'h-20'"
-      >
+      <!--
+        The height stays put. An earlier version shrank the bar from 5rem to 4rem
+        on scroll, which retypesets the logo and the nav mid-motion and reads as
+        the header flinching. Contrast carries the state change instead: the
+        glass frosts over so the content underneath stops competing.
+      -->
+      <div class="flex h-20 w-full items-center gap-2 px-3 sm:gap-6 sm:px-6">
         <!-- Title block: the mark, then who is behind it -->
         <a href="#index" class="group flex shrink-0 items-center gap-2 sm:gap-3" @click="closeMenu">
           <NxrLogo
             :title="identity.brand"
             class="h-5 w-auto shrink-0 text-ink transition-colors group-hover:text-dev sm:h-7"
           />
-          <span class="nx-meta hidden transition-colors group-hover:text-dev sm:inline">
+          <span aria-hidden="true" class="hidden text-ink-faint sm:inline">–</span>
+
+          <span
+            class="nx-meta hidden text-ink-muted transition-colors group-hover:text-dev sm:inline"
+          >
             {{ identity.name }}
           </span>
         </a>
@@ -79,13 +86,13 @@ watch(
                 :class="
                   uiStore.activeSection === section.id
                     ? 'text-dev'
-                    : 'text-ink-faint hover:text-ink-muted'
+                    : 'text-ink-muted hover:text-ink'
                 "
                 :aria-current="uiStore.activeSection === section.id ? 'true' : undefined"
               >
                 <span
                   class="transition-opacity"
-                  :class="uiStore.activeSection === section.id ? 'opacity-100' : 'opacity-40'"
+                  :class="uiStore.activeSection === section.id ? 'opacity-100' : 'opacity-60'"
                 >
                   {{ section.index }}
                 </span>
@@ -101,7 +108,7 @@ watch(
 
           <button
             type="button"
-            class="flex h-8 w-8 items-center justify-center border border-line text-ink-muted transition-colors hover:border-line-strong hover:text-ink md:hidden"
+            class="flex size-7 items-center justify-center rounded-lg border border-line text-ink-muted transition-colors hover:border-line-strong hover:text-ink sm:h-8 sm:w-9 md:hidden"
             :aria-label="uiStore.isMenuOpen ? t('nav.menu_close') : t('nav.menu_open')"
             :aria-expanded="uiStore.isMenuOpen"
             aria-controls="mobile-nav"

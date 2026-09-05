@@ -17,7 +17,7 @@ const { t } = useI18n()
       v-for="locale in localeList"
       :key="locale"
       type="button"
-      class="flex size-8 items-center justify-center font-mono text-meta tracking-[0.12em] uppercase transition-colors duration-[--nx-dur-fast] sm:h-9 sm:w-10 sm:tracking-[0.16em]"
+      class="flex size-7 items-center justify-center font-mono text-meta tracking-[0.12em] uppercase transition-colors duration-[--nx-dur-fast] sm:h-8 sm:w-9 sm:tracking-[0.16em]"
       :class="
         uiStore.locale === locale
           ? 'bg-dev text-void'

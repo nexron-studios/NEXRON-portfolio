@@ -5,7 +5,8 @@ export default {
     open_repository: 'Open repository',
     open_live: 'Live demo',
     private_repository: 'Private repository',
-    skip_to_content: 'Skip to content'
+    skip_to_content: 'Skip to content',
+    close: 'Close'
   },
   nav: {
     index: 'Index',
@@ -24,8 +25,6 @@ export default {
   hero: {
     explore_projects: 'Explore projects',
     about_me: 'About me',
-    status: 'Status',
-    status_building: 'building',
     location: 'Location',
     scroll_hint: 'Scroll',
     links_label: 'Links',
@@ -35,25 +34,55 @@ export default {
   about: {
     title: 'About',
     heading: "Hey, I'm Jonas —",
-    lead: 'I build software, train models and make things move in 3D.',
-    fact_focus: 'Focus',
-    fact_since: 'Studying since',
-    fact_location: 'Location',
+    lead: 'I enjoy building software, training models and working on design.',
     terminal_hint: 'typing allowed',
     terminal_label: 'Terminal input',
+    /** `{study}` is filled by a slot — the degree renders as a link. */
     body_1:
-      "I'm an Applied Artificial Intelligence student and developer from Baden-Württemberg who enjoys turning ideas into working software.",
+      "I study {study} at Offenburg University and I'm writing my bachelor's thesis right now.",
+    study_link: 'Applied Artificial Intelligence',
     body_2:
-      'My projects range from small productivity tools to AI applications, full-stack platforms and interactive 3D experiences.',
+      'I have worked with the Adobe stack for several years, and Blender brought 3D along with it — deepened during an internship and designing for clubs.',
     body_3:
-      'Besides development, I work with 3D and visual design — which is why I enjoy projects where technology and creativity meet.',
+      'What draws me in is the seam: bringing AI, design and development together in one project instead of settling into a single corner.',
     studio_label: 'The trade',
     services_label: 'What I offer',
-    mark_alt: 'Rotating chrome mark of NEXRON Studios'
+    mark_alt: 'Rotating NEXRON Studios sign in chrome'
+  },
+  /**
+   * The terminal transcript stays untranslated — a prompt is a prompt in
+   * either language — but the game it opens is ordinary UI and is not.
+   */
+  tetris: {
+    title: 'Tetris',
+    close: 'Close game',
+    score: 'Score',
+    best: 'Best',
+    level: 'Level',
+    lines: 'Lines',
+    next: 'Next up',
+    paused: 'Paused',
+    game_over: 'Game over',
+    final_score: '{score} points',
+    restart: 'Play again',
+    move_left: 'Move left',
+    move_right: 'Move right',
+    rotate: 'Rotate',
+    soft_drop: 'Soft drop',
+    hard_drop: 'Hard drop',
+    pause: 'Pause',
+    settings: 'Settings',
+    sound_on: 'Sound on',
+    sound_off: 'Sound off',
+    volume: 'Volume'
   },
   projects: {
     title: 'Projects',
     filter_all: 'All',
+    enlarge: 'Enlarge {screen}',
+    gallery_label: 'Screens of {project}',
+    previous_screen: 'Previous screen',
+    next_screen: 'Next screen',
     filter_label: 'Filter by category',
     clients_label: 'Clients',
     view_detail: 'Open project',
@@ -85,7 +114,7 @@ export default {
   },
   stack: {
     title: 'Tech stack',
-    show_all: 'All technologies',
+    show_all: 'All technologies in the four areas',
     core: 'core',
     domain_dev: 'Development',
     domain_ai: 'AI & Data',
@@ -96,7 +125,8 @@ export default {
     title: 'Contact',
     heading: 'Have an idea?',
     heading_accent: "Let's build something.",
-    intro: 'Write to me if you have an idea, want to talk through a project, or just want to ask how any of this was built.',
+    intro:
+      'For business enquiries, collaborations or a project you want built: write to me. And if you just want to know how something here works, that too.',
     mail: 'Mail',
     name: 'Name',
     email: 'Email',

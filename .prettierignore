@@ -1,0 +1,11 @@
+dist
+node_modules
+coverage
+package-lock.json
+
+# Binary-ish assets and generated art — Prettier would rewrite the SVG source
+# without understanding it, and a `--` it introduces in a comment silently
+# kills an externally loaded SVG.
+public/models
+public/icons
+doc/*.excalidraw

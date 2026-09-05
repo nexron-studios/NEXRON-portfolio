@@ -4,6 +4,8 @@ import { useI18n } from 'vue-i18n'
 import { useMediaQuery } from '@vueuse/core'
 import { Boxes, ChevronDown } from '@respeak/lucide-motion-vue'
 import { skillGroups } from '@/data/skills'
+import type { SkillDomain } from '@/types/skill.type'
+import { groupByDomain } from '@/utils/skillGrouping'
 import { useLocalizedText } from '@/composables/useLocalizedText'
 import { useIconMotion } from '@/composables/useIconMotion'
 import NxrSkillChip from '@/components/ui/NxrSkillChip.vue'
@@ -20,6 +22,18 @@ const SkillPit = defineAsyncComponent(() => import('@/components/three/SkillPit.
  */
 const canHover = useMediaQuery('(hover: hover)')
 
+/**
+ * The written list, arranged as the four chambers above it. Static data, so it
+ * is computed once rather than per render.
+ */
+const domainSections = groupByDomain(skillGroups)
+
+const domainClass: Record<SkillDomain, string> = {
+  dev: 'text-dev',
+  ai: 'text-ai',
+  creative: 'text-creative',
+  infra: 'text-infra'
+}
 </script>
 
 <template>
@@ -34,9 +48,9 @@ const canHover = useMediaQuery('(hover: hover)')
       state all come for free, and it keeps the full stack in the document for
       anyone reading without a pointer.
     -->
-    <details :open="!canHover" class="group mt-8 border-t border-line pt-6">
+    <details :open="!canHover" class="group mt-8">
       <summary
-        class="nx-meta flex cursor-pointer list-none items-center gap-2.5 text-ink transition-colors hover:text-dev marker:content-none"
+        class="nx-meta flex cursor-pointer list-none items-center gap-2.5 text-ink transition-colors marker:content-none hover:text-dev"
       >
         <Boxes class="size-4 shrink-0" aria-hidden="true" />
         {{ t('stack.show_all') }}
@@ -48,22 +62,33 @@ const canHover = useMediaQuery('(hover: hover)')
         />
       </summary>
 
-      <div class="mt-8 flex flex-col gap-8">
-        <section
-          v-for="group in skillGroups"
-          :key="group.id"
-          class="grid gap-4 border-t border-line pt-6 first:border-t-0 first:pt-0 md:grid-cols-12 md:gap-8"
-        >
-          <h3 class="nx-meta flex items-center gap-3 text-ink-muted md:col-span-3">
-            <span class="size-1.5 shrink-0 bg-ink" aria-hidden="true" />
-            <span>{{ localized(group.label) }}</span>
+      <!--
+        One block per chamber, in chamber order and under the chamber's own
+        name: the list is the pit spelled out, not a second inventory sorted
+        differently.
+      -->
+      <div class="mt-8 flex flex-col gap-10">
+        <section v-for="section in domainSections" :key="section.domain">
+          <h3 class="nx-meta flex items-center gap-3" :class="domainClass[section.domain]">
+            <span class="size-1.5 shrink-0 bg-current" aria-hidden="true" />
+            <span>{{ t(`stack.domain_${section.domain}`) }}</span>
           </h3>
 
-          <ul class="flex flex-wrap gap-2 md:col-span-9">
-            <li v-for="skill in group.skills" :key="skill.name">
-              <NxrSkillChip :skill :domain="group.domain" />
-            </li>
-          </ul>
+          <div class="mt-5 flex flex-col gap-5">
+            <div
+              v-for="group in section.groups"
+              :key="group.id"
+              class="grid gap-3 md:grid-cols-12 md:gap-8"
+            >
+              <h4 class="nx-meta text-ink-muted md:col-span-3">{{ localized(group.label) }}</h4>
+
+              <ul class="flex flex-wrap gap-2 md:col-span-9">
+                <li v-for="skill in group.skills" :key="skill.name">
+                  <NxrSkillChip :skill :domain="group.domain" />
+                </li>
+              </ul>
+            </div>
+          </div>
         </section>
       </div>
     </details>

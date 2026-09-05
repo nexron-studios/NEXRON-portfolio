@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ProjectCategory } from '@/types/project.type'
-import {
-  BLUEPRINT_BAR_BASELINE_Y,
-  buildBars,
-  buildRings,
-  hashSeed
-} from '@/utils/blueprint'
+import { BLUEPRINT_BAR_BASELINE_Y, buildBars, buildRings, hashSeed } from '@/utils/blueprint'
 
 /**
  * Stand-in artwork for projects that have no screenshot yet.
@@ -80,7 +75,14 @@ const bars = computed(() => buildBars(hash.value))
     <!-- Datum lines -->
     <g stroke="var(--color-line-strong)" stroke-width="1" vector-effect="non-scaling-stroke">
       <line x1="0" y1="140" x2="300" y2="140" vector-effect="non-scaling-stroke" />
-      <line x1="24" y1="0" x2="24" y2="160" stroke-dasharray="2 4" vector-effect="non-scaling-stroke" />
+      <line
+        x1="24"
+        y1="0"
+        x2="24"
+        y2="160"
+        stroke-dasharray="2 4"
+        vector-effect="non-scaling-stroke"
+      />
     </g>
   </svg>
 </template>

@@ -31,6 +31,18 @@ export interface SkillGroupProps {
 }
 
 /**
+ * One chamber of the pit with everything it holds, as text.
+ *
+ * The written list is rendered from these so it carries the same four names in
+ * the same order as the chambers above it — the list is the pit spelled out,
+ * not a second, differently-sorted inventory.
+ */
+export interface SkillDomainSectionProps {
+  domain: SkillDomain
+  groups: SkillGroupProps[]
+}
+
+/**
  * A technology that also appears as a floating object in the orb scene.
  * Kept separate from `SkillProps` because the scene needs far fewer of
  * them — a crowded orb field reads as noise.

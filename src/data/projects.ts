@@ -1,4 +1,18 @@
 import type { ProjectProps } from '@/types/project.type'
+import mellowDashboard from '@/assets/projects/mellow/dashboard.png'
+import mellowPomodoro from '@/assets/projects/mellow/pomodore.png'
+import mellowSettings from '@/assets/projects/mellow/settings.png'
+import mellowTodos from '@/assets/projects/mellow/todos.png'
+import mimiDashboard from '@/assets/projects/mimi/dashboard.png'
+import mimiHistory from '@/assets/projects/mimi/history.png'
+import mimiSettings from '@/assets/projects/mimi/settings.png'
+import tokenscopeDashboard from '@/assets/projects/tokenscope/dashboard.png'
+import tokenscopeSettings from '@/assets/projects/tokenscope/einstellungen.png'
+import tokenscopeUsage from '@/assets/projects/tokenscope/verbrauch.png'
+import trackiDashboard from '@/assets/projects/tracki/dashboard.png'
+import trackiCalculator from '@/assets/projects/tracki/fitnesscalculater.png'
+import trackiSettings from '@/assets/projects/tracki/settings.png'
+import trackiWorkout from '@/assets/projects/tracki/workout.png'
 
 const GITHUB_OWNER = 'https://github.com/nexron-studios'
 
@@ -12,8 +26,8 @@ const GITHUB_OWNER = 'https://github.com/nexron-studios'
  */
 export const projects: ProjectProps[] = [
   {
-    slug: 'spw-sport',
-    name: 'SPW Sport App',
+    slug: 'tracki',
+    name: 'NEXRON-Tracki',
     tagline: {
       de: 'Fitness-Tracking als Full-Stack-Anwendung, vorbereitet als PWA.',
       en: 'Fitness tracking as a full-stack application, prepared as a PWA.'
@@ -25,7 +39,13 @@ export const projects: ProjectProps[] = [
     repoUrl: null,
     liveUrl: null,
     status: 'shipped',
-    image: null,
+    shots: [
+      { src: trackiDashboard, label: { de: 'Übersicht', en: 'Dashboard' } },
+      { src: trackiWorkout, label: { de: 'Workout', en: 'Workout' } },
+      { src: trackiCalculator, label: { de: 'Fitness-Rechner', en: 'Fitness calculator' } },
+      { src: trackiSettings, label: { de: 'Einstellungen', en: 'Settings' } }
+    ],
+    shotOrientation: 'portrait',
     detail: {
       overview: {
         de: 'Moderne Fitness-Tracking-Web-App mit Authentifizierung und CRUD-Funktionen, als Progressive Web App für Mobil und Desktop vorbereitet.',
@@ -61,7 +81,12 @@ export const projects: ProjectProps[] = [
     repoUrl: `${GITHUB_OWNER}/NEXRON-TokenScope`,
     liveUrl: null,
     status: 'building',
-    image: null,
+    shots: [
+      { src: tokenscopeDashboard, label: { de: 'Übersicht', en: 'Dashboard' } },
+      { src: tokenscopeUsage, label: { de: 'Verbrauch', en: 'Usage' } },
+      { src: tokenscopeSettings, label: { de: 'Einstellungen', en: 'Settings' } }
+    ],
+    shotOrientation: 'landscape',
     detail: {
       overview: {
         de: 'Ein kleiner FastAPI-Dienst liest die Nutzungsdaten, die Claude Code und Codex ohnehin lokal auf der Platte halten, normalisiert sie und liefert sie über eine eigene API aus. Das Vue-Frontend spricht ausschließlich mit diesem Backend — nie direkt mit einem Anbieter, nie mit einem Token.',
@@ -97,7 +122,13 @@ export const projects: ProjectProps[] = [
     repoUrl: `${GITHUB_OWNER}/NEXRON-mellow`,
     liveUrl: null,
     status: 'shipped',
-    image: null,
+    shots: [
+      { src: mellowDashboard, label: { de: 'Übersicht', en: 'Dashboard' } },
+      { src: mellowTodos, label: { de: 'Aufgaben', en: 'Tasks' } },
+      { src: mellowPomodoro, label: { de: 'Pomodoro-Timer', en: 'Pomodoro timer' } },
+      { src: mellowSettings, label: { de: 'Einstellungen', en: 'Settings' } }
+    ],
+    shotOrientation: 'landscape',
     detail: {
       overview: {
         de: 'Aufgaben verwalten, Arbeitssitzungen tracken, Zeiten manuell nachtragen und Notizen mit Markdown schreiben. Alle Daten bleiben lokal, die App ist mehrsprachig und zeigt aktive wie abgeschlossene Aufgaben übersichtlich getrennt.',
@@ -133,7 +164,12 @@ export const projects: ProjectProps[] = [
     repoUrl: `${GITHUB_OWNER}/NEXRON-mimi`,
     liveUrl: null,
     status: 'shipped',
-    image: null,
+    shots: [
+      { src: mimiDashboard, label: { de: 'Aufnahme', en: 'Recording' } },
+      { src: mimiHistory, label: { de: 'Verlauf', en: 'History' } },
+      { src: mimiSettings, label: { de: 'Einstellungen', en: 'Settings' } }
+    ],
+    shotOrientation: 'portrait',
     detail: {
       overview: {
         de: 'Sprache aufnehmen, transkribieren, Text speichern und kopieren — mehr macht Mimi bewusst nicht.',
@@ -179,7 +215,8 @@ export const projects: ProjectProps[] = [
     repoUrl: `${GITHUB_OWNER}/NEXRON-Duraki`,
     liveUrl: null,
     status: 'shipped',
-    image: null,
+    shots: [],
+    shotOrientation: 'landscape',
     detail: {
       overview: {
         de: 'Durak für zwei Spieler mit 36 Karten, Trumpf, Angriff und Verteidigung, Schieben und Nachwerfen. Dazu Dashboard mit Statistiken, Räume per Einladungscode und Echtzeit über Socket.io.',
@@ -196,42 +233,6 @@ export const projects: ProjectProps[] = [
       implementation: {
         de: 'pnpm-Monorepo: packages/game-core enthält die reine Durak-Engine samt Typen, mit Vitest getestet und ohne jede UI- oder DB-Abhängigkeit. Der Express-Server validiert jeden Zug gegen diese Engine, persistiert Stand und Zug in PostgreSQL über Prisma und broadcastet jedem Spieler nur seine sichtbare Ansicht — die Gegnerhand bleibt verdeckt. Dadurch sind Reload und Resume möglich. Der Tischhintergrund ist eine Three.js-Szene, die auf das gewählte Theme und auf prefers-reduced-motion reagiert.',
         en: 'pnpm monorepo: packages/game-core holds the pure Durak engine and its types, tested with Vitest and free of any UI or DB dependency. The Express server validates every move against that engine, persists state and moves to PostgreSQL through Prisma, and broadcasts each player only their visible view — the opponent hand stays hidden. That makes reload and resume possible. The table background is a Three.js scene that reacts to the selected theme and to prefers-reduced-motion.'
-      },
-      challenges: [],
-      learnings: []
-    }
-  },
-  {
-    slug: 'creator-hub',
-    name: 'nexron-creator-hub',
-    tagline: {
-      de: 'Interaktive 3D-Plattform für Content-Creator.',
-      en: 'Interactive 3D platform for content creators.'
-    },
-    categories: ['3d', 'web'],
-    stack: ['Vue 3', 'Three.js', 'TypeScript'],
-    year: 2025,
-    visibility: 'private',
-    repoUrl: null,
-    liveUrl: null,
-    status: 'experiment',
-    image: null,
-    detail: {
-      overview: {
-        de: 'Creator-Portfolios, Live-Status, Social-Media-Integrationen und ein Discovery-Hub in einer interaktiven 3D-Oberfläche. Ziel: Fans, Creator und Marken an einem zentralen Ort zusammenbringen.',
-        en: 'Creator portfolios, live status, social media integrations and a discovery hub in one interactive 3D interface. The goal: bringing fans, creators and brands together in one place.'
-      },
-      problem: {
-        de: 'Creator verteilen ihre Präsenz über ein Dutzend Plattformen, ohne einen Ort zu haben, der alles zusammenführt.',
-        en: 'Creators spread their presence across a dozen platforms without any one place that pulls it all together.'
-      },
-      idea: {
-        de: 'Web-Entwicklung und 3D verbinden — der Hub ist begehbar statt nur eine Liste von Links.',
-        en: 'Combine web development and 3D — the hub is something you move through rather than a list of links.'
-      },
-      implementation: {
-        de: 'Vue 3 als Anwendungsgerüst, Three.js für die räumliche Oberfläche.',
-        en: 'Vue 3 as the application shell, Three.js for the spatial interface.'
       },
       challenges: [],
       learnings: []

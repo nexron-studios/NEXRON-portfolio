@@ -46,8 +46,13 @@ this repo differ from them on purpose:
   `--color-dev` is violet and carries everything interactive; `--color-creative`
   is magenta and belongs to the 3D / design half. `SkillDomain`'s four values
   are four steps along that one axis, so the tech-stack pit reads as four
-  chambers without a fifth hue being introduced. Status green and amber are the
-  only exception, because a status colour is not a brand colour.
+  chambers without a fifth hue being introduced. There are exactly two
+  exceptions, and neither is a brand colour: status green and amber, and the
+  seven `--color-piece-*` tokens of the Tetris easter egg, which are the
+  colours that game has always had — cyan I, yellow O, red Z and the rest. Its
+  well (`--color-well`) stays dark in both schemes for the same reason, or the
+  yellow and the cyan would be unreadable in the light one. Nothing outside
+  `NxrTetrisGame` and `useTetrisBoard` may reach for either.
 - **Corners are rounded, never chamfered.** The `--radius-*` scale in
   `tokens.css` generates the `rounded-*` utilities; `.nx-panel` and `.nx-glass`
   use `--radius-lg`. The cut-corner clip-paths and `NxrCornerTicks` this project

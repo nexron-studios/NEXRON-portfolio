@@ -16,8 +16,8 @@ export interface ServiceProps {
 }
 
 export const studioIntro: LocalizedText = {
-  de: 'NEXRON Studios ist mein eigenes Gewerbe — der Name, unter dem ich baue, gestalte und veröffentliche. Kleine Werkzeuge, Web-Anwendungen, KI-Prototypen und alles, was zwischen Code und Gestaltung liegt.',
-  en: 'NEXRON Studios is my own trade — the name I build, design and publish under. Small tools, web applications, AI prototypes and everything that sits between code and design.'
+  de: 'NEXRON Studios ist mein eigenes Gewerbe. Angemeldet habe ich es für das, was ich ohnehin am liebsten mache: entwickeln, gestalten und KI-Anwendungen schnell genug an den Markt bringen, dass sie jemandem tatsächlich Arbeit abnehmen.',
+  en: 'NEXRON Studios is my own trade. I registered it for the thing I would be doing anyway: building, designing, and getting AI applications to market fast enough that they actually take work off someone’s hands.'
 }
 
 export const services: ServiceProps[] = [
@@ -25,8 +25,8 @@ export const services: ServiceProps[] = [
     id: 'web',
     label: { de: 'Web & Anwendungen', en: 'Web & applications' },
     summary: {
-      de: 'Von der einzelnen Seite bis zur Full-Stack-Anwendung mit Datenbank, API und Deployment.',
-      en: 'From a single page to a full-stack application with database, API and deployment.'
+      de: 'Frontend und Full-Stack — von der Anforderung über Datenbank und API bis zum Release.',
+      en: 'Frontend and full-stack — from the requirement through database and API to the release.'
     },
     domain: 'dev'
   },
@@ -34,8 +34,8 @@ export const services: ServiceProps[] = [
     id: 'desktop',
     label: { de: 'Desktop-Werkzeuge', en: 'Desktop tools' },
     summary: {
-      de: 'Schlanke Programme, die offline laufen, schnell starten und keine Konten brauchen.',
-      en: 'Lean programs that run offline, start fast and need no accounts.'
+      de: 'Eigene Programme für den Rechner — Werkzeuge, mit denen man wirklich arbeitet: sofort startbereit, offline nutzbar, ohne Konto.',
+      en: 'Programs of my own for the desktop — tools you actually work with: ready the moment you open them, usable offline, no account.'
     },
     domain: 'infra'
   },
@@ -43,8 +43,8 @@ export const services: ServiceProps[] = [
     id: 'ai',
     label: { de: 'KI & Daten', en: 'AI & data' },
     summary: {
-      de: 'Chatbots, LLM-Agents und Multiagentensysteme — dazu Modelle trainieren, Daten aufbereiten und daraus etwas bauen, das man tatsächlich benutzen kann.',
-      en: 'Chatbots, LLM agents and multi-agent systems — plus training models, preparing data and building something from it that can actually be used.'
+      de: 'Chatbots und RAG-Systeme, Klassifikation und Computer Vision, neuronale Netze für Klassifikation und Regression — dazu Datenanalyse und die Aufbereitung, ohne die nichts davon trägt.',
+      en: 'Chatbots and RAG systems, classification and computer vision, neural networks for classification and regression — plus the data analysis and preparation none of it works without.'
     },
     domain: 'ai'
   },
@@ -52,8 +52,8 @@ export const services: ServiceProps[] = [
     id: 'creative',
     label: { de: '3D & Gestaltung', en: '3D & design' },
     summary: {
-      de: 'Interaktive 3D-Oberflächen im Browser, dazu Grafik und Bewegtbild aus der Adobe-Ecke.',
-      en: 'Interactive 3D interfaces in the browser, plus graphics and motion from the Adobe corner.'
+      de: 'Nicht nur 2D: vom Logo über Grafik bis zur 3D-Animation, dazu Bewegtbild und Effekte in After Effects und interaktives 3D im Browser.',
+      en: 'Not only 2D: from the logo through graphics to 3D animation, plus motion and effects in After Effects and interactive 3D in the browser.'
     },
     domain: 'creative'
   }

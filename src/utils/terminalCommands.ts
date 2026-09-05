@@ -11,7 +11,28 @@
  * explained.
  */
 
-export type TerminalAction = 'clear'
+export type TerminalAction = 'clear' | 'tetris'
+
+/**
+ * Names the prompt completes against, and the three the terminal suggests on
+ * its own once the intro has played. Someone who never types a character
+ * should still find out that the panel does something.
+ */
+export const commandNameList = [
+  'help',
+  'whoami',
+  'ls',
+  'cat',
+  'skills',
+  'projects',
+  'contact',
+  'theme',
+  'tetris',
+  'echo',
+  'clear'
+] as const
+
+export const suggestedCommandList = ['help', 'skills', 'tetris'] as const
 
 export interface CommandResultProps {
   output: string[]
@@ -59,10 +80,11 @@ const HELP: string[] = [
   '  projects      what I have built',
   '  contact       how to reach me',
   '  theme         switch light / dark',
+  '  tetris        play, right here',
   '  echo <text>   say it back',
   '  clear         wipe the screen',
   '',
-  'tip: arrow up walks back through history.'
+  'tip: tab completes, arrow up walks back through history.'
 ]
 
 /**
@@ -78,10 +100,35 @@ export const parseInput = (input: string): { name: string; args: string[] } => {
 
 export const listFiles = (): string[] => Object.keys(FILES).sort()
 
-export const runCommand = (
-  input: string,
-  context: TerminalContextProps
-): CommandResultProps => {
+/**
+ * Tab completion for the command name.
+ *
+ * One match completes it outright; several complete as far as they agree,
+ * which is what a shell does and what stops the key feeling broken when two
+ * commands share a prefix. Anything past the first word is left alone — the
+ * arguments are filenames, and `ls` already lists those.
+ */
+export const completeCommand = (input: string): string => {
+  if (input.trim() === '' || /\s/.test(input.trim())) return input
+
+  const prefix = input.trim().toLowerCase()
+  const matches = commandNameList.filter((name) => name.startsWith(prefix))
+
+  const [first] = matches
+  if (!first) return input
+  if (matches.length === 1) return first
+
+  let shared = first
+  for (const match of matches) {
+    while (!match.startsWith(shared)) {
+      shared = shared.slice(0, -1)
+    }
+  }
+
+  return shared
+}
+
+export const runCommand = (input: string, context: TerminalContextProps): CommandResultProps => {
   const { name, args } = parseInput(input)
 
   // An empty line is not an error — a shell just gives you a new prompt.
@@ -133,6 +180,9 @@ export const runCommand = (
 
     case 'echo':
       return { output: [args.join(' ')] }
+
+    case 'tetris':
+      return { output: ['booting tetris…'], action: 'tetris' }
 
     case 'clear':
       return { output: [], action: 'clear' }

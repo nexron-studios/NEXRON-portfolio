@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { listFiles, parseInput, runCommand, type TerminalContextProps } from '../terminalCommands'
+import {
+  commandNameList,
+  completeCommand,
+  listFiles,
+  parseInput,
+  runCommand,
+  suggestedCommandList,
+  type TerminalContextProps
+} from '../terminalCommands'
 
 const context: TerminalContextProps = {
   projectCount: 6,
@@ -122,5 +130,62 @@ describe('runCommand', () => {
 
   it('should not set an action for an ordinary command', () => {
     expect(runCommand('whoami', context).action).toBeUndefined()
+  })
+
+  it('should ask for the game rather than printing it', () => {
+    expect(runCommand('tetris', context).action).toBe('tetris')
+  })
+
+  it('should acknowledge the game before it opens', () => {
+    expect(runCommand('tetris', context).output).not.toHaveLength(0)
+  })
+
+  it('should list the game in help', () => {
+    expect(runCommand('help', context).output.join('\n')).toContain('tetris')
+  })
+})
+
+describe('completeCommand', () => {
+  it('should complete an unambiguous prefix', () => {
+    expect(completeCommand('tet')).toBe('tetris')
+  })
+
+  it('should complete only as far as several matches agree', () => {
+    // `cat` and `clear` share nothing past the first letter.
+    expect(completeCommand('c')).toBe('c')
+  })
+
+  it('should complete past a shared prefix once it is unambiguous', () => {
+    expect(completeCommand('cl')).toBe('clear')
+  })
+
+  it('should leave an unknown prefix alone', () => {
+    expect(completeCommand('zzz')).toBe('zzz')
+  })
+
+  it('should leave a blank input alone', () => {
+    expect(completeCommand('')).toBe('')
+  })
+
+  it('should not touch anything past the first word', () => {
+    expect(completeCommand('cat read')).toBe('cat read')
+  })
+
+  it('should ignore case', () => {
+    expect(completeCommand('TET')).toBe('tetris')
+  })
+})
+
+describe('suggestedCommandList', () => {
+  it('should only suggest commands that exist', () => {
+    for (const suggestion of suggestedCommandList) {
+      expect(commandNameList).toContain(suggestion)
+    }
+  })
+
+  it('should not suggest a command that answers with "not found"', () => {
+    for (const suggestion of suggestedCommandList) {
+      expect(runCommand(suggestion, context).output.join(' ')).not.toContain('command not found')
+    }
   })
 })

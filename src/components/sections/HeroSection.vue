@@ -37,7 +37,10 @@ const heroSocials = socials.filter((entry) => HERO_SOCIAL_IDS.includes(entry.id)
           <span class="h-px w-8 bg-line-strong" />
           <span class="text-dev">{{ t('hero.kicker') }}</span>
           <span aria-hidden="true" class="text-ink-faint">·</span>
-          <span>{{ identity.brand }}</span>
+          <!-- `text-ink` rather than `.nx-meta`'s faint default: this is the one
+               name on the line that has to survive being read at a glance, and
+               next to the violet kicker the faint tone lost it. -->
+          <span class="text-ink">{{ identity.brand }}</span>
         </p>
 
         <h1 class="mt-6 font-display text-display font-bold text-balance lg:mt-8">
@@ -48,7 +51,7 @@ const heroSocials = socials.filter((entry) => HERO_SOCIAL_IDS.includes(entry.id)
           {{ localized(identity.role) }}
         </p>
 
-        <p class="mt-4 max-w-lg text-lg leading-relaxed text-ink-muted text-pretty lg:mt-6">
+        <p class="mt-4 max-w-lg text-lg leading-relaxed text-pretty text-ink-muted lg:mt-6">
           {{ localized(identity.tagline) }}
         </p>
 

@@ -7,9 +7,11 @@
  *   ai/infra → the two tech-stack chambers between those, NOT new hues:
  *              both are steps along the violet→magenta axis
  *   ink      → content
- * Nothing else is allowed to introduce a hue. The one exception is status:
- * `shipped` and `building` stay green/amber, because a status colour is not a
- * brand colour and inventing a violet "shipped" would say nothing.
+ * Nothing else is allowed to introduce a hue. There are two exceptions, and
+ * both are things whose colour is not ours to choose: status — `shipped` and
+ * `building` stay green/amber, because inventing a violet "shipped" would say
+ * nothing — and the seven Tetris pieces further down, which are the colours
+ * that game has always had.
  *
  * The names are roles, not literal colours — `void` is the page ground and
  * `panel` the surface on top of it, whichever way the theme runs. The `@theme`
@@ -44,6 +46,31 @@
   --color-infra-dim: #2e1065;
   --color-shipped: #34d399;
   --color-building: #f0b429;
+
+  /* -- tetromino ------------------------------------------------------ *
+   * The seven pieces of the Tetris easter egg, in the colours the game has
+   * had since 1989. The second deliberate exception to the palette, for the
+   * same reason as status: these are not brand colours, they are the colours
+   * that particular thing *is*. A cyan I-piece is recognisable across every
+   * version ever shipped, and rendering the seven along the violet→magenta
+   * axis made four of them indistinguishable at a glance.
+   *
+   * Nothing outside the game may reach for them, and no interface element
+   * takes a hue from here.
+   *
+   * The well they fall into does not follow the theme either — a Tetris board
+   * is a lit screen, and it is the only way the original yellow and cyan stay
+   * readable when the site is in its light scheme. That is why these two are
+   * absent from the light block below.                                       */
+  --color-well: #0b0910;
+  --color-well-line: rgb(255 255 255 / 0.07);
+  --color-piece-i: #31c7ef;
+  --color-piece-o: #f7d308;
+  --color-piece-t: #ad4d9c;
+  --color-piece-s: #42b642;
+  --color-piece-z: #ef2029;
+  --color-piece-j: #5a65ad;
+  --color-piece-l: #ef7921;
 
   /* -- shape ---------------------------------------------------------- */
   /* Generates the `rounded-*` utilities. Corners are rounded, not chamfered —

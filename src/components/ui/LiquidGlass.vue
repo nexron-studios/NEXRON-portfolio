@@ -159,7 +159,14 @@ onUnmounted(() => {
     <svg class="nx-liquid-filter" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="displacementFilter" color-interpolation-filters="sRGB">
-          <feImage x="0" y="0" width="100%" height="100%" :href="displacementDataUri" result="map" />
+          <feImage
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            :href="displacementDataUri"
+            result="map"
+          />
           <feDisplacementMap
             id="redchannel"
             in="SourceGraphic"

@@ -9,7 +9,24 @@
       "Bash(node -p \"const p=require\\('./node_modules/@respeak/lucide-motion-vue/package.json'\\);p.name+' @ '+p.version+'  ->  '+\\(p.homepage||p.repository&&p.repository.url||''\\)\")",
       "Bash(netstat -ano)",
       "Bash(curl -s --max-time 5 \"http://localhost:5173/\")",
-      "Bash(curl -s --max-time 5 \"http://localhost:5174/\")"
+      "Bash(curl -s --max-time 5 \"http://localhost:5174/\")",
+      "Bash(node -e ' *)",
+      "Bash(python -)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://localhost:5174/)",
+      "Bash(echo \"dev server: $\\(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://localhost:5174/\\)\")",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' --max-time 5 http://localhost:5174/)",
+      "Bash(node -p \"JSON.stringify\\(require\\('./node_modules/@respeak/lucide-motion-vue/package.json'\\).dependencies,null,1\\)\")",
+      "Bash(npm install *)",
+      "Bash(awk 'NR>0')",
+      "Bash(npm uninstall *)",
+      "PowerShell(npm run typecheck)",
+      "PowerShell(npm run test)",
+      "PowerShell(npm run build)",
+      "Bash(awk -F': ' '{print $2}')",
+      "Bash(sort -u -t' ' -k2 -n)",
+      "PowerShell(npm run build 2>&1)",
+      "PowerShell(npm view simple-icons version 2>&1)",
+      "PowerShell(npm install --no-save --silent simple-icons 2>&1)"
     ]
   }
 }

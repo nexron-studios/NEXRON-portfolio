@@ -9,6 +9,14 @@ export default defineConfig({
   // host, which Vite's host check would otherwise reject as a DNS-rebinding
   // attempt. Only the wildcard is allowed, never `true`.
   server: {
+    // 5174, not Vite's default 5173: nexron-tracki is a PWA that registers a
+    // service worker on `localhost:5173` with scope `/`. That worker outlives
+    // whichever project holds the port and keeps serving its own cached
+    // index.html shell — old tab title, old favicon — over this app. A
+    // separate port is a separate origin, so it can never claim this one.
+    // strictPort keeps a busy 5174 from silently falling back into 5173.
+    port: 5174,
+    strictPort: true,
     allowedHosts: ['.trycloudflare.com']
   },
   preview: {

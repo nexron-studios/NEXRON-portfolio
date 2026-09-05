@@ -13,6 +13,7 @@ import JourneySection from '@/components/sections/JourneySection.vue'
 import ProjectsSection from '@/components/sections/ProjectsSection.vue'
 import StackSection from '@/components/sections/StackSection.vue'
 import { framedSections, sectionIds } from '@/data/sections'
+import { useScrollProgress } from '@/composables/useScrollProgress'
 import { useScrollSpy } from '@/composables/useScrollSpy'
 
 /**
@@ -31,6 +32,11 @@ const sectionComponents: Record<string, Component> = {
 const { t } = useI18n()
 
 useScrollSpy(sectionIds)
+
+// Publishes `--nx-progress` on the root element. Nothing else writes it, so
+// without this call the reading rule along the header's lower edge sits at
+// `scaleX(0)` for the life of the page.
+useScrollProgress()
 </script>
 
 <template>

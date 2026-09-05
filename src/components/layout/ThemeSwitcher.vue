@@ -25,7 +25,7 @@ const themeLabel = (theme: Theme): string => t(`nav.theme_${theme}`)
       v-for="theme in themeList"
       :key="theme"
       type="button"
-      class="flex size-8 items-center justify-center transition-colors duration-[--nx-dur-fast] sm:h-9 sm:w-10"
+      class="flex size-7 items-center justify-center transition-colors duration-[--nx-dur-fast] sm:h-8 sm:w-9"
       :class="
         uiStore.theme === theme
           ? 'bg-dev text-void'
@@ -35,7 +35,7 @@ const themeLabel = (theme: Theme): string => t(`nav.theme_${theme}`)
       :aria-label="themeLabel(theme)"
       @click="uiStore.setTheme(theme)"
     >
-      <component :is="themeIcons[theme]" v-bind="iconMotion" class="size-[1.125rem]" aria-hidden="true" />
+      <component :is="themeIcons[theme]" v-bind="iconMotion" class="size-4" aria-hidden="true" />
     </button>
   </div>
 </template>

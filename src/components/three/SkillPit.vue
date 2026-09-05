@@ -18,11 +18,18 @@ import { useUiStore } from '@/stores/ui'
  * and a click shoves them apart.
  *
  * The chamber labels are HTML rather than 3D text: cheaper and more readable.
+ * Nothing else is printed over the pit — a caption that followed the cursor sat
+ * on top of the very blocks it was describing. What each technology is belongs
+ * to the list below the scene, where it can be read without hunting for it.
  */
 const container = ref<HTMLElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)
 
 const pitRef = shallowRef<SkillPit | null>(null)
+
+/** Set up by the scene: NDC → the world plane the pit lives in. */
+type ProjectPointer = (ndcX: number, ndcY: number, target: Vector3) => void
+const projectRef = shallowRef<ProjectPointer | null>(null)
 
 const uiStore = useUiStore()
 const { t } = useI18n()
@@ -36,7 +43,7 @@ const domainClass: Record<SkillDomain, string> = {
 }
 
 const setupScene = (context: SceneContext): SceneHandle => {
-  const { scene, camera, isCompact } = context
+  const { scene, camera, renderer, isCompact } = context
 
   // Close enough that the settled stack fills the frame — further back left
   // two thirds of the canvas as empty sky above the balls.
@@ -45,28 +52,34 @@ const setupScene = (context: SceneContext): SceneHandle => {
 
   scene.add(createSceneLighting())
 
-  const pit = createSkillPit(pitSkills, camera, uiStore.theme, isCompact)
+  const pit = createSkillPit(pitSkills, camera, renderer, uiStore.theme, isCompact)
   pitRef.value = pit
   scene.add(pit.group)
 
   const pointerWorld = new Vector3()
 
   /** Pointer NDC → the world point on the z = 0 plane the pit lives in. */
-  const projectPointer = (ndcX: number, ndcY: number): void => {
-    pointerWorld.set(ndcX, ndcY, 0.5).unproject(camera).sub(camera.position).normalize()
-    const distance = -camera.position.z / pointerWorld.z
-    pointerWorld.multiplyScalar(distance).add(camera.position)
+  const projectPointer = (ndcX: number, ndcY: number, target: Vector3): void => {
+    target.set(ndcX, ndcY, 0.5).unproject(camera).sub(camera.position).normalize()
+    const distance = -camera.position.z / target.z
+    target.multiplyScalar(distance).add(camera.position)
   }
+
+  // The click handler lives outside the scene and has no camera of its own, so
+  // it borrows this one. Reconstructing the frustum from the chamber bounds is
+  // what it used to do, and that drifts the moment the pit gains any inset.
+  projectRef.value = projectPointer
 
   const update = (_elapsed: number, delta: number): void => {
     const { smoothX, smoothY, hasPointer } = advance()
 
-    if (hasPointer) {
-      projectPointer(smoothX, smoothY)
-      pit.update(delta, pointerWorld)
-    } else {
+    if (!hasPointer) {
       pit.update(delta, null)
+      return
     }
+
+    projectPointer(smoothX, smoothY, pointerWorld)
+    pit.update(delta, pointerWorld)
   }
 
   const resize = (width: number, height: number): void => {
@@ -76,6 +89,7 @@ const setupScene = (context: SceneContext): SceneHandle => {
   const dispose = (): void => {
     pit.dispose()
     pitRef.value = null
+    projectRef.value = null
   }
 
   return { update, resize, dispose }
@@ -83,8 +97,9 @@ const setupScene = (context: SceneContext): SceneHandle => {
 
 const handleShove = (event: PointerEvent): void => {
   const pit = pitRef.value
+  const project = projectRef.value
   const element = container.value
-  if (!pit || !element) return
+  if (!pit || !project || !element) return
 
   // Click position straight off the event rather than the smoothed pointer:
   // the shove should land where the visitor actually clicked.
@@ -92,11 +107,10 @@ const handleShove = (event: PointerEvent): void => {
   const ndcX = ((event.clientX - bounds.left) / bounds.width) * 2 - 1
   const ndcY = -((event.clientY - bounds.top) / bounds.height) * 2 + 1
 
-  const chamber = pit.chambers[0]
-  const height = chamber ? Math.abs(chamber.floor) * 2 : 6
-  const width = height * (bounds.width / bounds.height)
+  const point = new Vector3()
+  project(ndcX, ndcY, point)
 
-  pit.shove(new Vector3((ndcX * width) / 2, (ndcY * height) / 2, 0))
+  pit.shove(point)
 }
 
 watch(

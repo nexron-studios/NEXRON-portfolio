@@ -69,6 +69,7 @@ export const skillGroups: SkillGroupProps[] = [
       { name: 'RAG', quip: null, isCore: true },
       { name: 'PyTorch', quip: 'loss go down', isCore: true },
       { name: 'TensorFlow', quip: null, isCore: false },
+      { name: 'Keras', quip: null, isCore: true },
       { name: 'scikit-learn', quip: null, isCore: true },
       { name: 'Hugging Face', quip: null, isCore: true },
       { name: 'spaCy', quip: null, isCore: false },
@@ -121,13 +122,19 @@ export const pitSkills: OrbSkillProps[] = [
     name: 'TypeScript',
     domain: 'dev',
     weight: 1.3,
-    blurb: { de: 'Typen statt Überraschungen zur Laufzeit.', en: 'Types instead of runtime surprises.' }
+    blurb: {
+      de: 'Typen statt Überraschungen zur Laufzeit.',
+      en: 'Types instead of runtime surprises.'
+    }
   },
   {
     name: 'Tailwind',
     domain: 'dev',
     weight: 1.0,
-    blurb: { de: 'Styling im Markup, kein Klassen-Ratespiel.', en: 'Styling in the markup, no class guessing.' }
+    blurb: {
+      de: 'Styling im Markup, kein Klassen-Ratespiel.',
+      en: 'Styling in the markup, no class guessing.'
+    }
   },
   {
     name: 'Pinia',
@@ -151,19 +158,28 @@ export const pitSkills: OrbSkillProps[] = [
     name: 'LLM-Agents',
     domain: 'ai',
     weight: 1.35,
-    blurb: { de: 'Modelle, die Werkzeuge benutzen statt nur zu antworten.', en: 'Models that use tools instead of only answering.' }
+    blurb: {
+      de: 'Modelle, die Werkzeuge benutzen statt nur zu antworten.',
+      en: 'Models that use tools instead of only answering.'
+    }
   },
   {
     name: 'Multiagenten',
     domain: 'ai',
     weight: 1.2,
-    blurb: { de: 'Mehrere Agents, die sich eine Aufgabe teilen.', en: 'Several agents splitting one task.' }
+    blurb: {
+      de: 'Mehrere Agents, die sich eine Aufgabe teilen.',
+      en: 'Several agents splitting one task.'
+    }
   },
   {
     name: 'Python',
     domain: 'ai',
     weight: 1.25,
-    blurb: { de: 'Die Sprache für alles mit Daten und Modellen.', en: 'The language for anything with data and models.' }
+    blurb: {
+      de: 'Die Sprache für alles mit Daten und Modellen.',
+      en: 'The language for anything with data and models.'
+    }
   },
   {
     name: 'PyTorch',
@@ -172,22 +188,58 @@ export const pitSkills: OrbSkillProps[] = [
     blurb: { de: 'Netze bauen und trainieren.', en: 'Building and training networks.' }
   },
   {
+    name: 'Keras',
+    domain: 'ai',
+    weight: 0.9,
+    blurb: {
+      de: 'Netze aufsetzen, ohne den Unterbau neu zu bauen.',
+      en: 'Setting up networks without rebuilding the plumbing.'
+    }
+  },
+  {
+    name: 'scikit-learn',
+    domain: 'ai',
+    weight: 1.0,
+    blurb: {
+      de: 'Klassische Modelle — oft das, was reicht.',
+      en: 'Classical models — often all it takes.'
+    }
+  },
+  {
+    name: 'NumPy',
+    domain: 'ai',
+    weight: 1.05,
+    blurb: {
+      de: 'Die Arrays, auf denen alles andere aufsetzt.',
+      en: 'The arrays everything else is built on.'
+    }
+  },
+  {
     name: 'Pandas',
     domain: 'ai',
     weight: 0.9,
-    blurb: { de: 'Daten sortieren, bevor das Modell sie sieht.', en: 'Sorting data before the model sees it.' }
+    blurb: {
+      de: 'Daten sortieren, bevor das Modell sie sieht.',
+      en: 'Sorting data before the model sees it.'
+    }
   },
   {
     name: 'OpenCV',
     domain: 'ai',
     weight: 0.85,
-    blurb: { de: 'Bilder und Video maschinell lesbar machen.', en: 'Making images and video machine-readable.' }
+    blurb: {
+      de: 'Bilder und Video maschinell lesbar machen.',
+      en: 'Making images and video machine-readable.'
+    }
   },
   {
     name: 'Three.js',
     domain: 'creative',
     weight: 1.35,
-    blurb: { de: '3D im Browser — auch dieser Würfel hier.', en: '3D in the browser — including this cube.' }
+    blurb: {
+      de: '3D im Browser — auch dieser Würfel hier.',
+      en: '3D in the browser — including this cube.'
+    }
   },
   {
     name: 'Blender',
@@ -199,7 +251,10 @@ export const pitSkills: OrbSkillProps[] = [
     name: 'GLSL',
     domain: 'creative',
     weight: 0.95,
-    blurb: { de: 'Shader, wenn Material allein nicht reicht.', en: 'Shaders when a material is not enough.' }
+    blurb: {
+      de: 'Shader, wenn Material allein nicht reicht.',
+      en: 'Shaders when a material is not enough.'
+    }
   },
   {
     name: 'WebGL',
@@ -226,6 +281,12 @@ export const pitSkills: OrbSkillProps[] = [
     blurb: { de: 'Motion Design und Animation.', en: 'Motion design and animation.' }
   },
   {
+    name: 'Premiere Pro',
+    domain: 'creative',
+    weight: 0.8,
+    blurb: { de: 'Schnitt und Bewegtbild.', en: 'Editing and moving image.' }
+  },
+  {
     name: 'Docker',
     domain: 'infra',
     weight: 1.2,
@@ -247,7 +308,10 @@ export const pitSkills: OrbSkillProps[] = [
     name: 'Rust',
     domain: 'infra',
     weight: 1.05,
-    blurb: { de: 'Der Kern, wenn es schnell und sicher sein muss.', en: 'The core when it has to be fast and safe.' }
+    blurb: {
+      de: 'Der Kern, wenn es schnell und sicher sein muss.',
+      en: 'The core when it has to be fast and safe.'
+    }
   },
   {
     name: 'NestJS',
@@ -259,6 +323,9 @@ export const pitSkills: OrbSkillProps[] = [
     name: 'FastAPI',
     domain: 'infra',
     weight: 0.85,
-    blurb: { de: 'Schnelle Python-APIs, meist vor einem Modell.', en: 'Quick Python APIs, usually in front of a model.' }
+    blurb: {
+      de: 'Schnelle Python-APIs, meist vor einem Modell.',
+      en: 'Quick Python APIs, usually in front of a model.'
+    }
   }
 ]

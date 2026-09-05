@@ -3,7 +3,12 @@ import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useUiStore } from '@/stores/ui'
 import type { TerminalLineProps } from '@/types/terminal.type'
-import { runCommand, type TerminalContextProps } from '@/utils/terminalCommands'
+import {
+  completeCommand,
+  runCommand,
+  suggestedCommandList,
+  type TerminalContextProps
+} from '@/utils/terminalCommands'
 
 /** Pause after a command is typed out, before its output appears. */
 const COMMAND_SETTLE_MS = 260
@@ -30,6 +35,11 @@ const {
   context: TerminalContextProps
   typeSpeed?: number
   linePause?: number
+}>()
+
+const emit = defineEmits<{
+  /** A command asked for something the terminal cannot print. */
+  action: [action: 'tetris']
 }>()
 
 const uiStore = useUiStore()
@@ -95,8 +105,7 @@ const focusInput = (): void => {
   inputRef.value?.focus()
 }
 
-const submit = (): void => {
-  const input = draft.value
+const run = (input: string): void => {
   const { output, action } = runCommand(input, context)
 
   if (action === 'clear') {
@@ -105,12 +114,32 @@ const submit = (): void => {
     entries.value.push({ command: input, output })
   }
 
+  if (action === 'tetris') emit('action', 'tetris')
+
   if (input.trim() !== '') {
     history.value.push(input)
   }
   historyIndex.value = -1
   draft.value = ''
   void scrollToEnd()
+}
+
+const submit = (): void => {
+  run(draft.value)
+}
+
+/**
+ * A suggestion chip runs its command rather than typing it into the prompt.
+ * Someone who clicks a button expects it to do the thing, not to save them
+ * eleven keystrokes.
+ */
+const runSuggestion = (command: string): void => {
+  run(command)
+  focusInput()
+}
+
+const complete = (): void => {
+  draft.value = completeCommand(draft.value)
 }
 
 /** Arrow up/down walks back through what was typed, like a real shell. */
@@ -154,10 +183,7 @@ onBeforeUnmount(() => {
     window behaves. The click target is the wrapper rather than the input so
     the whole surface is usable; keyboard users reach the input by tabbing.
   -->
-  <div
-    class="nx-panel relative bg-raised/60 font-mono text-sm"
-    @click="focusInput"
-  >
+  <div class="nx-panel relative bg-raised/60 font-mono text-sm" @click="focusInput">
     <!-- Title bar reads as a part label, not as a fake OS window -->
     <div class="flex items-center gap-2 border-b border-line px-4 py-2.5">
       <span class="size-1.5 rounded-full bg-shipped" />
@@ -190,26 +216,46 @@ onBeforeUnmount(() => {
         class="inline-block h-4 w-2 translate-y-0.5 animate-pulse bg-dev"
       />
 
-      <!-- The live prompt appears only once the intro has finished playing,
-           so the two are never typing over each other. -->
-      <p v-else class="flex items-baseline gap-2">
-        <span aria-hidden="true" class="text-dev">$</span>
-        <label class="sr-only" for="nx-terminal-input">{{ t('about.terminal_label') }}</label>
-        <input
-          id="nx-terminal-input"
-          ref="inputRef"
-          v-model="draft"
-          type="text"
-          autocomplete="off"
-          autocapitalize="off"
-          autocorrect="off"
-          spellcheck="false"
-          class="min-w-0 flex-1 bg-transparent text-ink caret-dev outline-none"
-          @keydown.enter.prevent="submit"
-          @keydown.up.prevent="recall(-1)"
-          @keydown.down.prevent="recall(1)"
-        />
-      </p>
+      <!--
+        The panel took typed input from the first day and nothing said so. The
+        suggestions are the fix: they read as the terminal's own last line, and
+        each one is a real button that runs the command rather than typing it
+        into the prompt for you.
+      -->
+      <template v-else>
+        <p class="mb-3 flex flex-wrap items-center gap-2 pl-4 text-ink-faint">
+          <span aria-hidden="true">try:</span>
+          <button
+            v-for="command in suggestedCommandList"
+            :key="command"
+            type="button"
+            class="rounded-sm border border-line px-2 py-0.5 text-ink-muted transition-colors duration-[--nx-dur-fast] hover:border-dev hover:text-dev focus-visible:border-dev focus-visible:text-dev"
+            @click="runSuggestion(command)"
+          >
+            {{ command }}
+          </button>
+        </p>
+
+        <p class="flex items-baseline gap-2">
+          <span aria-hidden="true" class="text-dev">$</span>
+          <label class="sr-only" for="nx-terminal-input">{{ t('about.terminal_label') }}</label>
+          <input
+            id="nx-terminal-input"
+            ref="inputRef"
+            v-model="draft"
+            type="text"
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            class="min-w-0 flex-1 bg-transparent text-ink caret-dev outline-none"
+            @keydown.enter.prevent="submit"
+            @keydown.up.prevent="recall(-1)"
+            @keydown.down.prevent="recall(1)"
+            @keydown.tab.prevent="complete"
+          />
+        </p>
+      </template>
     </div>
   </div>
 </template>

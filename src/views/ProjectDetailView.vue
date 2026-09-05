@@ -9,6 +9,7 @@ import { useIconMotion } from '@/composables/useIconMotion'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import TetrisBackdrop from '@/components/layout/TetrisBackdrop.vue'
 import NxrBlueprintVisual from '@/components/ui/NxrBlueprintVisual.vue'
+import NxrProjectGallery from '@/components/ui/NxrProjectGallery.vue'
 import NxrStatusBadge from '@/components/ui/NxrStatusBadge.vue'
 
 const { slug } = defineProps<{ slug: string }>()
@@ -39,7 +40,7 @@ const detailBlocks = computed(() => {
 const challenges = computed(() => project.value?.detail?.challenges.map(localized) ?? [])
 const learnings = computed(() => project.value?.detail?.learnings.map(localized) ?? [])
 
-const BASE_TITLE = 'Jonas Glatz – Developer, AI & Creative Technology'
+const BASE_TITLE = 'Jonas Glatz – Developer, AI & Design'
 
 watchEffect(() => {
   const current = project.value
@@ -79,7 +80,9 @@ onBeforeUnmount(() => {
             <NxrStatusBadge :status="project.status" />
             <span class="nx-meta">{{ project.year }}</span>
             <span class="nx-meta">
-              {{ project.categories.map((category) => t(`projects.category_${category}`)).join(' · ') }}
+              {{
+                project.categories.map((category) => t(`projects.category_${category}`)).join(' · ')
+              }}
             </span>
           </div>
 
@@ -87,7 +90,7 @@ onBeforeUnmount(() => {
             {{ project.name }}
           </h1>
 
-          <p class="mt-4 max-w-2xl text-lg leading-relaxed text-ink-muted text-pretty">
+          <p class="mt-4 max-w-2xl text-lg leading-relaxed text-pretty text-ink-muted">
             {{ localized(project.tagline) }}
           </p>
 
@@ -132,18 +135,21 @@ onBeforeUnmount(() => {
           </div>
         </header>
 
-        <div class="relative mt-10 aspect-[21/9] max-h-80 overflow-hidden border border-line">
-          <img
-            v-if="project.image"
-            :src="project.image"
-            :alt="project.name"
-            class="h-full w-full object-cover"
+        <!--
+          The gallery is the hero where there are screens: a fixed 21:9 band
+          above it would either repeat the lead shot or crop a phone screen to
+          a strip. Projects without screenshots keep the generated blueprint.
+        -->
+        <div class="mt-10">
+          <NxrProjectGallery
+            v-if="project.shots.length > 0"
+            :shots="project.shots"
+            :orientation="project.shotOrientation"
+            :project-name="project.name"
           />
-          <NxrBlueprintVisual
-            v-else
-            :seed="project.slug"
-            :category="project.categories[0] ?? 'web'"
-          />
+          <div v-else class="relative aspect-[21/9] max-h-80 overflow-hidden border border-line">
+            <NxrBlueprintVisual :seed="project.slug" :category="project.categories[0] ?? 'web'" />
+          </div>
         </div>
 
         <div class="mt-14 grid gap-12 lg:grid-cols-12">
@@ -153,7 +159,7 @@ onBeforeUnmount(() => {
                 {{ block.label }}
                 <span class="h-px flex-1 bg-line" />
               </h2>
-              <p class="mt-4 text-lg leading-relaxed text-ink-muted text-pretty">
+              <p class="mt-4 text-lg leading-relaxed text-pretty text-ink-muted">
                 {{ block.body }}
               </p>
             </section>

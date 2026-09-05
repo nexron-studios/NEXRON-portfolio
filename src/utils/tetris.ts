@@ -185,7 +185,10 @@ export const spawnColumn = (columns: number, random: number): number => {
 }
 
 export const pickTetromino = (random: number): TetrominoName => {
-  const index = Math.min(tetrominoNameList.length - 1, Math.floor(random * tetrominoNameList.length))
+  const index = Math.min(
+    tetrominoNameList.length - 1,
+    Math.floor(random * tetrominoNameList.length)
+  )
 
   return tetrominoNameList[index] ?? 'I'
 }

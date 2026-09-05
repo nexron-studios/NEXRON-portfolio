@@ -64,18 +64,28 @@ const discRotation = (id: string): string => `${(hashSeed(id) % 9) - 4}deg`
       <span
         aria-hidden="true"
         class="absolute top-0 left-0 flex size-12 items-center justify-center overflow-hidden rounded-full border transition-all duration-[--nx-dur] ease-[--ease-out-expo] group-hover:scale-110 md:left-[9rem]"
-        :class="
+        :class="[
           isLive(entry)
-            ? 'border-dev bg-void text-dev shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-dev)_14%,transparent),0_0_22px_-2px_var(--color-dev)]'
-            : 'border-line-strong bg-panel text-ink-faint group-hover:border-dev group-hover:text-dev'
-        "
+            ? 'border-dev text-dev shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-dev)_14%,transparent),0_0_22px_-2px_var(--color-dev)]'
+            : 'border-line-strong text-ink-faint group-hover:border-dev group-hover:text-dev',
+          // A transparent mark sits on white whatever the theme, or it vanishes
+          // into the panel colour. A full-bleed logo brings its own ground and
+          // needs none, and the monogram keeps the panel — it is drawn in ink.
+          entry.logo && !entry.isLogoFullBleed ? 'bg-white' : isLive(entry) ? 'bg-void' : 'bg-panel'
+        ]"
         :style="{ transform: `rotate(${discRotation(entry.id)})` }"
       >
+        <!--
+          A full-bleed logo is cropped to fill the disc; a transparent wordmark
+          is fitted inside it, because cropping one to a circle cuts the name
+          in half.
+        -->
         <img
           v-if="entry.logo"
           :src="entry.logo"
           alt=""
-          class="size-full object-cover"
+          class="size-full"
+          :class="entry.isLogoFullBleed ? 'object-cover' : 'object-contain p-1.5'"
           loading="lazy"
           decoding="async"
         />
@@ -100,14 +110,14 @@ const discRotation = (id: string): string => `${(hashSeed(id) % 9) - 4}deg`
           <template v-else>{{ entry.organization }}</template>
         </h3>
         <span class="nx-meta">{{ t(`journey.kind_${entry.kind}`) }}</span>
-        <span class="nx-meta">{{ entry.location }}</span>
+        <span v-if="entry.location" class="nx-meta">{{ entry.location }}</span>
       </div>
 
-      <p class="mt-2 font-mono text-sm text-dev">{{ localized(entry.role) }}</p>
+      <p v-if="entry.role" class="mt-2 font-mono text-sm text-dev">{{ localized(entry.role) }}</p>
 
       <p
         v-if="localized(entry.summary)"
-        class="mt-3 max-w-2xl leading-relaxed text-ink-muted text-pretty"
+        class="mt-3 max-w-2xl leading-relaxed text-pretty text-ink-muted"
       >
         {{ localized(entry.summary) }}
       </p>

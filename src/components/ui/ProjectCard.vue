@@ -23,9 +23,13 @@ const card = ref<HTMLElement | null>(null)
 useTilt(card, { maxAngle: 8 })
 
 const primaryCategory = computed(() => project.categories[0] ?? 'web')
+/** The first screen stands for the project; the rest live in the detail view. */
+const coverShot = computed(() => project.shots[0] ?? null)
 /** Long stacks turn the card into a tag cloud — the rest lives in the detail view. */
 const visibleStack = computed(() => project.stack.slice(0, 5))
-const hiddenStackCount = computed(() => Math.max(project.stack.length - visibleStack.value.length, 0))
+const hiddenStackCount = computed(() =>
+  Math.max(project.stack.length - visibleStack.value.length, 0)
+)
 </script>
 
 <template>
@@ -46,7 +50,6 @@ const hiddenStackCount = computed(() => Math.max(project.stack.length - visibleS
         border-color var(--nx-dur);
     "
   >
-
     <!-- Pointer-tracked highlight: the card reacts to where the cursor is,
          not merely to the fact that it is somewhere on it. -->
     <span
@@ -73,20 +76,27 @@ const hiddenStackCount = computed(() => Math.max(project.stack.length - visibleS
       <NxrStatusBadge :status="project.status" />
     </header>
 
-    <div class="relative aspect-[300/160] overflow-hidden border-b border-line">
+    <!--
+      The box stays the same on every card, whatever shape the screens are —
+      a grid of cards that each set their own height reads as broken. What
+      changes is the fit: a wide screen fills it, a phone is set inside it on
+      the dark ground rather than being cropped to a letterbox slice.
+    -->
+    <div class="relative aspect-[300/160] overflow-hidden border-b border-line bg-void">
       <img
-        v-if="project.image"
-        :src="project.image"
-        :alt="project.name"
+        v-if="coverShot"
+        :src="coverShot.src"
+        :alt="`${project.name} — ${localized(coverShot.label)}`"
         loading="lazy"
         decoding="async"
-        class="h-full w-full object-cover"
+        class="h-full w-full"
+        :class="project.shotOrientation === 'portrait' ? 'object-contain p-2' : 'object-cover'"
       />
       <NxrBlueprintVisual v-else :seed="project.slug" :category="primaryCategory" />
     </div>
 
     <div class="flex flex-1 flex-col gap-4 p-4">
-      <p class="text-sm leading-relaxed text-ink-muted text-pretty">
+      <p class="text-sm leading-relaxed text-pretty text-ink-muted">
         {{ localized(project.tagline) }}
       </p>
 

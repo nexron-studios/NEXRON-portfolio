@@ -23,18 +23,23 @@ useTetrisField({ canvas, container })
     aria-hidden="true"
     class="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
   >
-    <canvas
-      ref="canvas"
-      class="absolute inset-0 h-full w-full"
-    />
+    <canvas ref="canvas" class="absolute inset-0 h-full w-full" />
 
     <!-- Light falloff — the one gradient in the whole design -->
     <div
       class="absolute inset-0"
       style="
         background:
-          radial-gradient(120% 70% at 70% -10%, color-mix(in oklab, var(--color-dev) 6%, transparent), transparent 60%),
-          radial-gradient(90% 60% at 10% 110%, color-mix(in oklab, var(--color-creative) 5%, transparent), transparent 60%);
+          radial-gradient(
+            120% 70% at 70% -10%,
+            color-mix(in oklab, var(--color-dev) 6%, transparent),
+            transparent 60%
+          ),
+          radial-gradient(
+            90% 60% at 10% 110%,
+            color-mix(in oklab, var(--color-creative) 5%, transparent),
+            transparent 60%
+          );
       "
     />
 
