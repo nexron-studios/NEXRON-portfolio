@@ -24,6 +24,22 @@ const terminalContext = {
 }
 
 const LedSign = defineAsyncComponent(() => import('@/components/three/LedSign.vue'))
+const PeekCharacter = defineAsyncComponent(() => import('@/components/three/PeekCharacter.vue'))
+
+// Same reasoning as the sign below, and the same gate: a decorative WebGL scene
+// has no business existing until the block it belongs to is within reach.
+const peekStage = ref<HTMLElement | null>(null)
+const isPeekNear = ref(false)
+
+const { stop: stopPeekObserver } = useIntersectionObserver(
+  peekStage,
+  (entries) => {
+    if (!entries[0]?.isIntersecting) return
+    isPeekNear.value = true
+    stopPeekObserver()
+  },
+  { rootMargin: '400px' }
+)
 
 // The sign's model file is four megabytes. It is decoration over copy that
 // stands on its own, so neither the chunk nor the model is fetched until the
@@ -104,8 +120,22 @@ const terminalLines: TerminalLineProps[] = [
 
         <!-- Offset into the last columns rather than filling the row — the
              empty column is what keeps the layout from reading as a slab. -->
-        <div class="lg:col-span-6 lg:col-start-7">
+        <div ref="peekStage" class="relative lg:col-span-6 lg:col-start-7">
+          <!--
+            The figure rises out of the terminal's top edge. `overflow-hidden`
+            is the edge it climbs out of; the panel below covers the cut. `z-0`
+            rather than a negative z on purpose — the section is only
+            `position: relative`, so a negative z would escape it and land in
+            the same layer as the page backdrop.
+          -->
+          <div
+            class="pointer-events-none absolute inset-x-0 bottom-full z-0 hidden h-40 overflow-hidden lg:block"
+          >
+            <PeekCharacter v-if="isPeekNear" />
+          </div>
+
           <NxrTerminal
+            class="relative z-10"
             :lines="terminalLines"
             :context="terminalContext"
             @action="isTetrisOpen = true"

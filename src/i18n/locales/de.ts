@@ -29,7 +29,8 @@ export default {
     scroll_hint: 'Scrollen',
     links_label: 'Links',
     kicker: 'Founder Portfolio',
-    scene_alt: 'Rotierender Würfel in poliertem Violett — das NEXRON-Objekt'
+    scene_alt:
+      '3D-Figur von Jonas auf einem beleuchteten Podest, umgeben von Laptop, Controller, Handy und Kopfhörern'
   },
   about: {
     title: 'Über mich',

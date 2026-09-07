@@ -29,7 +29,8 @@ export default {
     scroll_hint: 'Scroll',
     links_label: 'Links',
     kicker: 'Founder portfolio',
-    scene_alt: 'Rotating cube in polished violet — the NEXRON object'
+    scene_alt:
+      'A 3D figure of Jonas on a lit podium, surrounded by his laptop, controller, phone and headphones'
   },
   about: {
     title: 'About',

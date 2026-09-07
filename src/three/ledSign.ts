@@ -9,6 +9,7 @@ import {
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { createStudioEnvironment } from '@/three/environment'
+import { clampTo, relaxSpring, MAX_SPRING_DELTA, type SpringConfigProps } from '@/utils/spring'
 
 /**
  * The NEXRON LED sign, swaying slowly in chrome.
@@ -83,16 +84,7 @@ const TILT_LIMIT = 0.5
  * quarter revolution and settles over about five seconds without a single
  * overshoot. Softer springs wobble, stiffer ones snap back like a rubber band.
  */
-const SPRING_STIFFNESS = 3
-/** Share of the offset's velocity kept per second. */
-const SPRING_DAMPING = 0.02
-/** Below this the spring is done; parking it exactly avoids an endless crawl. */
-const SPRING_REST_SPEED = 0.002
-/**
- * A long frame — a tab coming back, a GC pause — would otherwise integrate the
- * spring in one huge step and fling the sign. Same guard as the ball pit.
- */
-const MAX_SPRING_DELTA = 1 / 30
+const SPRING: SpringConfigProps = { stiffness: 3, damping: 0.02, restSpeed: 0.002 }
 /**
  * Cap on the speed a release can hand to the spring. A flick covering half the
  * stage in one frame is worth about 90 rad/s uncapped, which reads as the sign
@@ -137,27 +129,7 @@ const fitToTarget = (model: Object3D): void => {
   model.position.multiplyScalar(scale)
 }
 
-const clampTo = (value: number, limit: number): number => Math.min(limit, Math.max(-limit, value))
-
 const clampSpeed = (speed: number): number => clampTo(speed, MAX_RELEASE_SPEED)
-
-/**
- * One damped spring step towards zero, as `[offset, velocity]`.
- *
- * Semi-implicit Euler — the velocity is integrated before the position, which
- * is what keeps a spring stable at a frame rate it was not tuned for.
- */
-const relax = (offset: number, velocity: number, step: number): [number, number] => {
-  const nextVelocity =
-    (velocity - SPRING_STIFFNESS * offset * step) * Math.pow(SPRING_DAMPING, step)
-  const nextOffset = offset + nextVelocity * step
-
-  if (Math.abs(nextVelocity) < SPRING_REST_SPEED && Math.abs(nextOffset) < SPRING_REST_SPEED) {
-    return [0, 0]
-  }
-
-  return [nextOffset, nextVelocity]
-}
 
 export interface LedSignOptionsProps {
   /** Fired once the model is in the group — the scene may need a fresh frame. */
@@ -262,8 +234,8 @@ export const createLedSign = (
       // The spring runs on the offset from the idle sway, not on the angle
       // itself — that is what lets a drag play out and still end up back on
       // the original path.
-      ;[spinOffset, spinVelocity] = relax(spinOffset, spinVelocity, step)
-      ;[tiltOffset, tiltVelocity] = relax(tiltOffset, tiltVelocity, step)
+      ;[spinOffset, spinVelocity] = relaxSpring(spinOffset, spinVelocity, step, SPRING)
+      ;[tiltOffset, tiltVelocity] = relaxSpring(tiltOffset, tiltVelocity, step, SPRING)
 
       // A thrown release still has to stop at the wall. Dropping the velocity
       // with it means the sign settles against the limit instead of pressing

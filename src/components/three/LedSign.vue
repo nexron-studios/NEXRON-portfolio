@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue'
 import { useThreeScene, type SceneContext, type SceneHandle } from '@/composables/useThreeScene'
+import { useSceneDrag } from '@/composables/useSceneDrag'
 import { createSceneLighting } from '@/three/lighting'
 import { createLedSign, type LedSign } from '@/three/ledSign'
 import { useUiStore } from '@/stores/ui'
@@ -51,51 +52,10 @@ const setupScene = (context: SceneContext): SceneHandle => {
 
 /**
  * Dragging turns the sign, and letting go lets it drift back onto its idle
- * path over a few seconds.
- *
- * Movement is handed over as a fraction of the stage rather than in pixels, so
- * the same gesture turns the sign by the same amount on a phone and on a wide
- * monitor. The pointer is captured, which is what keeps the drag alive when it
- * leaves the canvas mid-gesture.
+ * path over a few seconds. The gesture itself is shared with the hero stage —
+ * see `useSceneDrag`.
  */
-const isDragging = ref(false)
-let lastPointerX = 0
-let lastPointerY = 0
-
-const handleDragStart = (event: PointerEvent): void => {
-  const sign = signRef.value
-  if (!sign) return
-
-  isDragging.value = true
-  lastPointerX = event.clientX
-  lastPointerY = event.clientY
-
-  sign.beginDrag()
-  ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
-}
-
-const handleDragMove = (event: PointerEvent): void => {
-  const sign = signRef.value
-  const element = container.value
-  if (!isDragging.value || !sign || !element) return
-
-  const bounds = element.getBoundingClientRect()
-
-  sign.dragBy(
-    (event.clientX - lastPointerX) / Math.max(bounds.width, 1),
-    (event.clientY - lastPointerY) / Math.max(bounds.height, 1)
-  )
-
-  lastPointerX = event.clientX
-  lastPointerY = event.clientY
-}
-
-const handleDragEnd = (): void => {
-  if (!isDragging.value) return
-
-  isDragging.value = false
-  signRef.value?.endDrag()
-}
+const { isDragging, dragHandlers } = useSceneDrag({ container, target: () => signRef.value })
 
 const { renderOnce } = useThreeScene({ container, canvas, setup: setupScene, fov: 40 })
 </script>
@@ -109,10 +69,7 @@ const { renderOnce } = useThreeScene({ container, canvas, setup: setupScene, fov
     ref="container"
     class="relative h-full w-full touch-pan-y select-none"
     :class="isDragging ? 'cursor-grabbing' : 'cursor-grab'"
-    @pointerdown="handleDragStart"
-    @pointermove="handleDragMove"
-    @pointerup="handleDragEnd"
-    @pointercancel="handleDragEnd"
+    v-on="dragHandlers"
   >
     <canvas ref="canvas" class="h-full w-full" />
   </div>

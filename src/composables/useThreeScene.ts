@@ -30,6 +30,13 @@ export interface SceneHandle {
   /** Called once per frame. `elapsed` and `delta` are in seconds. */
   update?: (elapsed: number, delta: number) => void
   resize?: (width: number, height: number) => void
+  /**
+   * Draws the frame in place of a plain `renderer.render(scene, camera)`.
+   *
+   * For a scene that owns a post-processing chain — the hero's bloom pass. A
+   * scene that does not set it is rendered directly, as before.
+   */
+  render?: () => void
   /** Release anything the setup function allocated outside the scene graph. */
   dispose?: () => void
 }
@@ -113,7 +120,9 @@ export const useThreeScene = (options: UseThreeSceneOptions) => {
 
     const delta = clock.getDelta()
     handle?.update?.(clock.elapsedTime, delta)
-    renderer.render(scene, camera)
+
+    if (handle?.render) handle.render()
+    else renderer.render(scene, camera)
   }
 
   const { pause, resume, isActive } = useRafFn(renderFrame, { immediate: false })

@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { defineAsyncComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useIntersectionObserver } from '@vueuse/core'
 import { ArrowUpRight, LoaderCircle, Send } from '@respeak/lucide-motion-vue'
 import { identity } from '@/data/socials'
 import { useContactForm } from '@/composables/useContactForm'
@@ -14,6 +16,23 @@ const { iconMotion } = useIconMotion()
 
 const { values, errors, isSubmitting, isConfigured, handleBlur, revalidate, submit } =
   useContactForm()
+
+const PeekCharacter = defineAsyncComponent(() => import('@/components/three/PeekCharacter.vue'))
+
+// Decoration behind the form, so neither the chunk nor the model is fetched
+// until the block is within reach of the viewport — same gate as the LED sign.
+const peekStage = ref<HTMLElement | null>(null)
+const isPeekNear = ref(false)
+
+const { stop: stopPeekObserver } = useIntersectionObserver(
+  peekStage,
+  (entries) => {
+    if (!entries[0]?.isIntersecting) return
+    isPeekNear.value = true
+    stopPeekObserver()
+  },
+  { rootMargin: '400px' }
+)
 </script>
 
 <template>
@@ -29,8 +48,19 @@ const { values, errors, isSubmitting, isConfigured, handleBlur, revalidate, subm
       </p>
     </div>
 
-    <div class="lg:col-span-6 lg:col-start-7">
-      <form novalidate class="flex flex-col gap-5" @submit.prevent="submit">
+    <div ref="peekStage" class="relative lg:col-span-6 lg:col-start-7">
+      <!--
+        The clipping edge is pulled down past the first label, because the label
+        has no surface of its own — only the input below it does (`bg-panel`).
+        Cutting at the form's top edge would leave the figure ending in mid-air.
+      -->
+      <div
+        class="pointer-events-none absolute inset-x-0 bottom-[calc(100%-3rem)] z-0 hidden h-40 overflow-hidden lg:block"
+      >
+        <PeekCharacter v-if="isPeekNear" />
+      </div>
+
+      <form novalidate class="relative z-10 flex flex-col gap-5" @submit.prevent="submit">
         <ContactFormField
           v-model="values.name"
           field="name"
