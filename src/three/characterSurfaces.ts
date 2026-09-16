@@ -83,7 +83,7 @@ export const CHARACTER_SURFACES: Record<string, SurfaceProps> = {
   // --- Podium -------------------------------------------------------------
   'Material.003': { roughness: 0.35, metalness: 0.1, envMapIntensity: 0.6 },
   // The lamps around the rim, white as the file authored them. Pushed past 1 on
-  // purpose: `bloom.ts` picks what glows by luminance, and only what exceeds 1
+  // purpose: `bloom.ts` picks what glows by luminance, and only what exceeds its threshold
   // before tone mapping gets a halo. The base colour stays dark — emissive adds
   // on top of the lit surface, so a light grey base washes the whole thing out
   // instead of reading as a lamp.
@@ -93,20 +93,17 @@ export const CHARACTER_SURFACES: Record<string, SurfaceProps> = {
     envMapIntensity: 0.2,
     colorHex: 0x14121a,
     emissiveHex: 0xffffff,
-    emissiveIntensity: 3.4
+    emissiveIntensity: 1.6
   },
-  // The floor the figure stands on. White too, but deliberately just under the
-  // bloom threshold: it is the largest single area in the scene, and a second
-  // haloed surface that size pulls the eye off the character. The emissive has
-  // to stay strong enough to out-argue the violet rim lights landing on it —
-  // let them win and the floor goes pink.
+  // A softly lit white floor. Its large area needs much less emission than
+  // the rim lamps to avoid washing out the props and the podium edges.
   'Material.011': {
     roughness: 0.1,
     metalness: 0,
     envMapIntensity: 0.25,
     colorHex: 0x121118,
     emissiveHex: 0xffffff,
-    emissiveIntensity: 0.92
+    emissiveIntensity: 0.65
   },
 
   // --- Mascots ------------------------------------------------------------

@@ -14,11 +14,6 @@ export type SkillDomain = (typeof skillDomainList)[number]
 
 export interface SkillProps {
   name: string
-  /**
-   * Playful one-liner revealed on hover — e.g. PostgreSQL showing
-   * `SELECT * FROM ideas;`. Null means the tile stays quiet.
-   */
-  quip: string | null
   /** Marks technologies carried by a shipped project rather than tried once. */
   isCore: boolean
 }

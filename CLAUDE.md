@@ -162,6 +162,24 @@ would leave a body ending in mid-air. The wrapper is `z-0` with the content at
 `relative z-10`; a negative z would escape the section, since `SectionFrame` is
 only `position: relative`, and land in the backdrop's layer.
 
+## Copy
+
+Everything a visitor reads, in `src/data/` and in `src/i18n/locales/`, follows
+one rule decided on 2026-09-16: **no em dash in prose.** No `—` between two
+halves of a sentence, no `—` as a dramatic pause. A sentence that seems to
+need one is two sentences, or wants a comma or a colon. The dash is the
+single strongest tell of generated text, and this site is written by a person.
+
+Write directly and plainly, in short sentences, as Jonas would say it. Both
+locales, always.
+
+Separators are not prose and are exempt: the en dash in `<title>`
+(`Jonas Glatz – Developer …`), the `aria-hidden` dash in the header, and
+`EMPTY_MARK` in `src/utils/date.ts`. Code comments are not copy either.
+
+The rule is global (`Rules/frontend/i18n.md`, *Writing copy*); this is the
+pointer.
+
 Backend conventions (NestJS + TypeORM) are not part of this repo. Should a
 backend be added, link `Rules/backend/` per the vault README — do not unpack
 `.claude/webdev-conventions.zip`, that archive is a superseded copy.

@@ -86,7 +86,7 @@ const hiddenStackCount = computed(() =>
       <img
         v-if="coverShot"
         :src="coverShot.src"
-        :alt="`${project.name} — ${localized(coverShot.label)}`"
+        :alt="`${project.name}: ${localized(coverShot.label)}`"
         loading="lazy"
         decoding="async"
         class="h-full w-full"

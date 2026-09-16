@@ -55,7 +55,7 @@ const { stop: stopPeekObserver } = useIntersectionObserver(
         Cutting at the form's top edge would leave the figure ending in mid-air.
       -->
       <div
-        class="pointer-events-none absolute inset-x-0 bottom-[calc(100%-3rem)] z-0 hidden h-40 overflow-hidden lg:block"
+        class="pointer-events-none absolute inset-x-0 bottom-[calc(100%-3rem)] z-0 hidden h-48 overflow-hidden lg:block"
       >
         <PeekCharacter v-if="isPeekNear" />
       </div>

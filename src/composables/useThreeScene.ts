@@ -22,7 +22,15 @@ export interface SceneContext {
   renderer: WebGLRenderer
   width: number
   height: number
-  /** True on small viewports — scenes use it to cut object counts. */
+  /**
+   * True on a phone-sized **viewport** — scenes use it to cut object counts,
+   * drop post-processing and fit tighter.
+   *
+   * The viewport, not the container: the hero stage is a five-column slot
+   * that never reaches 768 px on any desktop, so a container-based flag put
+   * every desktop into the phone branch and left bloom switched off on the
+   * screens it was written for.
+   */
   isCompact: boolean
 }
 
@@ -51,8 +59,10 @@ interface UseThreeSceneOptions {
   maxPixelRatio?: number
 }
 
-/** Below this width a scene is on a phone and cuts its object counts. */
+/** Below this viewport width a scene is on a phone and cuts its object counts. */
 export const COMPACT_BREAKPOINT = 768
+
+export const isCompactViewport = (): boolean => window.innerWidth < COMPACT_BREAKPOINT
 
 /** How far outside the viewport a scene starts running, so it is never blank on arrival. */
 const VISIBILITY_MARGIN = '120px'
@@ -165,8 +175,10 @@ export const useThreeScene = (options: UseThreeSceneOptions) => {
   const applySize = (width: number, height: number): void => {
     if (!renderer || !camera || width === 0 || height === 0) return
 
-    const isCompact = width < COMPACT_BREAKPOINT
-    const cap = isCompact ? Math.min(maxPixelRatio, 1.5) : maxPixelRatio
+    // The pixel-ratio cap stays keyed to the *container*: a narrow stage is
+    // cheap to render sharp and a wide one is not, whatever screen it is on.
+    const isNarrow = width < COMPACT_BREAKPOINT
+    const cap = isNarrow ? Math.min(maxPixelRatio, 1.5) : maxPixelRatio
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, cap))
     renderer.setSize(width, height, false)
@@ -235,7 +247,7 @@ export const useThreeScene = (options: UseThreeSceneOptions) => {
       renderer,
       width,
       height,
-      isCompact: width < COMPACT_BREAKPOINT
+      isCompact: isCompactViewport()
     })
 
     applySize(width, height)

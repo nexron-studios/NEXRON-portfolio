@@ -57,14 +57,12 @@ const WALL_HEIGHT_RATIO = 0.55
 const ROLL_PER_UNIT = 2.2
 const QUARTER_TURN = Math.PI / 2
 /**
- * Cube side as a multiple of the collision radius.
+ * Cube side as a multiple of the body radius.
  *
- * The simulation still treats every body as a circle. Inscribing the cube in
- * that circle (×1.414) guarantees no overlap but leaves visible air between
- * settled blocks, and a sparse pit was the complaint that started this. Filling
- * it (×2) packs them but sinks each corner a long way into its neighbour. This
- * sits between: the faces very nearly meet, and the corners overlap by an
- * amount nobody reads as a bug on a moving pile.
+ * The radius is the coarse bound the broad phase bins by and the mass the
+ * solver weighs with; the cube the solver actually collides is `halfExtent`,
+ * half of this, rotated by the body's `angle`. The ratio is what packs the
+ * settled pile: faces meet, and nothing reaches into a neighbour at any angle.
  */
 const BLOCK_FILL = 1.72
 /**
@@ -82,10 +80,45 @@ const BLOCK_REACH = BLOCK_FILL * Math.SQRT1_2
 const BLOCK_HALF_DEPTH = BLOCK_FILL / 2
 /** Breathing room between the outermost block and the frustum edge. */
 const PIT_MARGIN = 0.12
-/** Below this combined speed a block is treated as coming to rest. */
+
+/**
+ * Chamber width the block sizes are authored against, in world units.
+ *
+ * The blocks used to be a world-space constant, which meant the chambers
+ * narrowed on a phone — from roughly this to about 1.1 — around blocks that
+ * stayed the same size, leaving barely more than one across. The radius is
+ * scaled by how much of this reference width a chamber actually has.
+ */
+const REFERENCE_CHAMBER_WIDTH = 2.75
+
+/**
+ * Floor on that scaling, rather than letting it run proportional.
+ *
+ * Strictly proportional, a phone gets blocks a little over half their desktop
+ * size and the logo on the face stops being readable — and a readable logo is
+ * the entire reason these are cubes and not spheres. Below this the pit is
+ * allowed to look tight instead.
+ */
+const MIN_RADIUS_SCALE = 0.55
+/**
+ * Below this combined speed a block is treated as coming to rest.
+ *
+ * Used twice and deliberately shared: it decides when a block snaps to the
+ * nearest quarter turn, and it is handed to `stepBodies` as `settleSpeed` so the
+ * same block starts falling asleep. One threshold, so a block never sleeps while
+ * still visibly askew.
+ */
 const SETTLE_SPEED = 0.4
 /** How fast a resting block swings to the nearest quarter turn, per second. */
 const UPRIGHT_RATE = 6
+/** Within this of a quarter turn a block counts as upright and may sleep. */
+const UPRIGHT_TOLERANCE = 0.01
+
+const nearestQuarterTurn = (angle: number): number =>
+  Math.round(angle / QUARTER_TURN) * QUARTER_TURN
+
+const isUpright = (body: BodyProps): boolean =>
+  Math.abs(nearestQuarterTurn(body.angle ?? 0) - (body.angle ?? 0)) < UPRIGHT_TOLERANCE
 
 /** Cursor shove: gentle, continuous, and only close by. */
 const CURSOR_RADIUS = 1.6
@@ -112,10 +145,28 @@ const CHAMBER_LIGHT_HEIGHT_RATIO = 0.46
 const CHAMBER_LIGHT_Z = 2.4
 const CHAMBER_LIGHT_DECAY = 2
 
+/**
+ * How much of their authored size the blocks get, from the width available.
+ *
+ * `layoutChambers` splits the width into `count` chambers separated by walls, so
+ * the per-chamber width is what a block is actually competing for — the frustum
+ * width on its own says nothing once it is divided four ways.
+ */
+const radiusScaleFor = (availableWidth: number, count: number): number => {
+  if (count <= 0) return 1
+
+  const chamberWidth = (availableWidth - (count - 1) * WALL_WIDTH) / count
+
+  return Math.min(1, Math.max(MIN_RADIUS_SCALE, chamberWidth / REFERENCE_CHAMBER_WIDTH))
+}
+
 export interface PitBallProps extends BodyProps {
   skill: OrbSkillProps
-  /** Accumulated roll, in radians. Per ball — a shared one smears across all. */
-  roll: number
+  /**
+   * The roll, in radians, is `angle` on the body itself: the solver collides the
+   * block as the rotated square it is drawn at, so the two cannot drift apart.
+   */
+  angle: number
 }
 
 export interface SkillPit {
@@ -144,6 +195,10 @@ const buildBalls = (skills: OrbSkillProps[], chambers: ChamberBoundsProps[]): Pi
     return {
       skill,
       radius,
+      // The solver collides the block as the square it is drawn as — see
+      // `halfExtent` in `utils/ballPit.ts`. Kept in step with the radius by
+      // `applyRadiusScale`.
+      halfExtent: radius * BLOCK_HALF_DEPTH,
       chamber: Math.max(0, chamberIndex),
       x: left + Math.random() * span,
       // Stagger the drop height so a chamber fills in rather than landing as
@@ -151,7 +206,8 @@ const buildBalls = (skills: OrbSkillProps[], chambers: ChamberBoundsProps[]): Pi
       y: (bounds?.floor ?? 0) + 2.5 + Math.random() * 5,
       vx: 0,
       vy: 0,
-      roll: Math.random() * Math.PI
+      angle: Math.random() * Math.PI,
+      sleepFrames: 0
     }
   })
 
@@ -170,18 +226,38 @@ export const createSkillPit = (
   let chambers = layoutChambers(viewWidth, -viewHeight / 2, domains.length, WALL_WIDTH)
   const balls = buildBalls(skills, chambers)
 
-  const maxRadius = balls.length === 0 ? 0 : Math.max(...balls.map((ball) => ball.radius))
-
+  let maxRadius = 0
   /** How far the pit has to stay clear of the frustum edge — see `BLOCK_REACH`. */
-  const edgeInset = maxRadius * (BLOCK_REACH - 1) + PIT_MARGIN
-
+  let edgeInset = 0
   /**
    * The blocks are cubes, not cards: their front faces stand this far out of
    * the plane the simulation runs in, and everything is measured against that
    * plane instead — a face closer to the camera projects larger, which is what
    * pushed the outer blocks past the edge even with the inset above.
    */
-  const frontFaceOffset = maxRadius * BLOCK_HALF_DEPTH
+  let frontFaceOffset = 0
+
+  /** The three values that follow from the block sizes, and only from those. */
+  const measureRadii = (): void => {
+    maxRadius = balls.length === 0 ? 0 : Math.max(...balls.map((ball) => ball.radius))
+    edgeInset = maxRadius * (BLOCK_REACH - 1) + PIT_MARGIN
+    frontFaceOffset = maxRadius * BLOCK_HALF_DEPTH
+  }
+
+  /**
+   * Resizes every block, keeping its collision circle, its drawn square and the
+   * pit's own insets in step.
+   */
+  const applyRadiusScale = (scale: number): void => {
+    balls.forEach((ball) => {
+      ball.radius = BASE_RADIUS * ball.skill.weight * scale
+      ball.halfExtent = ball.radius * BLOCK_HALF_DEPTH
+    })
+
+    measureRadii()
+  }
+
+  measureRadii()
 
   // One geometry for every block; the matrix carries the size, so a single
   // unit cube covers all of them.
@@ -316,22 +392,27 @@ export const createSkillPit = (
       // Roll each block by how far it actually travelled, so it does not slide.
       // The angle lives on the ball: a shared one would accumulate every
       // previous block's motion into the next.
-      ball.roll -= ball.vx * delta * ROLL_PER_UNIT
-
-      // A block that has come to rest swings to the nearest quarter turn. The
-      // roll is what makes the pit feel physical while it moves, but leaving a
-      // settled stack at whatever angle it stopped on means every logo sits
-      // crooked — and reading them is the entire point of putting them there.
+      //
+      // Roll and snap are exclusive, not stacked. A slow block wedged between a
+      // neighbour's corner and a wall is nudged sideways every frame, and that
+      // trickle of `vx` rolled it back exactly as fast as the snap straightened
+      // it: a permanent lean, and a block that could never sleep. Below the
+      // settle speed the snap alone owns the angle.
       if (Math.abs(ball.vx) + Math.abs(ball.vy) < SETTLE_SPEED) {
-        const upright = Math.round(ball.roll / QUARTER_TURN) * QUARTER_TURN
-        ball.roll += (upright - ball.roll) * Math.min(1, delta * UPRIGHT_RATE)
+        // A block that has come to rest swings to the nearest quarter turn.
+        // Leaving a settled stack at whatever angle it stopped on means every
+        // logo sits crooked, and reading them is the point of putting them there.
+        const upright = nearestQuarterTurn(ball.angle)
+        ball.angle += (upright - ball.angle) * Math.min(1, delta * UPRIGHT_RATE)
+      } else {
+        ball.angle -= ball.vx * delta * ROLL_PER_UNIT
       }
 
       const mesh = ballMeshes[index]
       if (!mesh) return
 
       mesh.position.set(ball.x, ball.y, 0)
-      mesh.rotation.set(0, 0, ball.roll)
+      mesh.rotation.set(0, 0, ball.angle)
       mesh.scale.setScalar(ball.radius * BLOCK_FILL)
     })
   }
@@ -345,7 +426,12 @@ export const createSkillPit = (
       gravity: GRAVITY,
       restitution: RESTITUTION,
       damping: DAMPING,
-      delta
+      delta,
+      // Blocks under this speed start falling asleep, and only once the snap in
+      // `syncInstances` has them upright: a block that slept mid-turn would be
+      // woken by its own straightening every frame.
+      settleSpeed: SETTLE_SPEED,
+      canSleep: isUpright
     })
 
     syncInstances(delta)
@@ -377,13 +463,26 @@ export const createSkillPit = (
    * the plane of their front faces rather than at their centres, and the pit
    * is then inset by how far a spinning block reaches past its own radius. See
    * `BLOCK_HALF_DEPTH` and `BLOCK_REACH`.
+   *
+   * The block size is derived here too, from the chamber width the frustum
+   * actually allows — see `REFERENCE_CHAMBER_WIDTH`.
    */
   const resize = (width: number, height: number): void => {
-    const distance = camera.position.z - frontFaceOffset
-    const halfHeight = Math.tan((camera.fov * Math.PI) / 360) * distance
+    const aspect = width / Math.max(height, 1)
+    const halfFov = Math.tan((camera.fov * Math.PI) / 360)
 
-    viewHeight = halfHeight * 2
-    viewWidth = viewHeight * (width / height)
+    // The block size and the frustum depend on each other: the exact frustum is
+    // measured at the plane of the front faces, which stands `frontFaceOffset`
+    // out of the simulation plane — and that offset is a multiple of the block
+    // size the frustum is about to decide. Broken by ordering rather than by
+    // iterating: the size is picked off a provisional frustum measured at the
+    // simulation plane itself, and only feeds a value that is clamped anyway.
+    const provisionalWidth = halfFov * camera.position.z * 2 * aspect
+    applyRadiusScale(radiusScaleFor(provisionalWidth, domains.length))
+
+    // Everything below now reads the offsets that belong to the new size.
+    viewHeight = halfFov * (camera.position.z - frontFaceOffset) * 2
+    viewWidth = viewHeight * aspect
 
     chambers = layoutChambers(
       Math.max(0, viewWidth - edgeInset * 2),

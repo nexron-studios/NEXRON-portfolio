@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue'
+import { Vector3 } from 'three'
 import { useThreeScene, type SceneContext, type SceneHandle } from '@/composables/useThreeScene'
 import { useSceneDrag } from '@/composables/useSceneDrag'
 import { createSceneLighting } from '@/three/lighting'
-import { createLedSign, type LedSign } from '@/three/ledSign'
+import { createLedSign, SIGN_HALF_HEIGHT, SIGN_HALF_WIDTH, type LedSign } from '@/three/ledSign'
+import { STAGE_BLEED, bleedRadius, fitBoxDistance } from '@/utils/framing'
 import { useUiStore } from '@/stores/ui'
 
 /**
@@ -13,6 +15,20 @@ import { useUiStore } from '@/stores/ui'
  * block is near the viewport — that gate sits in `AboutSection`, since a
  * component cannot defer its own creation.
  */
+const FOV = 40
+
+/** Breathing room around the plate. At 1 its edges touch the box. */
+const FRAMING_MARGIN = 1.05
+
+const fitCamera = (aspect: number): number =>
+  fitBoxDistance(
+    bleedRadius(SIGN_HALF_WIDTH),
+    bleedRadius(SIGN_HALF_HEIGHT),
+    FOV,
+    aspect,
+    FRAMING_MARGIN
+  )
+
 const container = ref<HTMLElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)
 const signRef = shallowRef<LedSign | null>(null)
@@ -20,9 +36,9 @@ const signRef = shallowRef<LedSign | null>(null)
 const uiStore = useUiStore()
 
 const setupScene = (context: SceneContext): SceneHandle => {
-  const { scene, camera, renderer, isCompact } = context
+  const { scene, camera, renderer } = context
 
-  camera.position.set(0, 0, isCompact ? 5.2 : 4.4)
+  camera.position.set(0, 0, fitCamera(1))
   camera.lookAt(0, 0, 0)
 
   scene.add(createSceneLighting())
@@ -33,6 +49,30 @@ const setupScene = (context: SceneContext): SceneHandle => {
   signRef.value = sign
   scene.add(sign.group)
 
+  // Fit the current rotated plate including depth. A flat box alone clips the
+  // near corners when yaw and tilt combine in a wide, short stage.
+  const corners = [-1, 1].flatMap((x) =>
+    [-1, 1].flatMap((y) =>
+      [-1, 1].map((z) => new Vector3(x * SIGN_HALF_WIDTH, y * SIGN_HALF_HEIGHT, z * 0.25))
+    )
+  )
+  const corner = new Vector3()
+  const render = (): void => {
+    const tangentY = Math.tan((FOV * Math.PI) / 360)
+    const tangentX = tangentY * camera.aspect
+    let distance = fitCamera(camera.aspect)
+    for (const point of corners) {
+      corner.copy(point).applyEuler(sign.group.rotation)
+      distance = Math.max(
+        distance,
+        corner.z + (FRAMING_MARGIN * Math.abs(corner.x)) / tangentX,
+        corner.z + (FRAMING_MARGIN * Math.abs(corner.y)) / tangentY
+      )
+    }
+    camera.position.z = distance
+    renderer.render(scene, camera)
+  }
+
   // `useThreeScene` renders exactly one frame and starts no loop under reduced
   // motion, and the model usually lands after that frame — `rest` therefore
   // sets the pose now and again when the file arrives.
@@ -42,12 +82,23 @@ const setupScene = (context: SceneContext): SceneHandle => {
     sign.update(elapsed, delta)
   }
 
+  // The camera backs off by whichever axis is tighter, as the hero does. This
+  // used to be a binary `isCompact ? 5.2 : 4.4`, which happened to work only
+  // because the flag was keyed to the container and this box is narrow on
+  // every desktop. The canvas overhangs the box by `STAGE_BLEED`, so the sign
+  // is fitted to the box and has the overhang to tilt into.
+  const resize = (width: number, height: number): void => {
+    const aspect = width / Math.max(height, 1)
+    camera.position.z = fitCamera(aspect)
+    camera.updateProjectionMatrix()
+  }
+
   const dispose = (): void => {
     sign.dispose()
     signRef.value = null
   }
 
-  return { update, dispose }
+  return { update, resize, render, dispose }
 }
 
 /**
@@ -55,9 +106,13 @@ const setupScene = (context: SceneContext): SceneHandle => {
  * path over a few seconds. The gesture itself is shared with the hero stage —
  * see `useSceneDrag`.
  */
-const { isDragging, dragHandlers } = useSceneDrag({ container, target: () => signRef.value })
+const { isDragging, dragHandlers } = useSceneDrag({
+  container,
+  bleed: STAGE_BLEED,
+  target: () => signRef.value
+})
 
-const { renderOnce } = useThreeScene({ container, canvas, setup: setupScene, fov: 40 })
+const { renderOnce } = useThreeScene({ container, canvas, setup: setupScene, fov: FOV })
 </script>
 
 <template>
@@ -67,7 +122,7 @@ const { renderOnce } = useThreeScene({ container, canvas, setup: setupScene, fov
   -->
   <div
     ref="container"
-    class="relative h-full w-full touch-pan-y select-none"
+    class="absolute -inset-[20%] touch-pan-y select-none"
     :class="isDragging ? 'cursor-grabbing' : 'cursor-grab'"
     v-on="dragHandlers"
   >

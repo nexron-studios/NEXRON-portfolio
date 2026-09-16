@@ -26,7 +26,16 @@ const CAMERA_DISTANCE = 3.4
 const VIEW_HEIGHT = 2 * CAMERA_DISTANCE * Math.tan((FOV * Math.PI) / 360)
 
 const uiStore = useUiStore()
-const { advance } = usePointerTracker({ damping: 0.08 })
+
+/**
+ * The **raw** pointer, not `advance()`'s smoothed pair.
+ *
+ * `peekCharacter` already damps the look with `MathUtils.damp`, which is
+ * frame-rate correct. Stacking the tracker's per-frame lerp in front of it added
+ * a second, frame-rate *dependent* lag — together they took over a second for
+ * the head to visibly arrive. One lag, in the place that does it properly.
+ */
+const { pointer } = usePointerTracker()
 
 const container = ref<HTMLElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)
@@ -61,8 +70,7 @@ const setupScene = (context: SceneContext): SceneHandle => {
   if (uiStore.prefersReducedMotion) figure.rest()
 
   const update = (elapsed: number, delta: number): void => {
-    const { smoothX, smoothY } = advance()
-    figure.update(elapsed, delta, smoothX, smoothY)
+    figure.update(elapsed, delta, pointer.x, pointer.y)
   }
 
   const dispose = (): void => {

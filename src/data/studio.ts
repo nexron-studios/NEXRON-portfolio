@@ -25,8 +25,8 @@ export const services: ServiceProps[] = [
     id: 'web',
     label: { de: 'Web & Anwendungen', en: 'Web & applications' },
     summary: {
-      de: 'Frontend und Full-Stack — von der Anforderung über Datenbank und API bis zum Release.',
-      en: 'Frontend and full-stack — from the requirement through database and API to the release.'
+      de: 'Frontend und Full-Stack, von der Anforderung über Datenbank und API bis zum Release.',
+      en: 'Frontend and full-stack, from the requirement through database and API to the release.'
     },
     domain: 'dev'
   },
@@ -34,8 +34,8 @@ export const services: ServiceProps[] = [
     id: 'desktop',
     label: { de: 'Desktop-Werkzeuge', en: 'Desktop tools' },
     summary: {
-      de: 'Eigene Programme für den Rechner — Werkzeuge, mit denen man wirklich arbeitet: sofort startbereit, offline nutzbar, ohne Konto.',
-      en: 'Programs of my own for the desktop — tools you actually work with: ready the moment you open them, usable offline, no account.'
+      de: 'Eigenständige Programme, die als klassische Software direkt auf dem Rechner laufen. Ohne Browser, ohne Konto, auch offline.',
+      en: 'Standalone programs that run as classic software right on your machine. No browser, no account, works offline.'
     },
     domain: 'infra'
   },
@@ -43,8 +43,8 @@ export const services: ServiceProps[] = [
     id: 'ai',
     label: { de: 'KI & Daten', en: 'AI & data' },
     summary: {
-      de: 'Chatbots und RAG-Systeme, Klassifikation und Computer Vision, neuronale Netze für Klassifikation und Regression — dazu Datenanalyse und die Aufbereitung, ohne die nichts davon trägt.',
-      en: 'Chatbots and RAG systems, classification and computer vision, neural networks for classification and regression — plus the data analysis and preparation none of it works without.'
+      de: 'Klassifikation, Regression und Computer Vision mit neuronalen Netzen, dazu Datenanalyse und Datenaufbereitung. Für Unternehmen außerdem Chatbots und RAG-Systeme.',
+      en: 'Classification, regression and computer vision with neural networks, plus data analysis and data preparation. For companies also chatbots and RAG systems.'
     },
     domain: 'ai'
   },
@@ -52,8 +52,8 @@ export const services: ServiceProps[] = [
     id: 'creative',
     label: { de: '3D & Gestaltung', en: '3D & design' },
     summary: {
-      de: 'Nicht nur 2D: vom Logo über Grafik bis zur 3D-Animation, dazu Bewegtbild und Effekte in After Effects und interaktives 3D im Browser.',
-      en: 'Not only 2D: from the logo through graphics to 3D animation, plus motion and effects in After Effects and interactive 3D in the browser.'
+      de: 'Mit 2D-Design beschäftige ich mich schon lange, von Logos bis zu Grafiken aller Art. Dazu kamen Blender und 3D für Visuals, Animationen und interaktive 3D-Inhalte im Browser.',
+      en: 'I have been doing 2D design for a long time, from logos to graphics of all kinds. Blender and 3D came later, for visuals, animations and interactive 3D in the browser.'
     },
     domain: 'creative'
   }

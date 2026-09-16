@@ -41,7 +41,7 @@ export const socials: SocialLinkProps[] = [
     handle: 'nexronstudios',
     href: 'https://www.instagram.com/nexronstudios/',
     brand: 'instagram',
-    note: { de: 'Das Studio', en: 'The studio' }
+    note: { de: 'Firmenaccount', en: 'Company account' }
   },
   {
     id: 'instagram-personal',
@@ -59,7 +59,7 @@ export const socials: SocialLinkProps[] = [
     label: 'Spotify',
     href: 'https://open.spotify.com/user/mr_funnykuchen',
     brand: 'spotify',
-    note: { de: 'Was beim Bauen läuft', en: 'What plays while building' }
+    note: { de: 'Was ich sonst so höre', en: 'What else I listen to' }
   },
   {
     id: 'mail',
@@ -67,9 +67,26 @@ export const socials: SocialLinkProps[] = [
     handle: 'nexronstudios@gmail.com',
     href: 'mailto:nexronstudios@gmail.com',
     brand: 'mail',
-    note: { de: 'Direkter Draht', en: 'Direct line' }
+    note: { de: 'Firmenmail', en: 'Company mail' }
   }
 ]
+
+/**
+ * The three that belong above the fold. The full set gets its own card grid
+ * above the footer; repeating all six in the hero would turn the spec strip
+ * into a link dump.
+ */
+export const heroSocialIds = ['github', 'linkedin', 'mail']
+
+/**
+ * What the phone menu shows under the navigation: the ones someone would look
+ * for while already on the site. Spotify and the private Instagram stay in
+ * the card grid.
+ */
+export const menuSocialIds = ['github', 'linkedin', 'instagram-nexron', 'mail']
+
+export const socialsById = (ids: string[]): SocialLinkProps[] =>
+  ids.flatMap((id) => socials.filter((entry) => entry.id === id))
 
 export interface IdentityProps {
   name: string

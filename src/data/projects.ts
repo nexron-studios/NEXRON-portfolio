@@ -52,8 +52,8 @@ export const projects: ProjectProps[] = [
         en: 'Modern fitness tracking web app with authentication and CRUD features, prepared as a Progressive Web App for mobile and desktop.'
       },
       problem: {
-        de: 'Das größte der Projekte — hier ging es darum, Frontend, API und Datenbank sauber getrennt und trotzdem als ein Produkt zu betreiben.',
-        en: 'The largest of the projects — the point here was keeping frontend, API and database cleanly separated while still running them as one product.'
+        de: 'Das größte der Projekte. Hier ging es darum, Frontend, API und Datenbank sauber getrennt und trotzdem als ein Produkt zu betreiben.',
+        en: 'The largest of the projects. The point here was keeping frontend, API and database cleanly separated while still running them as one product.'
       },
       idea: {
         de: 'Eine vollständige Full-Stack-Anwendung von der Datenbank bis zur installierbaren App durchziehen.',
@@ -80,7 +80,7 @@ export const projects: ProjectProps[] = [
     visibility: 'public',
     repoUrl: `${GITHUB_OWNER}/NEXRON-TokenScope`,
     liveUrl: null,
-    status: 'building',
+    status: 'shipped',
     shots: [
       { src: tokenscopeDashboard, label: { de: 'Übersicht', en: 'Dashboard' } },
       { src: tokenscopeUsage, label: { de: 'Verbrauch', en: 'Usage' } },
@@ -89,16 +89,16 @@ export const projects: ProjectProps[] = [
     shotOrientation: 'landscape',
     detail: {
       overview: {
-        de: 'Ein kleiner FastAPI-Dienst liest die Nutzungsdaten, die Claude Code und Codex ohnehin lokal auf der Platte halten, normalisiert sie und liefert sie über eine eigene API aus. Das Vue-Frontend spricht ausschließlich mit diesem Backend — nie direkt mit einem Anbieter, nie mit einem Token.',
-        en: 'A small FastAPI service reads the usage data that Claude Code and Codex already keep on disk, normalises it and serves it through its own API. The Vue frontend only ever talks to that backend — never directly to a provider, never to a token.'
+        de: 'Ein kleiner FastAPI-Dienst liest die Nutzungsdaten, die Claude Code und Codex ohnehin lokal auf der Platte halten, normalisiert sie und liefert sie über eine eigene API aus. Das Vue-Frontend spricht ausschließlich mit diesem Backend, nie direkt mit einem Anbieter und nie mit einem Token.',
+        en: 'A small FastAPI service reads the usage data that Claude Code and Codex already keep on disk, normalises it and serves it through its own API. The Vue frontend only ever talks to that backend, never directly to a provider and never to a token.'
       },
       problem: {
         de: 'Beide CLIs verbrauchen Kontingent, aber keine zeigt verlässlich, wie viel noch übrig ist und wann zurückgesetzt wird.',
         en: 'Both CLIs consume quota, but neither reliably shows how much is left or when it resets.'
       },
       idea: {
-        de: 'Ein dauerhaft sichtbares Kiosk-Display statt eines weiteren Browser-Tabs. Zielgerät ist ein Raspberry Pi mit 7"-Touchdisplay bei 1024 × 600 — auf dem Desktop läuft es genauso.',
-        en: 'A permanently visible kiosk display instead of yet another browser tab. The target device is a Raspberry Pi with a 7" touchscreen at 1024 × 600 — it runs on a desktop just as well.'
+        de: 'Ein dauerhaft sichtbares Kiosk-Display statt eines weiteren Browser-Tabs. Zielgerät ist ein Raspberry Pi mit 7"-Touchdisplay bei 1024 × 600, auf dem Desktop läuft es genauso.',
+        en: 'A permanently visible kiosk display instead of yet another browser tab. The target device is a Raspberry Pi with a 7" touchscreen at 1024 × 600, and it runs on a desktop just as well.'
       },
       implementation: {
         de: 'Poller, Cache und SQLite im FastAPI-Backend, das ausschließlich auf 127.0.0.1 lauscht. Die Daten stammen aus zwei Quellen: den OAuth-Usage-Endpunkten für Restkontingent und Reset-Zeitpunkt sowie den lokalen JSONL-Logs beider CLIs für den Verbrauch je Projekt und Modell. Fällt der Endpunkt aus, dienen frische rate_limits aus den Codex-Rollout-Logs als Rückfallebene. Tauri verpackt das Ganze als Desktop-App.',
@@ -172,8 +172,8 @@ export const projects: ProjectProps[] = [
     shotOrientation: 'portrait',
     detail: {
       overview: {
-        de: 'Sprache aufnehmen, transkribieren, Text speichern und kopieren — mehr macht Mimi bewusst nicht.',
-        en: 'Record speech, transcribe it, save and copy the text — Mimi deliberately does nothing more.'
+        de: 'Sprache aufnehmen, transkribieren, Text speichern und kopieren. Mehr macht Mimi bewusst nicht.',
+        en: 'Record speech, transcribe it, save and copy the text. Mimi deliberately does nothing more.'
       },
       problem: {
         de: 'Für einen kurzen Gedanken eine große Transkriptions-Suite zu öffnen, dauert länger als das Tippen.',
@@ -186,53 +186,6 @@ export const projects: ProjectProps[] = [
       implementation: {
         de: 'Transkription und Persistenz liegen in Rust (transcribe.rs, db.rs), die Oberfläche ist ein schlankes Vue-3-Frontend mit Aufnahme-, Verlaufs- und Einstellungsansicht sowie einem Pegelmesser während der Aufnahme.',
         en: 'Transcription and persistence live in Rust (transcribe.rs, db.rs); the surface is a lean Vue 3 frontend with record, history and settings views plus a live level meter while recording.'
-      },
-      challenges: [],
-      learnings: []
-    }
-  },
-  {
-    slug: 'duraki',
-    name: 'NEXRON-Duraki',
-    tagline: {
-      de: 'Mobile-first Web-App für das russische Kartenspiel Durak — zu zweit über Einladungscode.',
-      en: 'Mobile-first web app for the Russian card game Durak — two players via invite code.'
-    },
-    categories: ['web', 'fullstack', '3d'],
-    stack: [
-      'Vue 3',
-      'TypeScript',
-      'Socket.io',
-      'Express',
-      'Prisma',
-      'PostgreSQL',
-      'Clerk',
-      'Three.js',
-      'Vitest'
-    ],
-    year: 2026,
-    visibility: 'public',
-    repoUrl: `${GITHUB_OWNER}/NEXRON-Duraki`,
-    liveUrl: null,
-    status: 'shipped',
-    shots: [],
-    shotOrientation: 'landscape',
-    detail: {
-      overview: {
-        de: 'Durak für zwei Spieler mit 36 Karten, Trumpf, Angriff und Verteidigung, Schieben und Nachwerfen. Dazu Dashboard mit Statistiken, Räume per Einladungscode und Echtzeit über Socket.io.',
-        en: 'Two-player Durak with 36 cards, trumps, attack and defence, passing and adding cards. Plus a stats dashboard, invite-code rooms and real-time play over Socket.io.'
-      },
-      problem: {
-        de: 'Ein Kartenspiel im Netz ist nur so gut wie sein Regelwerk — und Regeln, die in Komponenten verstreut liegen, lassen sich weder testen noch gegen Manipulation absichern.',
-        en: 'An online card game is only as good as its rulebook — and rules scattered across components can neither be tested nor secured against tampering.'
-      },
-      idea: {
-        de: 'Die Spiellogik vollständig von der Oberfläche trennen und autoritativ auf dem Server ausführen.',
-        en: 'Separate the game logic completely from the UI and run it authoritatively on the server.'
-      },
-      implementation: {
-        de: 'pnpm-Monorepo: packages/game-core enthält die reine Durak-Engine samt Typen, mit Vitest getestet und ohne jede UI- oder DB-Abhängigkeit. Der Express-Server validiert jeden Zug gegen diese Engine, persistiert Stand und Zug in PostgreSQL über Prisma und broadcastet jedem Spieler nur seine sichtbare Ansicht — die Gegnerhand bleibt verdeckt. Dadurch sind Reload und Resume möglich. Der Tischhintergrund ist eine Three.js-Szene, die auf das gewählte Theme und auf prefers-reduced-motion reagiert.',
-        en: 'pnpm monorepo: packages/game-core holds the pure Durak engine and its types, tested with Vitest and free of any UI or DB dependency. The Express server validates every move against that engine, persists state and moves to PostgreSQL through Prisma, and broadcasts each player only their visible view — the opponent hand stays hidden. That makes reload and resume possible. The table background is a Three.js scene that reacts to the selected theme and to prefers-reduced-motion.'
       },
       challenges: [],
       learnings: []

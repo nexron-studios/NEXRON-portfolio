@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n'
 import { useScrollLock, useWindowScroll } from '@vueuse/core'
 import { Menu, X } from '@respeak/lucide-motion-vue'
 import { sections } from '@/data/sections'
-import { identity } from '@/data/socials'
+import { identity, menuSocialIds, socialsById } from '@/data/socials'
+import { brandIcons, isMotionBrand } from '@/components/ui/brand'
 import { useUiStore } from '@/stores/ui'
 import { useIconMotion } from '@/composables/useIconMotion'
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher.vue'
@@ -18,6 +19,7 @@ const SCROLLED_AFTER_PX = 24
 const uiStore = useUiStore()
 const { t } = useI18n()
 const { iconMotion } = useIconMotion()
+const menuSocials = socialsById(menuSocialIds)
 const { y: scrollY } = useWindowScroll()
 
 // The mobile panel covers the page, so the page must not scroll behind it.
@@ -132,7 +134,7 @@ watch(
       <div
         v-if="uiStore.isMenuOpen"
         id="mobile-nav"
-        class="nx-glass fixed inset-x-gutter top-20 bottom-4 md:hidden"
+        class="nx-glass fixed inset-x-gutter top-28 bottom-4 overflow-y-auto md:hidden"
       >
         <nav class="px-6 py-8" :aria-label="t('nav.index')">
           <ul class="flex flex-col">
@@ -144,6 +146,26 @@ watch(
               >
                 <span class="nx-meta text-dev">{{ section.index }}</span>
                 <span class="font-display text-2xl tracking-tight">{{ t(section.labelKey) }}</span>
+              </a>
+            </li>
+          </ul>
+          <ul class="mt-6 grid grid-cols-2 gap-2" :aria-label="t('hero.links_label')">
+            <li v-for="social in menuSocials" :key="social.id">
+              <a
+                :href="social.href"
+                :target="social.brand === 'mail' ? undefined : '_blank'"
+                rel="me noopener noreferrer"
+                class="group flex min-h-11 items-center gap-2 rounded-lg px-2 font-mono text-xs text-ink-muted transition-colors hover:bg-raised hover:text-dev"
+                @click="closeMenu"
+              >
+                <component
+                  :is="brandIcons[social.brand]"
+                  v-bind="isMotionBrand(social.brand) ? iconMotion : {}"
+                  :trigger-target="isMotionBrand(social.brand) ? 'parent' : undefined"
+                  class="size-4 shrink-0"
+                  aria-hidden="true"
+                />
+                {{ social.label }}
               </a>
             </li>
           </ul>

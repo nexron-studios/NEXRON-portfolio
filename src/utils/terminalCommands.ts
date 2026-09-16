@@ -140,7 +140,7 @@ export const runCommand = (input: string, context: TerminalContextProps): Comman
       return { output: HELP }
 
     case 'whoami':
-      return { output: ['Jonas Glatz — founder, NEXRON Studios.'] }
+      return { output: ['Jonas Glatz, founder of NEXRON Studios.'] }
 
     case 'ls':
       return { output: [listFiles().join('   ')] }
@@ -168,7 +168,7 @@ export const runCommand = (input: string, context: TerminalContextProps): Comman
       return {
         output: [
           `${context.projectCount} projects listed.`,
-          'scroll to "Projekte" — or check github.com/nexron-studios.'
+          'scroll to "Projekte" or check github.com/nexron-studios.'
         ]
       }
 

@@ -40,7 +40,7 @@ const isEnlarged = ref(false)
 const activeShot = computed(() => shots[activeIndex.value] ?? shots[0] ?? null)
 const isPortrait = computed(() => orientation === 'portrait')
 
-const altFor = (shot: ProjectShotProps): string => `${projectName} — ${localized(shot.label)}`
+const altFor = (shot: ProjectShotProps): string => `${projectName}: ${localized(shot.label)}`
 
 /** Wraps, so the last screen steps back to the first rather than dead-ending. */
 const step = (delta: number): void => {

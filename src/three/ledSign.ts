@@ -45,6 +45,18 @@ const MODEL_URL = '/models/nexron_3dledsign.glb'
 const TARGET_SIZE = 3
 
 /**
+ * The fitted plate's half extents, for the camera to frame it as a box.
+ *
+ * About 3 × 0.87 once the longest edge is `TARGET_SIZE`; the height is rounded
+ * up a little for the nod. Measured from the file rather than derived at load,
+ * so the camera can be placed before the model arrives. A box, not a sphere:
+ * the sphere around a plate this flat is mostly air and left the sign a third
+ * of the width it could have.
+ */
+export const SIGN_HALF_WIDTH = 1.5
+export const SIGN_HALF_HEIGHT = 0.5
+
+/**
  * The sign is a face, not a sculpture: its back is an unlit shell nobody was
  * meant to look at. So it never turns past this — it sways within the front
  * half and a drag runs into a wall rather than carrying on round.
@@ -85,13 +97,6 @@ const TILT_LIMIT = 0.5
  * overshoot. Softer springs wobble, stiffer ones snap back like a rubber band.
  */
 const SPRING: SpringConfigProps = { stiffness: 3, damping: 0.02, restSpeed: 0.002 }
-/**
- * Cap on the speed a release can hand to the spring. A flick covering half the
- * stage in one frame is worth about 90 rad/s uncapped, which reads as the sign
- * having come loose rather than as a throw.
- */
-const MAX_RELEASE_SPEED = 10
-
 export interface LedSign {
   group: Group
   /** Called once per frame. `elapsed` and `delta` are in seconds. */
@@ -128,8 +133,6 @@ const fitToTarget = (model: Object3D): void => {
   model.scale.multiplyScalar(scale)
   model.position.multiplyScalar(scale)
 }
-
-const clampSpeed = (speed: number): number => clampTo(speed, MAX_RELEASE_SPEED)
 
 export interface LedSignOptionsProps {
   /** Fired once the model is in the group — the scene may need a fresh frame. */
@@ -179,9 +182,6 @@ export const createLedSign = (
   let tiltVelocity = 0
 
   let isDragging = false
-  /** Last frame's offsets — what the drag speed is measured from on release. */
-  let previousSpinOffset = 0
-  let previousTiltOffset = 0
 
   const loader = new GLTFLoader()
   loader.load(
@@ -222,32 +222,22 @@ export const createLedSign = (
 
     const step = Math.min(delta, MAX_SPRING_DELTA)
 
-    if (isDragging) {
-      // The drag writes the offsets directly, so its speed is whatever they
-      // moved this frame. Measuring it here rather than from pointer events
-      // keeps the release velocity in the same units as the spring's.
-      if (step > 0) {
-        spinVelocity = clampSpeed((spinOffset - previousSpinOffset) / step)
-        tiltVelocity = clampSpeed((tiltOffset - previousTiltOffset) / step)
-      }
-    } else {
+    // While dragged the offsets are written by `dragBy`; nothing to integrate.
+    if (!isDragging) {
       // The spring runs on the offset from the idle sway, not on the angle
       // itself — that is what lets a drag play out and still end up back on
       // the original path.
       ;[spinOffset, spinVelocity] = relaxSpring(spinOffset, spinVelocity, step, SPRING)
       ;[tiltOffset, tiltVelocity] = relaxSpring(tiltOffset, tiltVelocity, step, SPRING)
 
-      // A thrown release still has to stop at the wall. Dropping the velocity
-      // with it means the sign settles against the limit instead of pressing
-      // into it and springing off.
+      // The spring still has to stop at the wall. Dropping the velocity with it
+      // means the sign settles against the limit instead of pressing into it
+      // and springing off.
       if (Math.abs(spinOffset) > MAX_SPIN_OFFSET) {
         spinOffset = Math.sign(spinOffset) * MAX_SPIN_OFFSET
         spinVelocity = 0
       }
     }
-
-    previousSpinOffset = spinOffset
-    previousTiltOffset = tiltOffset
 
     group.rotation.y = Math.sin(elapsed * SWAY_RATE) * SWAY_AMPLITUDE + spinOffset
     group.rotation.x = Math.sin(elapsed * NOD_RATE) * NOD_AMPLITUDE + tiltOffset
@@ -257,8 +247,9 @@ export const createLedSign = (
     if (isResting) return
 
     isDragging = true
-    previousSpinOffset = spinOffset
-    previousTiltOffset = tiltOffset
+    // A grab mid-return takes over from wherever the spring got to, at rest.
+    spinVelocity = 0
+    tiltVelocity = 0
   }
 
   const dragBy = (fractionX: number, fractionY: number): void => {
@@ -269,6 +260,32 @@ export const createLedSign = (
     spinOffset = clampTo(spinOffset + fractionX * TURN_PER_WIDTH, MAX_SPIN_OFFSET)
     tiltOffset = clampTo(tiltOffset + fractionY * TILT_PER_HEIGHT, TILT_LIMIT)
   }
+
+  /**
+
+   * Letting go hands the spring **no** speed.
+
+   *
+
+   * It used to carry the last frame's pointer delta, capped at 10 rad/s, and the
+
+   * spring is so lightly braked that a flick coasted ~2.5 rad: always into the far
+
+   * wall, then a slow crawl home. Worse, the delta of a single frame is whatever
+
+   * the thumb did in its last 16 ms, and a thumb rolling off a phone screen
+
+   * reverses. The figure then set off in the *opposite* direction of the drag,
+
+   * hit the wall, and came back. That read as a turn the wrong way round.
+
+   *
+
+   * With no release speed the figure returns from exactly where it was let go, on
+
+   * the shortest path, every time. The throw was never the point; the turn is.
+
+   */
 
   const endDrag = (): void => {
     isDragging = false

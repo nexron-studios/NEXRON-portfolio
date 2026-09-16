@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { ArrowUpRight } from '@respeak/lucide-motion-vue'
 import { socials } from '@/data/socials'
 import { brandIcons, isMotionBrand } from '@/components/ui/brand'
-import { useIconMotion } from '@/composables/useIconMotion'
 import { useLocalizedText } from '@/composables/useLocalizedText'
+import NxrLinkCard from '@/components/ui/NxrLinkCard.vue'
 
 const { t } = useI18n()
 const { localized } = useLocalizedText()
-const { iconMotion } = useIconMotion()
 </script>
 
 <template>
@@ -24,44 +22,14 @@ const { iconMotion } = useIconMotion()
 
     <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <li v-for="social in socials" :key="social.id">
-        <a
+        <NxrLinkCard
+          :icon="brandIcons[social.brand]"
+          :is-motion-icon="isMotionBrand(social.brand)"
+          :label="social.label"
+          :handle="social.handle"
+          :note="localized(social.note)"
           :href="social.href"
-          target="_blank"
-          rel="me noopener noreferrer"
-          class="nx-panel group relative flex h-full items-center gap-4 p-5 transition-colors duration-[--nx-dur-fast] hover:border-line-strong"
-        >
-          <!--
-            Brand marks are simple-icons paths, not Lucide — Lucide has none.
-            They animate on the group's hover through a plain CSS transition;
-            only the Lucide mark takes the motion runtime.
-          -->
-          <component
-            :is="brandIcons[social.brand]"
-            v-bind="isMotionBrand(social.brand) ? iconMotion : {}"
-            :trigger-target="isMotionBrand(social.brand) ? 'parent' : undefined"
-            class="size-6 shrink-0 text-ink-muted transition-all duration-[--nx-dur] ease-[--ease-out-expo] group-hover:scale-110 group-hover:text-dev"
-            aria-hidden="true"
-          />
-
-          <span class="min-w-0 flex-1">
-            <span class="block truncate font-display text-sm font-bold text-ink">
-              {{ social.label }}
-            </span>
-            <span v-if="social.handle" class="nx-meta block truncate normal-case">
-              {{ social.handle }}
-            </span>
-            <span class="nx-meta mt-1 block truncate text-ink-faint">
-              {{ localized(social.note) }}
-            </span>
-          </span>
-
-          <ArrowUpRight
-            v-bind="iconMotion"
-            trigger-target="parent"
-            class="size-4 shrink-0 text-ink-faint transition-colors group-hover:text-dev"
-            aria-hidden="true"
-          />
-        </a>
+        />
       </li>
     </ul>
   </section>

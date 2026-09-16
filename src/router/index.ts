@@ -12,6 +12,18 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/ProjectDetailView.vue'),
     props: true
   },
+  /**
+   * The linktree behind the NFC tag.
+   *
+   * Deliberately absent from `data/sections.ts`: the header nav and the scroll
+   * spy are generated from that list, and this is a route rather than a section
+   * of the home page. Nothing on the site links here — the tag is the entrance.
+   */
+  {
+    path: '/links',
+    name: 'links',
+    component: () => import('@/views/LinksView.vue')
+  },
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',

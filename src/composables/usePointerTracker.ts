@@ -6,7 +6,7 @@ export interface PointerState {
   /** Normalised −1…1, relative to the viewport centre. */
   x: number
   y: number
-  /** Same values run through a spring — this is what scenes should read. */
+  /** The same values lagged by `advance()`. Only meaningful if you call it. */
   smoothX: number
   smoothY: number
   hasPointer: boolean
@@ -18,11 +18,15 @@ interface UsePointerTrackerOptions {
 }
 
 /**
- * Tracks the pointer as a damped value.
+ * Tracks the pointer, optionally as a damped value.
  *
- * Scenes read `smoothX`/`smoothY` rather than the raw position, which is what
- * keeps the character's gaze and the orbs from snapping — they lag slightly
- * behind the cursor and settle, the way something with mass would.
+ * `advance()` lags the position so a scene reading `smoothX`/`smoothY` settles
+ * the way something with mass would instead of snapping — the tech-stack pit
+ * uses it that way. It is a plain per-frame lerp and therefore **frame-rate
+ * dependent**, so a scene that already damps with a delta (`MathUtils.damp`,
+ * a spring) should read raw `x`/`y` and not call `advance()` at all. Stacking
+ * both is how the peek figure's head ended up a third of a second behind the
+ * cursor.
  *
  * The returned object is deliberately plain rather than reactive: it is read
  * inside render loops, and going through Vue's reactivity there would mean a

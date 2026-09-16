@@ -9,10 +9,9 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
  *
  * **The threshold does the selecting, not layer masks.** Selective bloom over two
  * passes and a layer mask is the general answer and is not needed here:
- * `UnrealBloomPass` runs before tone mapping, so everything merely lit sits at a
- * luminance of at most 1, while the lamps are pushed deliberately above it with
- * their `emissiveIntensity`. A threshold of 1 separates the two without the
- * figure's skin glowing along.
+ * `UnrealBloomPass` runs before tone mapping. The threshold selects bright
+ * highlights, with the lamp emission tuned above it. Lit and reflective
+ * surfaces can also exceed the threshold, so the bloom strength stays low.
  *
  * `OutputPass` takes over tone mapping and the sRGB conversion — `toneMapping`
  * stays set on the renderer and is applied there instead of in `render()`.
@@ -23,10 +22,11 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
  * their alpha channel.
  */
 
-/** Below this luminance nothing blooms. Lit surfaces cap at 1; the lamps exceed it. */
-const THRESHOLD = 1
-const STRENGTH = 0.55
-const RADIUS = 0.5
+/** Keep the broad podium surface out of bloom; only bright highlights qualify. */
+const THRESHOLD = 1.3
+/** A faint, tight halo now that desktop rendering actually enables bloom. */
+const STRENGTH = 0.08
+const RADIUS = 0.05
 
 export interface BloomComposerProps {
   render: () => void

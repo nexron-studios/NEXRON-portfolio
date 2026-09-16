@@ -12,7 +12,19 @@ const { id, index, title } = defineProps<{
 </script>
 
 <template>
-  <section :id :aria-labelledby="`${id}-title`" class="relative scroll-mt-20 py-section">
+  <!--
+    `scroll-mt-26`: the fixed header is `h-20` plus its `mt-4`, so an anchor
+    jump with 5 rem of margin parked the title 1 rem under the bar.
+    `py-12 md:py-section`: on a phone two adjacent sections put 9 rem of
+    nothing between the last chip of one and the title of the next.
+    `overflow-x-clip` because two sections carry canvases that overhang their
+    box by `STAGE_BLEED` — see `HeroSection` for why `clip` and not `hidden`.
+  -->
+  <section
+    :id
+    :aria-labelledby="`${id}-title`"
+    class="relative scroll-mt-26 overflow-x-clip py-12 md:py-section"
+  >
     <div class="mx-auto w-full max-w-[88rem] px-gutter">
       <header class="flex items-baseline gap-4 md:gap-6">
         <span class="nx-meta shrink-0 text-dev">{{ index }}</span>

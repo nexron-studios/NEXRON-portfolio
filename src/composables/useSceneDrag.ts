@@ -23,24 +23,39 @@ export interface DraggableSceneProps {
 }
 
 interface UseSceneDragOptions {
-  /** The element the gesture is measured against — the stage, not the canvas. */
+  /** The element the gesture is measured against — the scene's canvas container. */
   container: Ref<HTMLElement | null>
+  /**
+   * How far that container overhangs the visible stage on each side, as a
+   * share of the stage — `STAGE_BLEED` for the bled scenes. The gesture is
+   * measured against the *stage*, so a drag across it turns the scene by the
+   * same amount whether or not the canvas has an overhang.
+   */
+  bleed?: number
   /** Resolves to the scene being dragged, or null before it exists. */
   target: () => DraggableSceneProps | null
 }
 
 export const useSceneDrag = (options: UseSceneDragOptions) => {
-  const { container, target } = options
+  const { container, target, bleed = 0 } = options
+  const stageShare = 1 / (1 + 2 * bleed)
 
   const isDragging = ref(false)
+  /**
+   * The one pointer that owns the gesture. Without this every finger on the
+   * stage fed `pointermove`, and a second finger or a palm produced deltas
+   * between the two touch points: the scene slammed from wall to wall.
+   */
+  let activePointerId: number | null = null
   let lastPointerX = 0
   let lastPointerY = 0
 
   const handlePointerDown = (event: PointerEvent): void => {
     const scene = target()
-    if (!scene) return
+    if (!scene || activePointerId !== null) return
 
     isDragging.value = true
+    activePointerId = event.pointerId
     lastPointerX = event.clientX
     lastPointerY = event.clientY
 
@@ -52,22 +67,24 @@ export const useSceneDrag = (options: UseSceneDragOptions) => {
     const scene = target()
     const element = container.value
     if (!isDragging.value || !scene || !element) return
+    if (event.pointerId !== activePointerId) return
 
     const bounds = element.getBoundingClientRect()
 
     scene.dragBy(
-      (event.clientX - lastPointerX) / Math.max(bounds.width, 1),
-      (event.clientY - lastPointerY) / Math.max(bounds.height, 1)
+      (event.clientX - lastPointerX) / Math.max(bounds.width * stageShare, 1),
+      (event.clientY - lastPointerY) / Math.max(bounds.height * stageShare, 1)
     )
 
     lastPointerX = event.clientX
     lastPointerY = event.clientY
   }
 
-  const handlePointerUp = (): void => {
-    if (!isDragging.value) return
+  const handlePointerUp = (event: PointerEvent): void => {
+    if (!isDragging.value || event.pointerId !== activePointerId) return
 
     isDragging.value = false
+    activePointerId = null
     target()?.endDrag()
   }
 

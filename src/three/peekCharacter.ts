@@ -64,8 +64,17 @@ const MODEL_YAW = Math.PI
  */
 const VISIBLE_SHARE = 0.75
 
-/** A little air above the head so it does not touch the top edge. */
-const TOP_MARGIN_SHARE = 0.04
+/**
+ * Air above the head, as a share of the view height.
+ *
+ * Far more than the 4 % it started at, because the model is half as deep as it
+ * is tall and the camera sits 3.4 away: the front of the cap stands ~0.9 units
+ * towards the lens and is magnified by up to a third, so at 4 % it crossed the
+ * top edge *at rest*. Perspective accounts for ~11 % and a full upward look
+ * (`LOOK_PITCH`) for another ~8 %. The section boxes grew by the same share so
+ * the figure stays the size it was.
+ */
+const TOP_MARGIN_SHARE = 0.2
 
 /** How far the head turns to follow the pointer, in radians. */
 const LOOK_YAW = 0.5
@@ -74,8 +83,14 @@ const LOOK_PITCH = 0.22
 /**
  * How fast the look catches up, per second. Damped rather than tracked exactly:
  * a head that pins itself to the cursor reads as a mechanism, not a glance.
+ *
+ * This is now the **only** smoothing on the pointer path. It was 6 — a time
+ * constant of ~167 ms — while `PeekCharacter.vue` also fed it the tracker's
+ * pre-smoothed `smoothX/smoothY`, and two first-order lags in series added up to
+ * over a third of a second before the head even started to arrive. The
+ * component passes the raw pointer now, so this number alone is the knob.
  */
-const LOOK_DAMPING = 6
+const LOOK_DAMPING = 14
 
 export interface PeekCharacterOptionsProps {
   /**

@@ -2,7 +2,7 @@
 import { defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ArrowUpRight } from '@respeak/lucide-motion-vue'
-import { identity, socials } from '@/data/socials'
+import { heroSocialIds, identity, socialsById } from '@/data/socials'
 import { brandIcons, isMotionBrand } from '@/components/ui/brand'
 import { useLocalizedText } from '@/composables/useLocalizedText'
 import { useIconMotion } from '@/composables/useIconMotion'
@@ -15,21 +15,30 @@ const { iconMotion } = useIconMotion()
 // three lives in its own chunk — the hero text paints without waiting for it.
 const HeroScene = defineAsyncComponent(() => import('@/components/three/HeroScene.vue'))
 
-/**
- * Only the three that belong above the fold. The full set — both Instagram
- * accounts, Spotify — gets its own card grid above the footer, and repeating
- * all six here would turn the spec strip into a link dump.
- */
-const HERO_SOCIAL_IDS = ['github', 'linkedin', 'mail']
-
-const heroSocials = socials.filter((entry) => HERO_SOCIAL_IDS.includes(entry.id))
+const heroSocials = socialsById(heroSocialIds)
 </script>
 
 <template>
-  <section id="index" class="relative flex min-h-svh items-center pt-32 pb-10 sm:pt-28 lg:pt-16">
+  <!--
+    `pt-28` on a phone: the fixed header is `h-20` plus `mt-4`, so its lower
+    edge sits at 6 rem and anything less than 7 rem puts the kicker under it.
+    Desktop relies on `items-center` inside `min-h-svh` and needs far less.
+
+    `overflow-x-clip` because the stage canvas overhangs its box by 20 % on
+    every side (see `STAGE_BLEED`); on a phone that overhang reaches past the
+    viewport edge and would otherwise make the page scroll sideways. `clip`,
+    not `hidden`: it creates no scroll container and clips only at the
+    section edge, where nothing the model does ever arrives.
+  -->
+  <section
+    id="index"
+    class="relative flex min-h-svh items-center overflow-x-clip pt-28 pb-10 lg:pt-16"
+  >
     <div class="mx-auto grid w-full max-w-[88rem] gap-8 px-gutter lg:grid-cols-12">
-      <!-- Identity block, offset off-centre against the 12-column grid -->
-      <div class="lg:col-span-7 lg:pt-8 xl:col-span-6">
+      <!-- Identity block, offset off-centre against the 12-column grid. Above the
+           stage in the stacking order: the overhanging canvas would otherwise
+           sit on the links and take their clicks as the start of a drag. -->
+      <div class="relative z-10 lg:col-span-7 lg:pt-8 xl:col-span-6">
         <!-- Says what this is before the name does: a founder portfolio, not
              a CV page. -->
         <p class="nx-meta flex flex-wrap items-center gap-x-3 gap-y-1.5">
@@ -99,10 +108,21 @@ const heroSocials = socials.filter((entry) => HERO_SOCIAL_IDS.includes(entry.id)
       </div>
 
       <!-- Stage -->
-      <div class="relative lg:col-span-5 xl:col-span-6">
-        <!-- Sized in svh so the figure is never cropped by mobile browser
-             chrome the way a vh-based stage would be. -->
-        <div class="relative h-64 w-full sm:h-[36svh] sm:min-h-56 lg:h-[clamp(30rem,68vh,44rem)]">
+      <div class="relative z-0 lg:col-span-5 xl:col-span-6">
+        <!--
+          Sized in svh so the figure is never cropped by mobile browser chrome
+          the way a vh-based stage would be.
+
+          The phone step used to be a flat `h-64` — a 256 px landscape strip.
+          The camera fits the diorama's swept sphere into *both* axes, so a short
+          wide box puts the figure edge to edge vertically at a distance that
+          leaves half the width empty, which is what read as a tiny model with a
+          gap under it. A tall box plus `COMPACT_FIT_SHARE` in `HeroScene`
+          together are the fix; neither alone is enough.
+        -->
+        <div
+          class="relative h-[46svh] min-h-80 w-full sm:h-[36svh] sm:min-h-56 lg:h-[clamp(30rem,68vh,44rem)]"
+        >
           <Suspense>
             <HeroScene />
             <template #fallback>

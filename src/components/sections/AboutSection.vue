@@ -128,8 +128,15 @@ const terminalLines: TerminalLineProps[] = [
             `position: relative`, so a negative z would escape it and land in
             the same layer as the page backdrop.
           -->
+          <!--
+            `h-48`, not `h-40`, with `TOP_MARGIN_SHARE` in `three/peekCharacter.ts`
+            raised to match: the figure is fitted to this box, and the cap's
+            front stands half the model's depth towards the camera, where
+            perspective made it cross the top edge at rest. Together the two
+            keep the figure the same size and give the head room to look up.
+          -->
           <div
-            class="pointer-events-none absolute inset-x-0 bottom-full z-0 hidden h-40 overflow-hidden lg:block"
+            class="pointer-events-none absolute inset-x-0 bottom-full z-0 hidden h-48 overflow-hidden lg:block"
           >
             <PeekCharacter v-if="isPeekNear" />
           </div>
@@ -158,13 +165,23 @@ const terminalLines: TerminalLineProps[] = [
       <div class="lg:col-span-4">
         <p class="nx-meta">{{ t('about.studio_label') }}</p>
 
-        <div ref="markStage" class="relative mt-6 h-56 w-full sm:h-64 lg:h-72">
+        <!--
+          Shallower than it was (`h-56 sm:h-64 lg:h-72`): the sign is a 3.4:1
+          plate fitted by width, so most of a tall box was air above and below
+          it, which read as a gap between the mark and its text. The canvas
+          overhangs the box by `STAGE_BLEED`, so a tilt still has room.
+        -->
+        <div ref="markStage" class="relative mt-2 h-36 w-full sm:h-44 lg:h-52">
           <LedSign v-if="isMarkStageNear" />
           <span class="sr-only">{{ t('about.mark_alt') }}</span>
         </div>
 
-        <p class="mt-6 font-display text-xl font-bold tracking-tight">{{ identity.brand }}</p>
-        <p class="mt-3 leading-relaxed text-pretty text-ink-muted">{{ localized(studioIntro) }}</p>
+        <p class="relative z-10 mt-2 font-display text-xl font-bold tracking-tight">
+          {{ identity.brand }}
+        </p>
+        <p class="relative z-10 mt-3 leading-relaxed text-pretty text-ink-muted">
+          {{ localized(studioIntro) }}
+        </p>
       </div>
 
       <div class="lg:col-span-8 lg:col-start-5">

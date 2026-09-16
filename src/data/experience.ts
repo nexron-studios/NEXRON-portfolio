@@ -30,26 +30,6 @@ export const STUDY_HREF =
 
 export const experience: ExperienceProps[] = [
   {
-    id: 'hs-offenburg-master-informatik',
-    kind: 'education',
-    organization: 'Hochschule Offenburg',
-    role: {
-      de: 'M.Sc. Informatik',
-      en: 'M.Sc. Computer Science'
-    },
-    location: 'Offenburg, DE',
-    startedAt: '2027-03',
-    endedAt: '2028-09',
-    isOngoing: false,
-    summary: {
-      de: 'Geplanter Masterstart mit Vertiefungen in Künstlicher Intelligenz und Advanced Software Engineering.',
-      en: 'Planned master’s start with focus areas in artificial intelligence and advanced software engineering.'
-    },
-    href: 'https://www.hs-offenburg.de/studium/master/informatik',
-    logo: hsOffenburgLogo,
-    isLogoFullBleed: true
-  },
-  {
     id: 'avenit-werkstudent',
     kind: 'work',
     organization: 'avenit AG',
@@ -62,8 +42,8 @@ export const experience: ExperienceProps[] = [
     endedAt: '2026-06',
     isOngoing: false,
     summary: {
-      de: 'Webentwicklung neben dem Studium — Features umsetzen, Bestehendes pflegen, im Team arbeiten.',
-      en: 'Web development alongside my studies — building features, maintaining what exists, working in a team.'
+      de: 'Webentwicklung neben dem Studium: Features entwickeln, bestehende Anwendungen pflegen und im Team arbeiten, vor allem mit Scrum.',
+      en: 'Web development alongside my studies: building features, maintaining existing applications and working in a team, mostly with Scrum.'
     },
     href: 'https://www.avenit.de',
     logo: avenitLogo,
@@ -82,8 +62,8 @@ export const experience: ExperienceProps[] = [
     endedAt: '2026-03',
     isOngoing: false,
     summary: {
-      de: 'Sechs Monate als Junior Webentwickler: von der Anforderung bis zum Release, an echten Kundenprojekten.',
-      en: 'Six months as a junior web developer: from requirement to release, on real client work.'
+      de: 'Sechs Monate als Junior Webentwickler an echten Kundenprojekten: Features entwickeln, Bestehendes pflegen und im Scrum-Team von der Anforderung bis zum Release.',
+      en: 'Six months as a junior web developer on real client work: building features, maintaining what exists and working in a Scrum team from requirement to release.'
     },
     href: 'https://www.avenit.de',
     logo: avenitLogo,
@@ -102,8 +82,8 @@ export const experience: ExperienceProps[] = [
     endedAt: null,
     isOngoing: true,
     summary: {
-      de: 'Schwerpunkte in Machine Learning, Deep Learning, Natural Language Processing, Computer Vision und Reinforcement Learning — dazu alles rund um Sprachmodelle, Agents und Multiagentensysteme.',
-      en: 'Focus areas in machine learning, deep learning, natural language processing, computer vision and reinforcement learning — plus everything around language models, agents and multi-agent systems.'
+      de: 'Schwerpunkte in Machine Learning, Deep Learning, Natural Language Processing, Computer Vision und Reinforcement Learning, dazu alles rund um Sprachmodelle, Agents und Multiagentensysteme.',
+      en: 'Focus areas in machine learning, deep learning, natural language processing, computer vision and reinforcement learning, plus everything around language models, agents and multi-agent systems.'
     },
     href: STUDY_HREF,
     logo: hsOffenburgLogo,
@@ -117,8 +97,8 @@ export const experience: ExperienceProps[] = [
     endedAt: '2023-07',
     isOngoing: false,
     summary: {
-      de: 'Nach der Ausbildung nachgeholt — die Zugangsberechtigung für das Studium.',
-      en: 'Completed after the apprenticeship — the qualification that opened up the degree.'
+      de: 'Nach der Ausbildung habe ich die Zugangsberechtigung für das Studium nachgeholt.',
+      en: 'After the apprenticeship I caught up on the qualification needed for the degree.'
     },
     logo: lahrLogo
   },
@@ -135,8 +115,8 @@ export const experience: ExperienceProps[] = [
     endedAt: '2022-08',
     isOngoing: false,
     summary: {
-      de: 'Gestaltung und 3D hatte ich zu dem Zeitpunkt schon lange nebenher gemacht — hier wurde es professionell vertieft. Später habe ich damit die Social-Media-Kampagne eines Clubs gestalterisch begleitet.',
-      en: 'I had been doing design and 3D on my own for a long time by then — this is where it was deepened professionally. Later I used it to support the design of a club’s social media campaign.'
+      de: '2D und 3D hatte ich mir davor schon selbst beigebracht. Im Praktikum wollte ich professionelles Arbeiten kennenlernen und vertiefen. Daraus entstanden später unter anderem Social-Media-Kampagnen und Visuals für Clubs.',
+      en: 'I had already taught myself 2D and 3D before. In the internship I wanted to learn and deepen professional work. Later that led to social media campaigns and visuals for clubs, among other things.'
     },
     href: 'https://visionsbox.de',
     logo: visionsboxLogo
@@ -154,8 +134,8 @@ export const experience: ExperienceProps[] = [
     endedAt: '2022-01',
     isOngoing: false,
     summary: {
-      de: 'Abgeschlossene Berufsausbildung: dreieinhalb Jahre an realen Anlagen — messen, Fehler suchen, reparieren. Das Debuggen habe ich hier gelernt, lange bevor es Code war.',
-      en: 'A completed vocational apprenticeship: three and a half years on real installations — measuring, fault-finding, repairing. I learned to debug here, long before it was code.'
+      de: 'Abgeschlossene Berufsausbildung: dreieinhalb Jahre an realen Anlagen, messen, Fehler suchen, reparieren. Das Debuggen habe ich hier gelernt, lange bevor es Code war.',
+      en: 'A completed vocational apprenticeship: three and a half years on real installations, measuring, fault-finding, repairing. I learned to debug here, long before it was code.'
     },
     href: 'https://www.julabo.com',
     logo: julaboLogo

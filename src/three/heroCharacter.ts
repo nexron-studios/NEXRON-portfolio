@@ -4,13 +4,7 @@ import { createStudioEnvironment } from '@/three/environment'
 import { createContactShadow, type ContactShadowProps } from '@/three/contactShadow'
 import { applyCharacterSurfaces, type SurfacePassProps } from '@/three/characterSurfaces'
 import { advanceHop, createHopState, type HopStateProps } from '@/utils/hop'
-import {
-  clampTo,
-  relaxSpring,
-  softLimit,
-  MAX_SPRING_DELTA,
-  type SpringConfigProps
-} from '@/utils/spring'
+import { clampTo, relaxSpring, MAX_SPRING_DELTA, type SpringConfigProps } from '@/utils/spring'
 import type { Theme } from '@/types/ui.type'
 
 /**
@@ -78,31 +72,28 @@ const FRONT_LIMIT = 1.25
 const MAX_SPIN_OFFSET = FRONT_LIMIT - SWAY_AMPLITUDE
 
 /**
- * Turn per drag across the full stage width. Gentle on purpose: the reachable
- * range is under a radian, and a sensitive drag would spend most of its travel
- * pressed against the limit.
+ * Turn per drag across the full stage width, and the LED sign's number.
+ *
+ * It was 1.2 for a while, on the theory that a reachable range under a radian
+ * wants a gentle drag. In use it read as the scene resisting the pointer, which
+ * is the opposite of what the softer numbers were meant to buy.
  */
-const TURN_PER_WIDTH = 1.2
-/** Vertical drags tilt rather than turn, and far less — the figure never flips. */
-const TILT_PER_HEIGHT = 0.7
-const TILT_LIMIT = 0.32
+const TURN_PER_WIDTH = 1.6
+/** Vertical drags tilt rather than turn, and less — the figure never flips. */
+const TILT_PER_HEIGHT = 1.2
+const TILT_LIMIT = 0.5
 
 /**
- * Softer and slower than the LED sign's, which is why the two no longer share
- * one set of numbers: this scene is a figure being turned rather than a plate
- * being spun, and the stiffer pull read as the model snapping back. Released
- * from the far edge it is about 39 % of the way home after a second and settles
- * over roughly six, with a fraction of a degree of overshoot at the end — enough
- * to read as coming to rest instead of stopping.
+ * The LED sign's spring, shared again on purpose.
+ *
+ * The two were tuned apart once, on the argument that a figure being turned is
+ * not a plate being spun: stiffness 1.6 with damping 0.12, about 39 % of the way
+ * home after a second and six seconds to settle. Next to the sign that read as
+ * the figure being dragged through treacle rather than as weight, so both scenes
+ * are back on one set of numbers. `damping` is velocity *retained* per second,
+ * so 0.02 is the heavier friction of the two — stiff pull, no overshoot.
  */
-const SPRING: SpringConfigProps = { stiffness: 1.6, damping: 0.12, restSpeed: 0.002 }
-
-/**
- * Cap on the speed a release can hand to the spring. A flick covering half the
- * stage in one frame is worth about 90 rad/s uncapped, which reads as the scene
- * coming loose rather than as a throw.
- */
-const MAX_RELEASE_SPEED = 8
+const SPRING: SpringConfigProps = { stiffness: 3, damping: 0.02, restSpeed: 0.002 }
 
 /** The gentle float, in world units. */
 const FLOAT_AMPLITUDE = 0.03
@@ -295,16 +286,6 @@ export const createHeroCharacter = (
   let tiltVelocity = 0
 
   let isDragging = false
-  /** Last frame's offsets — what the drag speed is measured from on release. */
-  let previousSpinOffset = 0
-  let previousTiltOffset = 0
-  /**
-   * What the pointer has actually travelled this drag, before the soft limit
-   * bends it. Kept apart so the easing is applied once to the total rather than
-   * compounding on every increment.
-   */
-  let rawSpinOffset = 0
-  let rawTiltOffset = 0
 
   const applyEmissiveTheme = (nextTheme: Theme): void => {
     const scale = EMISSIVE_SCALE[nextTheme]
@@ -378,32 +359,22 @@ export const createHeroCharacter = (
 
     const step = Math.min(delta, MAX_SPRING_DELTA)
 
-    if (isDragging) {
-      // The drag writes the offsets directly, so its speed is whatever they
-      // moved this frame. Measuring it here rather than from pointer events
-      // keeps the release velocity in the same units as the spring's.
-      if (step > 0) {
-        spinVelocity = clampTo((spinOffset - previousSpinOffset) / step, MAX_RELEASE_SPEED)
-        tiltVelocity = clampTo((tiltOffset - previousTiltOffset) / step, MAX_RELEASE_SPEED)
-      }
-    } else {
+    // While dragged the offsets are written by `dragBy`; nothing to integrate.
+    if (!isDragging) {
       // The spring runs on the offset from the idle sway, not on the angle
       // itself — that is what lets a drag play out and still end up back on the
       // original path.
       ;[spinOffset, spinVelocity] = relaxSpring(spinOffset, spinVelocity, step, SPRING)
       ;[tiltOffset, tiltVelocity] = relaxSpring(tiltOffset, tiltVelocity, step, SPRING)
 
-      // A thrown release still has to stop at the wall. Dropping the velocity
-      // with it means the scene settles against the limit instead of pressing
-      // into it and springing off.
+      // The spring still has to stop at the wall. Dropping the velocity with it
+      // means the scene settles against the limit instead of pressing into it
+      // and springing off.
       if (Math.abs(spinOffset) > MAX_SPIN_OFFSET) {
         spinOffset = Math.sign(spinOffset) * MAX_SPIN_OFFSET
         spinVelocity = 0
       }
     }
-
-    previousSpinOffset = spinOffset
-    previousTiltOffset = tiltOffset
 
     group.rotation.y = RESTING_YAW + Math.sin(elapsed * SWAY_RATE) * SWAY_AMPLITUDE + spinOffset
     group.rotation.x = Math.sin(elapsed * NOD_RATE) * NOD_AMPLITUDE + tiltOffset
@@ -416,27 +387,55 @@ export const createHeroCharacter = (
     if (isResting) return
 
     isDragging = true
-    previousSpinOffset = spinOffset
-    previousTiltOffset = tiltOffset
-    // Take up wherever the spring left the scene, so a second grab does not jump.
-    rawSpinOffset = spinOffset
-    rawTiltOffset = tiltOffset
+    // A grab mid-return takes over from wherever the spring got to, at rest.
+    spinVelocity = 0
+    tiltVelocity = 0
   }
 
+  /**
+   * The offset *is* the state, as in `ledSign.ts`: the pointer moves it one to
+   * one until the wall, and the wall stops it dead.
+   *
+   * This used to run through `softLimit` against a separate raw accumulator, so
+   * the drag gave way gradually towards the limit. Two things were wrong with
+   * it. The ratio of pointer to rotation was never one to one, which is most of
+   * what made the scene feel unlike the sign — and `beginDrag` re-seeded the raw
+   * accumulator from the *already compressed* offset, so every re-grab ran the
+   * easing curve over an eased value again and had visibly less travel than the
+   * first.
+   */
   const dragBy = (fractionX: number, fractionY: number): void => {
     if (!isDragging) return
 
-    rawSpinOffset += fractionX * TURN_PER_WIDTH
-    rawTiltOffset += fractionY * TILT_PER_HEIGHT
-
-    // Both axes give way towards their limit rather than stopping at it — the
-    // back of the figure still never comes into view, but the drag runs out of
-    // travel gradually instead of going dead under the pointer. It also means a
-    // release at the edge hands the spring almost no speed, because the last
-    // stretch of the drag barely moved the scene.
-    spinOffset = softLimit(rawSpinOffset, MAX_SPIN_OFFSET)
-    tiltOffset = softLimit(rawTiltOffset, TILT_LIMIT)
+    spinOffset = clampTo(spinOffset + fractionX * TURN_PER_WIDTH, MAX_SPIN_OFFSET)
+    tiltOffset = clampTo(tiltOffset + fractionY * TILT_PER_HEIGHT, TILT_LIMIT)
   }
+
+  /**
+
+   * Letting go hands the spring **no** speed.
+
+   *
+
+   * It used to carry the last frame's pointer delta, capped at 10 rad/s, and the
+
+   * spring is so lightly braked that a flick coasted ~2.5 rad: always into the far
+
+   * wall, then a slow crawl home. Worse, the delta of a single frame is whatever
+
+   * the thumb did in its last 16 ms, and a thumb rolling off a phone screen
+
+   * reverses. The figure then set off in the *opposite* direction of the drag,
+
+   * hit the wall, and came back. That read as a turn the wrong way round.
+
+   *
+
+   * With no release speed the figure returns from exactly where it was let go, on
+
+   * the shortest path, every time. The throw was never the point; the turn is.
+
+   */
 
   const endDrag = (): void => {
     isDragging = false

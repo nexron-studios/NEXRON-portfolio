@@ -34,16 +34,15 @@ export default {
   },
   about: {
     title: 'About',
-    heading: "Hey, I'm Jonas —",
-    lead: 'I enjoy building software, training models and working on design.',
+    heading: "Hey, I'm Jonas.",
+    lead: 'I build software, train models and have been into design for a long time.',
     terminal_hint: 'typing allowed',
     terminal_label: 'Terminal input',
     /** `{study}` is filled by a slot — the degree renders as a link. */
-    body_1:
-      "I study {study} at Offenburg University and I'm writing my bachelor's thesis right now.",
+    body_1: 'I studied {study} at Offenburg University.',
     study_link: 'Applied Artificial Intelligence',
     body_2:
-      'I have worked with the Adobe stack for several years, and Blender brought 3D along with it — deepened during an internship and designing for clubs.',
+      'I have worked with the Adobe stack for several years. Blender then pulled me further into 3D, deepened during an internship and by designing for clubs.',
     body_3:
       'What draws me in is the seam: bringing AI, design and development together in one project instead of settling into a single corner.',
     studio_label: 'The trade',
@@ -88,7 +87,7 @@ export default {
     clients_label: 'Clients',
     view_detail: 'Open project',
     empty: 'No projects in this category.',
-    status_shipped: 'shipped',
+    status_shipped: 'completed',
     status_building: 'building',
     status_experiment: 'experiment',
     detail_overview: 'Overview',
@@ -134,7 +133,7 @@ export default {
     message: 'Message',
     send: 'Send message',
     sending: 'Sending',
-    success: 'Message sent — thanks, I will get back to you.',
+    success: 'Message sent. Thanks, I will get back to you.',
     error: 'Sending failed. Please try again or reach out on LinkedIn.',
     not_configured: 'The form is not configured yet.',
     error_name_required: 'Please enter your name.',
@@ -145,6 +144,11 @@ export default {
   },
   socials: {
     heading: 'Also findable here.'
+  },
+  links: {
+    title: 'Links',
+    website: 'My website',
+    website_note: 'Portfolio, projects and contact'
   },
   footer: {
     built_with: 'Built with Vue, TypeScript and Three.js',

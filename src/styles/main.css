@@ -17,6 +17,13 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  /* Scale rem-based type, spacing, controls and stages together on large screens. */
+  @media (min-width: 120rem) {
+    html {
+      font-size: clamp(1rem, 0.833333vw, 2rem);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;

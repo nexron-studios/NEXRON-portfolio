@@ -34,18 +34,17 @@ export default {
   },
   about: {
     title: 'Über mich',
-    heading: 'Hey, ich bin Jonas —',
-    lead: 'ich entwickle Software, trainiere Modelle und beschäftige mich mit Gestaltung.',
+    heading: 'Hey, ich bin Jonas.',
+    lead: 'Ich entwickle Software, trainiere Modelle und beschäftige mich schon lange mit Design.',
     terminal_hint: 'tippen erlaubt',
     terminal_label: 'Terminal-Eingabe',
     /** `{study}` is filled by a slot — the degree renders as a link. */
-    body_1:
-      'Ich studiere {study} an der Hochschule Offenburg und schreibe gerade meine Bachelorarbeit.',
+    body_1: 'Ich habe {study} an der Hochschule Offenburg studiert.',
 
     study_link: 'Angewandte Künstliche Intelligenz',
 
     body_2:
-      'Mit dem Adobe-Stack arbeite ich schon seit mehreren Jahren. Über Blender bin ich dann auch immer mehr in 3D reingekommen — vertieft im Praktikum und durch Designs für Clubs.',
+      'Mit dem Adobe-Stack arbeite ich seit mehreren Jahren. Über Blender bin ich immer weiter in 3D reingekommen, vertieft im Praktikum und durch Designs für Clubs.',
 
     body_3:
       'Am spannendsten finde ich Projekte, bei denen KI, Design und Entwicklung zusammenkommen. Genau diese Mischung macht für mich am meisten Spaß, statt mich nur auf einen Bereich festzulegen.',
@@ -91,7 +90,7 @@ export default {
     clients_label: 'Kunden',
     view_detail: 'Projekt öffnen',
     empty: 'Keine Projekte in dieser Kategorie.',
-    status_shipped: 'ausgeliefert',
+    status_shipped: 'fertiggestellt',
     status_building: 'in Arbeit',
     status_experiment: 'Experiment',
     detail_overview: 'Überblick',
@@ -137,7 +136,7 @@ export default {
     message: 'Nachricht',
     send: 'Nachricht senden',
     sending: 'Wird gesendet',
-    success: 'Nachricht ist raus — danke, ich melde mich.',
+    success: 'Nachricht ist raus. Danke, ich melde mich.',
     error: 'Senden fehlgeschlagen. Versuch es nochmal oder schreib mir auf LinkedIn.',
     not_configured: 'Das Formular ist noch nicht konfiguriert.',
     error_name_required: 'Bitte trag deinen Namen ein.',
@@ -148,6 +147,11 @@ export default {
   },
   socials: {
     heading: 'Sonst noch hier zu finden.'
+  },
+  links: {
+    title: 'Links',
+    website: 'Meine Webseite',
+    website_note: 'Portfolio, Projekte und Kontakt'
   },
   footer: {
     built_with: 'Gebaut mit Vue, TypeScript und Three.js',

@@ -24,8 +24,7 @@ const cubeFaceTransforms = [
 
 <template>
   <span
-    class="group/skill relative inline-flex items-center gap-2 border px-2.5 py-1.5 font-mono text-xs transition-colors duration-[--nx-dur-fast]"
-    :tabindex="skill.quip ? 0 : undefined"
+    class="relative inline-flex items-center gap-2 border px-2.5 py-1.5 font-mono text-xs transition-colors duration-[--nx-dur-fast]"
     :class="[
       skill.isCore ? 'border-line-strong text-ink-muted' : 'border-line text-ink-faint',
       domain === 'creative'
@@ -45,17 +44,5 @@ const cubeFaceTransforms = [
     </span>
 
     {{ skill.name }}
-
-    <!--
-      Flavour text, not information — it is aria-hidden and never the only
-      place something is said, so nothing is lost without a hovering pointer.
-    -->
-    <span
-      v-if="skill.quip"
-      aria-hidden="true"
-      class="pointer-events-none absolute bottom-full left-0 z-10 mb-1.5 hidden border border-dev/40 bg-void px-2 py-1 text-[0.625rem] whitespace-nowrap text-dev opacity-0 transition-opacity duration-[--nx-dur] group-hover/skill:opacity-100 group-focus-visible/skill:opacity-100 md:block"
-    >
-      {{ skill.quip }}
-    </span>
   </span>
 </template>

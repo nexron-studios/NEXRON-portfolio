@@ -6,7 +6,7 @@ const buildGroup = (id: string, domain: SkillDomain): SkillGroupProps => ({
   id,
   label: { de: id, en: id },
   domain,
-  skills: [{ name: id, quip: null, isCore: false }]
+  skills: [{ name: id, isCore: false }]
 })
 
 describe('groupByDomain', () => {

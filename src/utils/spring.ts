@@ -51,6 +51,13 @@ export const clampTo = (value: number, limit: number): number =>
 /**
  * A limit the value eases into instead of hitting.
  *
+ * **Currently used by no scene**, and kept deliberately. The hero ran on it for
+ * a while and is back on `clampTo`, because tracking the pointer at anything
+ * other than one to one is what made it feel unlike the LED sign. The function
+ * is the only rubber-banding in the repo and the wish it answers — a drag that
+ * runs out of travel gradually rather than going dead — is a recurring one, so
+ * the next round starts from a specced implementation rather than from scratch.
+ *
  * `clampTo` stops dead: the object tracks the pointer one-to-one and then simply
  * refuses to move, which reads as the drag having broken. This gives way
  * gradually — one-to-one near the middle, progressively more resistance towards

@@ -14,12 +14,12 @@ export const skillGroups: SkillGroupProps[] = [
     label: { de: 'Frontend', en: 'Frontend' },
     domain: 'dev',
     skills: [
-      { name: 'Vue 3', quip: '<script setup> or nothing', isCore: true },
-      { name: 'TypeScript', quip: 'any is not a type, it is a surrender', isCore: true },
-      { name: 'JavaScript', quip: null, isCore: true },
-      { name: 'Tailwind CSS', quip: null, isCore: true },
-      { name: 'HTML', quip: null, isCore: true },
-      { name: 'CSS', quip: 'still centering things in 2026', isCore: true }
+      { name: 'Vue 3', isCore: true },
+      { name: 'TypeScript', isCore: true },
+      { name: 'JavaScript', isCore: true },
+      { name: 'Tailwind CSS', isCore: true },
+      { name: 'HTML', isCore: true },
+      { name: 'CSS', isCore: true }
     ]
   },
   {
@@ -27,10 +27,10 @@ export const skillGroups: SkillGroupProps[] = [
     label: { de: '3D & Interaktiv', en: '3D & Interactive' },
     domain: 'creative',
     skills: [
-      { name: 'Three.js', quip: 'z-fighting is a lifestyle', isCore: true },
-      { name: 'Blender', quip: null, isCore: true },
-      { name: 'GLSL', quip: null, isCore: false },
-      { name: 'WebGL', quip: null, isCore: true }
+      { name: 'Three.js', isCore: true },
+      { name: 'Blender', isCore: true },
+      { name: 'GLSL', isCore: false },
+      { name: 'WebGL', isCore: true }
     ]
   },
   {
@@ -38,9 +38,9 @@ export const skillGroups: SkillGroupProps[] = [
     label: { de: 'Desktop & Systems', en: 'Desktop & Systems' },
     domain: 'infra',
     skills: [
-      { name: 'Tauri', quip: '6 MB, not 200', isCore: true },
-      { name: 'Rust', quip: 'borrow checker: 1 — me: 0', isCore: true },
-      { name: 'SQLite', quip: null, isCore: true }
+      { name: 'Tauri', isCore: true },
+      { name: 'Rust', isCore: true },
+      { name: 'SQLite', isCore: true }
     ]
   },
   {
@@ -48,14 +48,14 @@ export const skillGroups: SkillGroupProps[] = [
     label: { de: 'Backend & Infrastruktur', en: 'Backend & Infrastructure' },
     domain: 'infra',
     skills: [
-      { name: 'PostgreSQL', quip: 'SELECT * FROM ideas;', isCore: true },
-      { name: 'Docker', quip: 'works on my machine — and now on yours', isCore: true },
-      { name: 'NestJS', quip: null, isCore: true },
-      { name: 'FastAPI', quip: null, isCore: true },
-      { name: 'Uvicorn', quip: null, isCore: false },
-      { name: 'Prisma', quip: null, isCore: true },
-      { name: 'Socket.io', quip: null, isCore: true },
-      { name: 'REST APIs', quip: null, isCore: true }
+      { name: 'PostgreSQL', isCore: true },
+      { name: 'Docker', isCore: true },
+      { name: 'NestJS', isCore: true },
+      { name: 'FastAPI', isCore: true },
+      { name: 'Uvicorn', isCore: false },
+      { name: 'Prisma', isCore: true },
+      { name: 'Socket.io', isCore: true },
+      { name: 'REST APIs', isCore: true }
     ]
   },
   {
@@ -63,18 +63,18 @@ export const skillGroups: SkillGroupProps[] = [
     label: { de: 'KI & Machine Learning', en: 'AI & Machine Learning' },
     domain: 'ai',
     skills: [
-      { name: 'LLM-Agents', quip: 'it called the tool. twice.', isCore: true },
-      { name: 'Multiagentensysteme', quip: null, isCore: true },
-      { name: 'Chatbots', quip: null, isCore: true },
-      { name: 'RAG', quip: null, isCore: true },
-      { name: 'PyTorch', quip: 'loss go down', isCore: true },
-      { name: 'TensorFlow', quip: null, isCore: false },
-      { name: 'Keras', quip: null, isCore: true },
-      { name: 'scikit-learn', quip: null, isCore: true },
-      { name: 'Hugging Face', quip: null, isCore: true },
-      { name: 'spaCy', quip: null, isCore: false },
-      { name: 'OpenAI Gym', quip: null, isCore: false },
-      { name: 'OpenCV', quip: "cv2.imshow('debug', frame)", isCore: false }
+      { name: 'LLM-Agents', isCore: true },
+      { name: 'Multiagentensysteme', isCore: true },
+      { name: 'Chatbots', isCore: true },
+      { name: 'RAG', isCore: true },
+      { name: 'PyTorch', isCore: true },
+      { name: 'TensorFlow', isCore: false },
+      { name: 'Keras', isCore: true },
+      { name: 'scikit-learn', isCore: true },
+      { name: 'Hugging Face', isCore: true },
+      { name: 'spaCy', isCore: false },
+      { name: 'OpenAI Gym', isCore: false },
+      { name: 'OpenCV', isCore: false }
     ]
   },
   {
@@ -82,12 +82,12 @@ export const skillGroups: SkillGroupProps[] = [
     label: { de: 'Data Science', en: 'Data Science' },
     domain: 'ai',
     skills: [
-      { name: 'NumPy', quip: null, isCore: true },
-      { name: 'Pandas', quip: 'df.head() and hope', isCore: true },
-      { name: 'Matplotlib', quip: null, isCore: true },
-      { name: 'Seaborn', quip: null, isCore: false },
-      { name: 'ARIMA', quip: null, isCore: false },
-      { name: 'MATLAB', quip: null, isCore: false }
+      { name: 'NumPy', isCore: true },
+      { name: 'Pandas', isCore: true },
+      { name: 'Matplotlib', isCore: true },
+      { name: 'Seaborn', isCore: false },
+      { name: 'ARIMA', isCore: false },
+      { name: 'MATLAB', isCore: false }
     ]
   },
   {
@@ -95,11 +95,11 @@ export const skillGroups: SkillGroupProps[] = [
     label: { de: 'Creative Tools', en: 'Creative Tools' },
     domain: 'creative',
     skills: [
-      { name: 'Photoshop', quip: null, isCore: true },
-      { name: 'Illustrator', quip: null, isCore: true },
-      { name: 'Premiere Pro', quip: null, isCore: true },
-      { name: 'After Effects', quip: null, isCore: true },
-      { name: 'InDesign', quip: null, isCore: false }
+      { name: 'Photoshop', isCore: true },
+      { name: 'Illustrator', isCore: true },
+      { name: 'Premiere Pro', isCore: true },
+      { name: 'After Effects', isCore: true },
+      { name: 'InDesign', isCore: false }
     ]
   }
 ]
@@ -201,8 +201,8 @@ export const pitSkills: OrbSkillProps[] = [
     domain: 'ai',
     weight: 1.0,
     blurb: {
-      de: 'Klassische Modelle — oft das, was reicht.',
-      en: 'Classical models — often all it takes.'
+      de: 'Klassische Modelle, oft reicht das schon.',
+      en: 'Classical models, often all it takes.'
     }
   },
   {
@@ -237,8 +237,8 @@ export const pitSkills: OrbSkillProps[] = [
     domain: 'creative',
     weight: 1.35,
     blurb: {
-      de: '3D im Browser — auch dieser Würfel hier.',
-      en: '3D in the browser — including this cube.'
+      de: '3D im Browser, auch dieser Würfel hier.',
+      en: '3D in the browser, including this cube.'
     }
   },
   {
