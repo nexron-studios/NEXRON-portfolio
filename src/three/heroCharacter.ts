@@ -154,6 +154,8 @@ interface MascotProps {
 export interface HeroCharacterOptionsProps {
   /** Fired once the model is in the group — the scene may need a fresh frame. */
   onLoaded?: () => void
+  /** Fired when the file cannot be loaded, so a placeholder can stand down. */
+  onLoadFailed?: () => void
 }
 
 export interface HeroCharacter {
@@ -341,6 +343,7 @@ export const createHeroCharacter = (
     undefined,
     (error) => {
       console.warn('herocharacter.load_failed', { url: MODEL_URL, error })
+      options.onLoadFailed?.()
     }
   )
 

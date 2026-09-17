@@ -7,6 +7,7 @@ import { brandIcons, isMotionBrand } from '@/components/ui/brand'
 import { useLocalizedText } from '@/composables/useLocalizedText'
 import { useIconMotion } from '@/composables/useIconMotion'
 import NxrButton from '@/components/ui/NxrButton.vue'
+import NxrSceneLoader from '@/components/ui/NxrSceneLoader.vue'
 
 const { t } = useI18n()
 const { localized } = useLocalizedText()
@@ -123,12 +124,12 @@ const heroSocials = socialsById(heroSocialIds)
         <div
           class="relative h-[46svh] min-h-80 w-full sm:h-[36svh] sm:min-h-56 lg:h-[clamp(30rem,68vh,44rem)]"
         >
+          <!-- The same mark the scene shows while its model loads, so the chunk
+               and the file read as one wait rather than two. -->
           <Suspense>
             <HeroScene />
             <template #fallback>
-              <div class="grid h-full w-full place-items-center">
-                <span class="nx-meta animate-pulse">{{ t('global.loading') }}</span>
-              </div>
+              <NxrSceneLoader />
             </template>
           </Suspense>
         </div>

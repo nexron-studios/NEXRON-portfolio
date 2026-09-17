@@ -3,10 +3,12 @@ import { ref, shallowRef } from 'vue'
 import { Vector3 } from 'three'
 import { useThreeScene, type SceneContext, type SceneHandle } from '@/composables/useThreeScene'
 import { useSceneDrag } from '@/composables/useSceneDrag'
+import { useModelLoadState } from '@/composables/useModelLoadState'
 import { createSceneLighting } from '@/three/lighting'
 import { createLedSign, SIGN_HALF_HEIGHT, SIGN_HALF_WIDTH, type LedSign } from '@/three/ledSign'
 import { STAGE_BLEED, bleedRadius, fitBoxDistance } from '@/utils/framing'
 import { useUiStore } from '@/stores/ui'
+import NxrSceneLoader from '@/components/ui/NxrSceneLoader.vue'
 
 /**
  * The NEXRON LED sign, turning slowly in chrome.
@@ -35,6 +37,8 @@ const signRef = shallowRef<LedSign | null>(null)
 
 const uiStore = useUiStore()
 
+const { isModelLoading, isModelReady, markLoaded, markFailed } = useModelLoadState()
+
 const setupScene = (context: SceneContext): SceneHandle => {
   const { scene, camera, renderer } = context
 
@@ -45,7 +49,13 @@ const setupScene = (context: SceneContext): SceneHandle => {
 
   // The model lands well after the frame drawn on mount. With reduced motion
   // there is no loop to pick it up, so the scene is asked for one more frame.
-  const sign = createLedSign(renderer, { onLoaded: () => renderOnce() })
+  const sign = createLedSign(renderer, {
+    onLoaded: () => {
+      markLoaded()
+      renderOnce()
+    },
+    onLoadFailed: markFailed
+  })
   signRef.value = sign
   scene.add(sign.group)
 
@@ -126,6 +136,15 @@ const { renderOnce } = useThreeScene({ container, canvas, setup: setupScene, fov
     :class="isDragging ? 'cursor-grabbing' : 'cursor-grab'"
     v-on="dragHandlers"
   >
-    <canvas ref="canvas" class="h-full w-full" />
+    <canvas
+      ref="canvas"
+      class="h-full w-full transition-opacity duration-700"
+      :class="isModelReady ? 'opacity-100' : 'opacity-0'"
+    />
+
+    <!-- The bleed is symmetric, so the loader centres on the stage box too. -->
+    <Transition name="fade">
+      <NxrSceneLoader v-if="isModelLoading" />
+    </Transition>
   </div>
 </template>

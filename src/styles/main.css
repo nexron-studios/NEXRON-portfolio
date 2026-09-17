@@ -278,13 +278,25 @@
    *
    * `light-dark()` reads the used `color-scheme`, which `tokens.css` sets per
    * theme; without that it would silently resolve light in both.
+   *
+   * One deviation from upstream, and it is the same one `.nx-glass` makes:
+   * upstream puts `backdrop-filter: url(#displacementFilter)` on the element
+   * itself, and that is the *only* backdrop-filter it has. `backdrop-filter`
+   * is all-or-nothing, so wherever the SVG filter is not applied — Chrome on
+   * Android, Safari, Firefox — the whole declaration drops and the bar is a
+   * clear pane with the page's text running sharp underneath it. The blur
+   * therefore sits on `::before` and the refraction on `::after`, as two
+   * siblings under the content: the worst case is a plain frosted bar.
+   *
+   * Siblings, not element plus pseudo: an element with its own
+   * `backdrop-filter` becomes a backdrop root, and a pseudo-element inside it
+   * would sample only the element's own background, never the page.
    */
   .nx-liquid-effect {
     position: fixed;
     display: block;
     opacity: 1;
     border-radius: inherit;
-    backdrop-filter: url(#displacementFilter);
     background: light-dark(hsl(0 0% 100% / var(--frost, 0)), hsl(0 0% 0% / var(--frost, 0)));
     box-shadow:
       0 0 2px 1px
@@ -305,6 +317,40 @@
       0px 4px 16px rgba(17, 17, 26, 0.05) inset,
       0px 8px 24px rgba(17, 17, 26, 0.05) inset,
       0px 16px 56px rgba(17, 17, 26, 0.05) inset;
+  }
+
+  .nx-liquid-effect::before,
+  .nx-liquid-effect::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    /* Under the bar's own children: a backdrop-filter samples everything
+       painted beneath it, and at the default order that includes the nav
+       labels, which then blur and ripple along with the page. */
+    z-index: -1;
+  }
+
+  /* The frost: what every browser with backdrop-filter gets. Lighter than
+     `.nx-glass`, so the refraction on top still has edges to bend. */
+  .nx-liquid-effect::before {
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
+    backdrop-filter: blur(18px) saturate(1.6);
+  }
+
+  /* The refraction: Chromium desktop only, and nothing is lost where it is not. */
+  .nx-liquid-effect::after {
+    -webkit-backdrop-filter: url(#displacementFilter);
+    backdrop-filter: url(#displacementFilter);
+  }
+
+  /* Without any backdrop-filter the frost alone is near transparent, so the
+     bar takes a solid enough ground to keep its labels readable. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nx-liquid-effect {
+      background: color-mix(in oklab, var(--color-void) 88%, transparent);
+    }
   }
 
   .nx-liquid-slot {

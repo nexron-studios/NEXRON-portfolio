@@ -18,10 +18,18 @@ useTetrisField({ canvas, container })
 </script>
 
 <template>
+  <!--
+    `h-lvh` on top of `inset-0`: the explicit height wins over `bottom-0`, and
+    the *large* viewport height does not move when a phone's address bar
+    collapses on scroll. Keyed to `bottom-0` the box shrank and grew with the
+    bar, the field was re-laid out on every change, and the whole backdrop
+    switched to a fresh random board mid-scroll. Where `lvh` is unknown the
+    height falls back to `inset-0` as before.
+  -->
   <div
     ref="container"
     aria-hidden="true"
-    class="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+    class="pointer-events-none fixed inset-0 -z-10 h-lvh overflow-hidden"
   >
     <canvas ref="canvas" class="absolute inset-0 h-full w-full" />
 

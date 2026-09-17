@@ -3,6 +3,7 @@ import { ref, shallowRef, watch } from 'vue'
 import { useElementBounding, useWindowSize } from '@vueuse/core'
 import { useThreeScene, type SceneContext, type SceneHandle } from '@/composables/useThreeScene'
 import { usePointerTracker } from '@/composables/usePointerTracker'
+import { useModelLoadState } from '@/composables/useModelLoadState'
 import { createCharacterLighting, type CharacterLightingProps } from '@/three/lighting'
 import { createPeekCharacter, type PeekCharacter } from '@/three/peekCharacter'
 import { revealProgress } from '@/utils/reveal'
@@ -45,6 +46,10 @@ const lightingRef = shallowRef<CharacterLightingProps | null>(null)
 const { top, height } = useElementBounding(container)
 const { height: viewportHeight } = useWindowSize()
 
+// No placeholder here: the figure sits behind a panel and reserves no space of
+// its own. Only the fade is keyed to the model, so it rises rather than pops.
+const { isModelReady, markLoaded, markFailed } = useModelLoadState()
+
 const setupScene = (context: SceneContext): SceneHandle => {
   const { scene, camera, renderer } = context
 
@@ -61,8 +66,10 @@ const setupScene = (context: SceneContext): SceneHandle => {
     viewHeight: VIEW_HEIGHT,
     onLoaded: () => {
       figure.setProgress(currentProgress())
+      markLoaded()
       renderOnce()
-    }
+    },
+    onLoadFailed: markFailed
   })
   figureRef.value = figure
   scene.add(figure.group)
@@ -84,7 +91,7 @@ const setupScene = (context: SceneContext): SceneHandle => {
 
 const currentProgress = (): number => revealProgress(top.value, height.value, viewportHeight.value)
 
-const { isReady, renderOnce } = useThreeScene({
+const { renderOnce } = useThreeScene({
   container,
   canvas,
   setup: setupScene,
@@ -114,7 +121,7 @@ watch(
     <canvas
       ref="canvas"
       class="h-full w-full transition-opacity duration-700"
-      :class="isReady ? 'opacity-100' : 'opacity-0'"
+      :class="isModelReady ? 'opacity-100' : 'opacity-0'"
       aria-hidden="true"
     />
   </div>

@@ -86,9 +86,12 @@ export const useTetrisField = ({ canvas, container }: OptionsProps): void => {
     }
   }
 
+  const measureColumns = (): number => Math.max(4, Math.ceil(width.value / CELL_SIZE))
+  const measureRows = (): number => Math.max(4, Math.ceil(height.value / CELL_SIZE))
+
   const resetField = (): void => {
-    columns.value = Math.max(4, Math.ceil(width.value / CELL_SIZE))
-    rows.value = Math.max(4, Math.ceil(height.value / CELL_SIZE))
+    columns.value = measureColumns()
+    rows.value = measureRows()
     board.value = createBoard(columns.value, rows.value)
     settleAges = board.value.map((row) => row.map(() => 0))
 
@@ -307,6 +310,14 @@ export const useTetrisField = ({ canvas, container }: OptionsProps): void => {
     if (width.value === 0 || height.value === 0) return
 
     resizeCanvas()
+
+    // A resize that changes no cell count — a scrollbar appearing, a subpixel
+    // nudge — keeps the board. Resetting on it dealt a fresh random field for
+    // a change nobody could see.
+    const hasSameGrid =
+      board.value.length > 0 && columns.value === measureColumns() && rows.value === measureRows()
+    if (hasSameGrid) return
+
     resetField()
 
     if (uiStore.prefersReducedMotion) renderStatic()

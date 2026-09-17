@@ -102,6 +102,8 @@ export interface PeekCharacterOptionsProps {
   viewHeight: number
   /** Fired once the model is in the group — the scene may need a fresh frame. */
   onLoaded?: () => void
+  /** Fired when the file cannot be loaded, so a placeholder can stand down. */
+  onLoadFailed?: () => void
 }
 
 export interface PeekCharacter {
@@ -218,6 +220,7 @@ export const createPeekCharacter = (
     undefined,
     (error) => {
       console.warn('peekcharacter.load_failed', { url: MODEL_URL, error })
+      options.onLoadFailed?.()
     }
   )
 

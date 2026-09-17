@@ -137,6 +137,8 @@ const fitToTarget = (model: Object3D): void => {
 export interface LedSignOptionsProps {
   /** Fired once the model is in the group — the scene may need a fresh frame. */
   onLoaded?: () => void
+  /** Fired when the file cannot be loaded, so a placeholder can stand down. */
+  onLoadFailed?: () => void
 }
 
 export const createLedSign = (
@@ -214,6 +216,7 @@ export const createLedSign = (
     undefined,
     (error) => {
       console.warn('ledsign.load_failed', { url: MODEL_URL, error })
+      options.onLoadFailed?.()
     }
   )
 

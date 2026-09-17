@@ -11,6 +11,7 @@ import { projects } from '@/data/projects'
 import { pitSkills } from '@/data/skills'
 import { useLocalizedText } from '@/composables/useLocalizedText'
 import NxrDialog from '@/components/ui/NxrDialog.vue'
+import NxrSceneLoader from '@/components/ui/NxrSceneLoader.vue'
 import NxrTerminal from '@/components/ui/NxrTerminal.vue'
 
 const { t } = useI18n()
@@ -23,7 +24,12 @@ const terminalContext = {
   email: identity.email
 }
 
-const LedSign = defineAsyncComponent(() => import('@/components/three/LedSign.vue'))
+// The chunk and the model file arrive one after the other; the same loader
+// stands in for both, so the stage never sits empty and then fills in.
+const LedSign = defineAsyncComponent({
+  loader: () => import('@/components/three/LedSign.vue'),
+  loadingComponent: NxrSceneLoader
+})
 const PeekCharacter = defineAsyncComponent(() => import('@/components/three/PeekCharacter.vue'))
 
 // Same reasoning as the sign below, and the same gate: a decorative WebGL scene
@@ -170,8 +176,16 @@ const terminalLines: TerminalLineProps[] = [
           plate fitted by width, so most of a tall box was air above and below
           it, which read as a gap between the mark and its text. The canvas
           overhangs the box by `STAGE_BLEED`, so a tilt still has room.
+
+          Capped at `max-w-56` on a phone: the sign is fitted to the box's
+          width, and a full-width box put it edge to edge across the screen,
+          twice the size of the brand name it introduces. The box, not a fit
+          share in the scene, is the knob — the sign fills whatever it is given.
         -->
-        <div ref="markStage" class="relative mt-2 h-36 w-full sm:h-44 lg:h-52">
+        <div
+          ref="markStage"
+          class="relative mt-2 h-24 w-full max-w-56 sm:h-44 sm:max-w-none lg:h-52"
+        >
           <LedSign v-if="isMarkStageNear" />
           <span class="sr-only">{{ t('about.mark_alt') }}</span>
         </div>

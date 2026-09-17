@@ -9,11 +9,13 @@ import {
   type SceneHandle
 } from '@/composables/useThreeScene'
 import { useSceneDrag } from '@/composables/useSceneDrag'
+import { useModelLoadState } from '@/composables/useModelLoadState'
 import { createCharacterLighting, type CharacterLightingProps } from '@/three/lighting'
 import { createHeroCharacter, CHARACTER_RADIUS, type HeroCharacter } from '@/three/heroCharacter'
 import { createBloomComposer, type BloomComposerProps } from '@/three/bloom'
 import { STAGE_BLEED, bleedRadius, fitDistance } from '@/utils/framing'
 import { useUiStore } from '@/stores/ui'
+import NxrSceneLoader from '@/components/ui/NxrSceneLoader.vue'
 
 /**
  * Hero stage: Jonas at his setup, swaying on a fixed path and draggable.
@@ -74,6 +76,8 @@ const canvas = ref<HTMLCanvasElement | null>(null)
 const characterRef = shallowRef<HeroCharacter | null>(null)
 const lightingRef = shallowRef<CharacterLightingProps | null>(null)
 
+const { isModelLoading, isModelReady, markLoaded, markFailed } = useModelLoadState()
+
 const setupScene = (context: SceneContext): SceneHandle => {
   const { scene, camera, renderer, isCompact } = context
 
@@ -89,7 +93,13 @@ const setupScene = (context: SceneContext): SceneHandle => {
 
   // The model lands well after the frame drawn on mount. With reduced motion
   // there is no loop to pick it up, so the scene is asked for one more frame.
-  const character = createHeroCharacter(renderer, uiStore.theme, { onLoaded: () => renderOnce() })
+  const character = createHeroCharacter(renderer, uiStore.theme, {
+    onLoaded: () => {
+      markLoaded()
+      renderOnce()
+    },
+    onLoadFailed: markFailed
+  })
   characterRef.value = character
   scene.add(character.group)
 
@@ -167,7 +177,7 @@ watch(
   }
 )
 
-const { isReady, renderOnce } = useThreeScene({
+const { renderOnce } = useThreeScene({
   container,
   canvas,
   setup: setupScene,
@@ -186,12 +196,22 @@ const { isReady, renderOnce } = useThreeScene({
     :class="isDragging ? 'cursor-grabbing' : 'cursor-grab'"
     v-on="dragHandlers"
   >
+    <!--
+      Faded in on the *model*, not on the renderer: the canvas is transparent
+      and the model lands seconds after mount, so keyed to the renderer the
+      fade ran over an empty stage and the diorama still popped in.
+    -->
     <canvas
       ref="canvas"
       class="h-full w-full transition-opacity duration-700"
-      :class="isReady ? 'opacity-100' : 'opacity-0'"
+      :class="isModelReady ? 'opacity-100' : 'opacity-0'"
       role="img"
       :aria-label="t('hero.scene_alt')"
     />
+
+    <!-- The bleed is symmetric, so the loader centres on the stage box too. -->
+    <Transition name="fade">
+      <NxrSceneLoader v-if="isModelLoading" />
+    </Transition>
   </div>
 </template>
