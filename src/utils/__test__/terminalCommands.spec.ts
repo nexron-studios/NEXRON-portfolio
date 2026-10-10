@@ -12,7 +12,7 @@ import {
 const context: TerminalContextProps = {
   projectCount: 6,
   skillCount: 24,
-  email: 'nexronstudios@gmail.com'
+  email: 'jonas.glatz@nexron-studios.com'
 }
 
 describe('parseInput', () => {

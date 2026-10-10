@@ -9,7 +9,7 @@ Typeface is Geist Sans + Geist Mono, self-hosted through `@fontsource-variable`.
 
 ## What deviates here
 
-The web conventions are loaded globally from `~/.claude/rules/`. These things in
+The web conventions are loaded globally from `~/.claude/rules/brain/` (brain repo). These things in
 this repo differ from them on purpose:
 
 - **Generic components are `Nxr*` in `src/components/ui/`**, not `common/`.
@@ -24,7 +24,7 @@ this repo differ from them on purpose:
 - **The terminal in `AboutSection` is not translated.** A shell prompt is a
   shell prompt in either language.
 - **Stylesheets live in `src/styles/`, not `src/assets/`.** That includes the
-  copy of `Rules/assets/debug.css`, which sits at `src/styles/debug.css`
+  copy of `rules/assets/debug.css` from the brain, which sits at `src/styles/debug.css`
   alongside `tokens.css` and `transitions.css`.
 - **Icons come from `@respeak/lucide-motion-vue`, not `@lucide/vue`.** Same
   Lucide shapes, but animated on hover. It is the one place an animation
@@ -177,9 +177,9 @@ Separators are not prose and are exempt: the en dash in `<title>`
 (`Jonas Glatz – Developer …`), the `aria-hidden` dash in the header, and
 `EMPTY_MARK` in `src/utils/date.ts`. Code comments are not copy either.
 
-The rule is global (`Rules/frontend/i18n.md`, *Writing copy*); this is the
+The rule is global (`rules/frontend/i18n.md` in the brain, *Writing copy*); this is the
 pointer.
 
 Backend conventions (NestJS + TypeORM) are not part of this repo. Should a
-backend be added, link `Rules/backend/` per the vault README — do not unpack
+backend be added, its rules load by path from the brain (`backend/**`) — do not unpack
 `.claude/webdev-conventions.zip`, that archive is a superseded copy.
