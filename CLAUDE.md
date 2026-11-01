@@ -63,6 +63,15 @@ this repo differ from them on purpose:
   the hash it is already on. Inspira's Liquid Glass was removed on
   2026-11-01: its SVG refraction smeared text from outside the pill along the
   edge at every setting tried.
+- **Big type must fit a 320 px phone.** Every display size is a `clamp()`
+  whose `vw` term keeps the longest word on one line at 320 px (the project
+  titles: "Weltenbummler" is about 9.6 em) and, where the text sits in a
+  narrower column from `lg`, in that column too. A grid item holding such a
+  word gets `min-w-0` and `[overflow-wrap:anywhere]` as the last resort;
+  without `min-w-0` one wide title widened its whole grid track and pushed
+  the tagline beside it off the screen as well. Checked on 2026-11-02 by
+  scanning every route at 320, 360, 390, 768, 1024, 1280, 1440 and 1920 px
+  for text past the viewport edge.
 - **Monument lines are fitted by CSS, not script.** The hero `h1` is an
   inline-size container; each line is `font-size: calc(100cqi / --nx-ems)`,
   where `--nx-ems` is that line's width in ems, measured once in the browser

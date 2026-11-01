@@ -99,8 +99,13 @@ onBeforeUnmount(() => {
 
       <template v-if="project">
         <header class="mt-10 grid items-end gap-x-10 gap-y-8 lg:grid-cols-12">
+          <!-- The size follows the width so the longest name (Weltenbummler,
+               about 9.6 em) fits one line: a 320 px phone at full width, and
+               from lg its two-thirds column (6vw); `min-w-0` and
+               `anywhere` are the last resort for a longer one, breaking it
+               instead of pushing the page sideways. -->
           <h1
-            class="text-[clamp(2.75rem,6vw,6.5rem)] leading-[0.88] font-black tracking-[-0.055em] break-words uppercase lg:col-span-8"
+            class="min-w-0 text-[clamp(1.75rem,9vw,6.5rem)] leading-[0.88] font-black tracking-[-0.055em] [overflow-wrap:anywhere] uppercase lg:col-span-8 lg:text-[clamp(1.75rem,6vw,6.5rem)]"
           >
             {{ shortProjectName(project.name) }}
           </h1>
@@ -221,9 +226,11 @@ onBeforeUnmount(() => {
         >
           <span class="text-lead font-medium text-ink-muted">{{ t('projects.next') }}</span>
           <span
-            class="mt-2 flex items-center gap-4 text-[clamp(2.75rem,8vw,8rem)] leading-[0.9] font-black tracking-[-0.06em] uppercase group-hover:text-link"
+            class="mt-2 flex items-center gap-4 text-[clamp(1.75rem,8vw,8rem)] leading-[0.9] font-black tracking-[-0.06em] uppercase group-hover:text-link"
           >
-            {{ shortProjectName(nextProject.name) }}
+            <span class="min-w-0 [overflow-wrap:anywhere]">{{
+              shortProjectName(nextProject.name)
+            }}</span>
             <ArrowUpRight
               v-bind="iconMotion"
               triggerTarget="parent"
