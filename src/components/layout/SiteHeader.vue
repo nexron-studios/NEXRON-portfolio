@@ -157,7 +157,8 @@ const handleNav = (id: string, event: MouseEvent): void => {
       </div>
     </Transition>
 
-    <!-- Phone menu: a full sheet in the inverted colours. -->
+    <!-- Phone menu: a full sheet on the page's own dark ground, frosted so
+         the stars show faintly through. A white sheet glared on phones. -->
     <Transition name="fade">
       <div
         v-if="isMenuOpen"
@@ -165,7 +166,7 @@ const handleNav = (id: string, event: MouseEvent): void => {
         role="dialog"
         aria-modal="true"
         :aria-label="t('nav.menu')"
-        class="fixed inset-0 z-50 flex flex-col bg-ink px-gutter pt-5 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] text-void"
+        class="fixed inset-0 z-50 flex flex-col bg-void/92 px-gutter pt-5 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] text-ink backdrop-blur-xl"
       >
         <div class="flex items-center justify-between">
           <NxrLogo class="h-7 w-auto" />
@@ -193,14 +194,16 @@ const handleNav = (id: string, event: MouseEvent): void => {
           </ul>
         </nav>
 
-        <div class="mt-auto flex flex-wrap items-center gap-x-6 gap-y-4 text-base font-medium">
+        <div
+          class="mt-auto flex flex-wrap items-center gap-x-6 gap-y-4 text-base font-medium text-ink-muted"
+        >
           <a
             v-for="social in menuSocials"
             :key="social.id"
             :href="social.href"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-2"
+            class="flex items-center gap-2 transition-colors duration-(--nx-dur-fast) active:text-link"
           >
             <component
               :is="social.icon"
