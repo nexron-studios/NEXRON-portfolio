@@ -41,7 +41,7 @@ export const contactService = {
       endpoint,
       {
         access_key: accessKey,
-        subject: `nexron-studios.de — ${payload.name}`,
+        subject: `nexron-studios.com — ${payload.name}`,
         from_name: payload.name,
         ...payload
       },
