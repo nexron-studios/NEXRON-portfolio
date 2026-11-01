@@ -10,6 +10,7 @@ import { brandIcons, isMotionBrand } from '@/components/ui/brand'
 import { useIconMotion } from '@/composables/useIconMotion'
 import { useSectionNav } from '@/composables/useSectionNav'
 import NxrLogo from '@/components/ui/NxrLogo.vue'
+import StarField from '@/components/layout/StarField.vue'
 
 /**
  * The site's one header, in two states.
@@ -157,8 +158,10 @@ const handleNav = (id: string, event: MouseEvent): void => {
       </div>
     </Transition>
 
-    <!-- Phone menu: a full sheet on the page's own dark ground, frosted so
-         the stars show faintly through. A white sheet glared on phones. -->
+    <!-- Phone menu: a full sheet on the page's dark ground with its own
+         drifting star field (the sheet is a stacking context, so the
+         canvas's -z-10 lands above the ground and below the links). A white
+         sheet glared on phones. -->
     <Transition name="fade">
       <div
         v-if="isMenuOpen"
@@ -166,8 +169,9 @@ const handleNav = (id: string, event: MouseEvent): void => {
         role="dialog"
         aria-modal="true"
         :aria-label="t('nav.menu')"
-        class="fixed inset-0 z-50 flex flex-col bg-void/92 px-gutter pt-5 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] text-ink backdrop-blur-xl"
+        class="fixed inset-0 isolate z-50 flex flex-col bg-void px-gutter pt-5 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] text-ink"
       >
+        <StarField is-drifting />
         <div class="flex items-center justify-between">
           <NxrLogo class="h-7 w-auto" />
           <button
