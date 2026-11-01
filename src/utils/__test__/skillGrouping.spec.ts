@@ -4,13 +4,13 @@ import type { SkillDomain, SkillGroupProps } from '@/types/skill.type'
 
 const buildGroup = (id: string, domain: SkillDomain): SkillGroupProps => ({
   id,
-  label: { de: id, en: id },
+  label: id,
   domain,
   skills: [{ name: id, isCore: false }]
 })
 
 describe('groupByDomain', () => {
-  it('should order the sections like the chambers of the pit', () => {
+  it('should order the sections in the fixed order of the four areas', () => {
     const sections = groupByDomain([
       buildGroup('creative-tools', 'creative'),
       buildGroup('backend', 'infra'),

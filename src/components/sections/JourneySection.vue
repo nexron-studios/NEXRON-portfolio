@@ -1,126 +1,212 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useElementBounding, useWindowSize } from '@vueuse/core'
 import { experience } from '@/data/experience'
-import type { ExperienceProps } from '@/types/experience.type'
-import { useLocalizedText } from '@/composables/useLocalizedText'
+import { useUiStore } from '@/stores/ui'
 import { formatMonthRange } from '@/utils/date'
-import { hashSeed } from '@/utils/blueprint'
-
-const { t } = useI18n()
-const { localized } = useLocalizedText()
-
-const formatRange = (entry: ExperienceProps): string =>
-  formatMonthRange(entry.startedAt, entry.endedAt, entry.isOngoing, t('journey.ongoing'))
+import { pathProgress } from '@/utils/pathProgress'
+import chainArt from '@/assets/art/chain.png'
+import sparklesArt from '@/assets/art/sparkles.png'
+import DitherArt from '@/components/ui/DitherArt.vue'
 
 /**
- * Initials for the logo disc, so an entry never waits on a trademark file to
- * render. Two letters from the first two words, or the first two letters of a
- * single-word name.
+ * The path so far, newest first, as a connected timeline: one line runs
+ * through every station, each station is its round logo sitting on that
+ * line, and the line fills in violet as the reader scrolls down it, with a
+ * glowing tip. A station lights up (colour, full size, full text) the moment
+ * the fill reaches it, so the path is walked rather than listed. Stations
+ * still running carry a violet ring that breathes.
+ *
+ * Kept compact: six stations fit in about one and a half screens.
  */
-const monogram = (organization: string): string => {
-  const words = organization.split(/[\s-]+/).filter(Boolean)
+const { t } = useI18n()
+const uiStore = useUiStore()
 
-  if (words.length > 1) {
-    return words
-      .slice(0, 2)
-      .map((word) => word.charAt(0))
-      .join('')
-      .toUpperCase()
-  }
+const track = ref<HTMLElement | null>(null)
+const stations = ref<HTMLElement[]>([])
+const { top, height } = useElementBounding(track)
+const { height: viewportHeight } = useWindowSize()
 
-  return organization.slice(0, 2).toUpperCase()
+/** The fill follows a reading line a little above the middle of the screen. */
+const READING_LINE = 0.6
+/** Half a node: the line runs from the first node's centre to the last one's. */
+const NODE_HALF_PX = 24
+
+const progress = computed(() =>
+  uiStore.prefersReducedMotion
+    ? 1
+    : pathProgress(top.value, height.value, viewportHeight.value * READING_LINE)
+)
+
+const fillPx = computed(() => progress.value * Math.max(0, height.value - NODE_HALF_PX * 2))
+
+/** A station is lit once the fill has reached its node's centre. */
+const isLit = (index: number): boolean => {
+  if (progress.value >= 1) return true
+  const station = stations.value[index]
+  if (!station) return false
+  return station.offsetTop <= fillPx.value + 1
 }
 
-/** Ongoing entries glow; the rest sit quiet. Keeps the eye on "now". */
-const isLive = (entry: ExperienceProps): boolean => entry.isOngoing
-
-/** Deterministic tilt so the discs are not all identical, but never move. */
-const discRotation = (id: string): string => `${(hashSeed(id) % 9) - 4}deg`
+const monogram = (organization: string): string =>
+  organization
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase()
 </script>
 
 <template>
-  <ol class="relative flex flex-col">
-    <!-- Datum line the entries hang off, like a dimension on a drawing -->
-    <span
-      aria-hidden="true"
-      class="absolute top-6 bottom-6 left-6 w-px bg-line-strong md:left-[calc(9rem+1.5rem)]"
+  <section
+    id="journey"
+    aria-labelledby="journey-heading"
+    class="relative overflow-x-clip px-gutter pt-[clamp(3rem,9vw,8rem)]"
+  >
+    <!-- Two clusters of spiky stars in halftone, one beside the first
+         stations, one under the heading, so the sky of the page gathers
+         around the path. Desktop only: on a phone they would sit on the text. -->
+    <DitherArt
+      :src="sparklesArt"
+      :cell="3"
+      :strength="0.65"
+      is-pushable
+      class="pointer-events-none absolute top-[clamp(14rem,19vw,20rem)] right-[6%] hidden aspect-[224/310] w-[clamp(9rem,11vw,13rem)] [--color-ink:var(--color-ink-muted)] lg:block"
+    />
+    <DitherArt
+      :src="sparklesArt"
+      :cell="3"
+      :strength="0.65"
+      is-pushable
+      class="pointer-events-none absolute top-[clamp(36rem,36vw,44rem)] left-[18%] hidden aspect-[224/310] w-[clamp(8rem,10vw,11.5rem)] [--color-ink:var(--color-ink-muted)] lg:block"
     />
 
-    <li
-      v-for="entry in experience"
-      :key="entry.id"
-      class="group relative pb-12 pl-16 last:pb-0 md:pl-[calc(9rem+4rem)]"
-    >
-      <!-- Date column sits outside the line on desktop. -->
-      <span class="nx-meta absolute top-3 left-0 hidden w-32 text-right md:block">
-        {{ formatRange(entry) }}
-      </span>
-
-      <!--
-        The node is the organisation's logo when there is one, and its
-        monogram when there is not — the disc is the same size either way, so
-        adding a file later changes the picture, not the layout.
-      -->
-      <span
-        aria-hidden="true"
-        class="absolute top-0 left-0 flex size-12 items-center justify-center overflow-hidden rounded-full border transition-all duration-[--nx-dur] ease-[--ease-out-expo] group-hover:scale-110 md:left-[9rem]"
-        :class="[
-          isLive(entry)
-            ? 'border-dev text-dev shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-dev)_14%,transparent),0_0_22px_-2px_var(--color-dev)]'
-            : 'border-line-strong text-ink-faint group-hover:border-dev group-hover:text-dev',
-          // A transparent mark sits on white whatever the theme, or it vanishes
-          // into the panel colour. A full-bleed logo brings its own ground and
-          // needs none, and the monogram keeps the panel — it is drawn in ink.
-          entry.logo && !entry.isLogoFullBleed ? 'bg-white' : isLive(entry) ? 'bg-void' : 'bg-panel'
-        ]"
-        :style="{ transform: `rotate(${discRotation(entry.id)})` }"
-      >
-        <!--
-          A full-bleed logo is cropped to fill the disc; a transparent wordmark
-          is fitted inside it, because cropping one to a circle cuts the name
-          in half.
-        -->
-        <img
-          v-if="entry.logo"
-          :src="entry.logo"
-          alt=""
-          class="size-full"
-          :class="entry.isLogoFullBleed ? 'object-cover' : 'object-contain p-1.5'"
-          loading="lazy"
-          decoding="async"
-        />
-        <span v-else class="font-mono text-sm font-bold tracking-tight">
-          {{ monogram(entry.organization) }}
-        </span>
-      </span>
-
-      <p class="nx-meta md:hidden">{{ formatRange(entry) }}</p>
-
-      <div class="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 md:mt-2">
-        <h3 class="font-display text-xl font-bold tracking-tight">
-          <a
-            v-if="entry.href"
-            :href="entry.href"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="underline-offset-4 transition-colors hover:text-dev hover:underline"
+    <div class="grid gap-x-10 gap-y-10 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <div class="relative lg:sticky lg:top-28">
+          <h2
+            id="journey-heading"
+            v-reveal.wipe
+            class="relative text-[clamp(3rem,4.6vw,5rem)] leading-[0.86] font-black tracking-[-0.055em] uppercase"
           >
-            {{ entry.organization }}
-          </a>
-          <template v-else>{{ entry.organization }}</template>
-        </h3>
-        <span class="nx-meta">{{ t(`journey.kind_${entry.kind}`) }}</span>
-        <span v-if="entry.location" class="nx-meta">{{ entry.location }}</span>
+            {{ t('journey.title') }}<span class="text-violet">.</span>
+          </h2>
+          <!-- The thorn chain in halftone lies across the heading the way the
+               angels lie across the hero headline: it comes after the h2, so
+               its light grey dots print faintly over the white letters (a
+               lighter grey shows less on white and as much on black), and
+               before the intro, which stays on top and readable. It gives way
+               to the pointer like the angels, and a glint runs along it every
+               few seconds: a journey is stations linked one
+               to the next. It runs out past the column; the section clips it. -->
+          <DitherArt
+            :src="chainArt"
+            :cell="4.5"
+            :strength="0.75"
+            class="pointer-events-none absolute top-1/2 -left-6 aspect-[449/267] w-[min(115%,40rem)] -translate-y-1/2 [--color-ink:var(--color-ink-muted)] lg:w-[min(135%,42rem)]"
+          />
+          <p v-reveal="1" class="relative mt-6 max-w-[30ch] text-lead text-pretty text-ink">
+            {{ t('journey.intro') }}
+          </p>
+        </div>
       </div>
 
-      <p v-if="entry.role" class="mt-2 font-mono text-sm text-dev">{{ localized(entry.role) }}</p>
+      <ol ref="track" class="relative lg:col-span-8">
+        <!-- The line: a quiet track, the violet fill that walks down it, and
+             a glowing tip at the end of the fill. -->
+        <span
+          aria-hidden="true"
+          class="absolute top-6 bottom-6 left-[calc(1.5rem-1px)] w-0.5 bg-raised"
+        />
+        <span
+          aria-hidden="true"
+          class="absolute top-6 bottom-6 left-[calc(1.5rem-1px)] w-0.5 origin-top bg-violet"
+          :style="{ transform: `scaleY(${progress.toFixed(4)})` }"
+        />
+        <span
+          v-if="progress > 0 && progress < 1"
+          aria-hidden="true"
+          class="absolute top-6 left-6 z-20 -mt-1.25 -ml-1.25 size-2.5 rounded-full bg-violet shadow-[0_0_0.75rem_0.2rem_var(--color-violet)]"
+          :style="{ transform: `translateY(${fillPx.toFixed(1)}px)` }"
+        />
 
-      <p
-        v-if="localized(entry.summary)"
-        class="mt-3 max-w-2xl leading-relaxed text-pretty text-ink-muted"
-      >
-        {{ localized(entry.summary) }}
-      </p>
-    </li>
-  </ol>
+        <li
+          v-for="(entry, index) in experience"
+          :key="entry.id"
+          ref="stations"
+          v-reveal="index % 2"
+          class="relative grid grid-cols-[3rem_1fr] gap-x-5 pb-[clamp(1.75rem,3vw,2.5rem)] last:pb-0 sm:gap-x-7"
+        >
+          <!-- The node. Its ring in the page ground cuts the line, so the
+               line reads as running between stations, not through logos.
+               Unlit it waits small and grey; the fill pops it. -->
+          <span
+            class="relative z-10 flex size-12 items-center justify-center overflow-hidden rounded-full ring-[5px] ring-void transition-[scale,filter,box-shadow] duration-(--nx-dur-slow) ease-(--ease-out-expo)"
+            :class="[
+              entry.logo && !entry.isLogoFullBleed ? 'bg-white' : 'bg-raised',
+              isLit(index)
+                ? 'scale-100 shadow-[0_0_1.5rem_-0.25rem_var(--color-violet)]'
+                : 'scale-80 brightness-60 grayscale'
+            ]"
+          >
+            <img
+              v-if="entry.logo"
+              :src="entry.logo"
+              alt=""
+              loading="lazy"
+              class="size-full"
+              :class="entry.isLogoFullBleed ? 'object-cover' : 'object-contain p-2'"
+            />
+            <span v-else aria-hidden="true" class="text-base font-black">
+              {{ monogram(entry.organization) }}
+            </span>
+          </span>
+          <span
+            v-if="entry.isOngoing"
+            aria-hidden="true"
+            class="nx-node-pulse absolute top-0 left-0 z-20 size-12 rounded-full ring-2 ring-violet"
+          />
+
+          <div
+            class="transition-[opacity,translate] duration-(--nx-dur-slow) ease-(--ease-out-expo)"
+            :class="isLit(index) ? 'opacity-100' : 'translate-x-2 opacity-45'"
+          >
+            <p class="text-sm font-semibold text-ink-faint tabular-nums">
+              {{
+                formatMonthRange(
+                  entry.startedAt,
+                  entry.endedAt,
+                  entry.isOngoing,
+                  t('journey.ongoing')
+                )
+              }}
+              · {{ t(`journey.kind_${entry.kind}`)
+              }}<template v-if="entry.location"> · {{ entry.location }}</template>
+            </p>
+            <h3
+              class="mt-1 text-[clamp(1.375rem,2vw,1.875rem)] leading-[1.05] font-black tracking-[-0.035em]"
+            >
+              <a
+                v-if="entry.href"
+                :href="entry.href"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="transition-colors duration-(--nx-dur-fast) hover:text-link"
+              >
+                {{ entry.organization }}
+              </a>
+              <template v-else>{{ entry.organization }}</template>
+            </h3>
+            <p v-if="entry.role" class="mt-1 text-base font-semibold text-violet">
+              {{ entry.role }}
+            </p>
+            <p class="mt-2 max-w-[62ch] text-base leading-relaxed text-pretty text-ink-muted">
+              {{ entry.summary }}
+            </p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
 </template>

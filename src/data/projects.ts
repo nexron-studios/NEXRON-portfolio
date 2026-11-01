@@ -1,18 +1,23 @@
 import type { ProjectProps } from '@/types/project.type'
-import mellowDashboard from '@/assets/projects/mellow/dashboard.png'
-import mellowPomodoro from '@/assets/projects/mellow/pomodore.png'
-import mellowSettings from '@/assets/projects/mellow/settings.png'
-import mellowTodos from '@/assets/projects/mellow/todos.png'
-import mimiDashboard from '@/assets/projects/mimi/dashboard.png'
-import mimiHistory from '@/assets/projects/mimi/history.png'
-import mimiSettings from '@/assets/projects/mimi/settings.png'
-import tokenscopeDashboard from '@/assets/projects/tokenscope/dashboard.png'
-import tokenscopeSettings from '@/assets/projects/tokenscope/einstellungen.png'
-import tokenscopeUsage from '@/assets/projects/tokenscope/verbrauch.png'
+import batteryDark from '@/assets/projects/battery/hero-dark.png'
+import batteryLight from '@/assets/projects/battery/hero-light.png'
+import batteryLow from '@/assets/projects/battery/low-dark.png'
+import batterySetup from '@/assets/projects/battery/setup-dark.png'
+import mellowDashboard from '@/assets/projects/mellow/dashboard.webp'
+import mellowPomodoro from '@/assets/projects/mellow/pomodore.webp'
+import mellowSettings from '@/assets/projects/mellow/settings.webp'
+import mellowTodos from '@/assets/projects/mellow/todos.webp'
+import tokenscopeDashboard from '@/assets/projects/tokenscope/dashboard.webp'
+import tokenscopeSettings from '@/assets/projects/tokenscope/einstellungen.webp'
+import tokenscopeUsage from '@/assets/projects/tokenscope/verbrauch.webp'
 import trackiDashboard from '@/assets/projects/tracki/dashboard.png'
 import trackiCalculator from '@/assets/projects/tracki/fitnesscalculater.png'
 import trackiSettings from '@/assets/projects/tracki/settings.png'
 import trackiWorkout from '@/assets/projects/tracki/workout.png'
+import worldFeedback from '@/assets/projects/worldgame/feedback.webp'
+import worldMenu from '@/assets/projects/worldgame/menu.webp'
+import worldQuiz from '@/assets/projects/worldgame/quiz.webp'
+import worldResult from '@/assets/projects/worldgame/result.webp'
 
 const GITHUB_OWNER = 'https://github.com/nexron-studios'
 
@@ -26,43 +31,67 @@ const GITHUB_OWNER = 'https://github.com/nexron-studios'
  */
 export const projects: ProjectProps[] = [
   {
-    slug: 'tracki',
-    name: 'NEXRON-Tracki',
-    tagline: {
-      de: 'Fitness-Tracking als Full-Stack-Anwendung, vorbereitet als PWA.',
-      en: 'Fitness tracking as a full-stack application, prepared as a PWA.'
-    },
-    categories: ['fullstack', 'web'],
-    stack: ['Vue 3', 'Tailwind CSS', 'shadcn-vue', 'vue-router', 'NestJS', 'PostgreSQL', 'Docker'],
-    year: 2025,
+    slug: 'weltenbummler',
+    name: 'Weltenbummler',
+    tagline: 'Learning geography on a 3D globe: German states, countries, continents and seas.',
+    categories: ['web', '3d'],
+    stack: ['Vue 3', 'TypeScript', 'globe.gl', 'Three.js', 'Tailwind CSS', 'Pinia', 'Vite'],
+    year: 2026,
     visibility: 'private',
     repoUrl: null,
     liveUrl: null,
     status: 'shipped',
     shots: [
-      { src: trackiDashboard, label: { de: 'Übersicht', en: 'Dashboard' } },
-      { src: trackiWorkout, label: { de: 'Workout', en: 'Workout' } },
-      { src: trackiCalculator, label: { de: 'Fitness-Rechner', en: 'Fitness calculator' } },
-      { src: trackiSettings, label: { de: 'Einstellungen', en: 'Settings' } }
+      { src: worldMenu, label: 'Start screen with the globe' },
+      { src: worldQuiz, label: 'Quiz: what is lit up?' },
+      {
+        src: worldFeedback,
+        label: 'Feedback after an answer'
+      },
+      { src: worldResult, label: 'Result of a round' }
     ],
-    shotOrientation: 'portrait',
+    shotOrientation: 'landscape',
     detail: {
-      overview: {
-        de: 'Moderne Fitness-Tracking-Web-App mit Authentifizierung und CRUD-Funktionen, als Progressive Web App für Mobil und Desktop vorbereitet.',
-        en: 'Modern fitness tracking web app with authentication and CRUD features, prepared as a Progressive Web App for mobile and desktop.'
-      },
-      problem: {
-        de: 'Das größte der Projekte. Hier ging es darum, Frontend, API und Datenbank sauber getrennt und trotzdem als ein Produkt zu betreiben.',
-        en: 'The largest of the projects. The point here was keeping frontend, API and database cleanly separated while still running them as one product.'
-      },
-      idea: {
-        de: 'Eine vollständige Full-Stack-Anwendung von der Datenbank bis zur installierbaren App durchziehen.',
-        en: 'Carry a complete full-stack application all the way from database to installable app.'
-      },
-      implementation: {
-        de: 'Vue 3 mit Tailwind, shadcn-vue und vue-router im Frontend; NestJS mit PostgreSQL im Backend; Docker für den Betrieb.',
-        en: 'Vue 3 with Tailwind, shadcn-vue and vue-router on the frontend; NestJS with PostgreSQL on the backend; Docker for running it.'
-      },
+      overview:
+        'A geography learning game. You turn a 3D globe and learn it country by country, sea by sea: the 16 German states, every country in Europe and the world, the continents and the oceans.',
+      problem:
+        'Map quizzes on the web are either flat and dull or full of ads. And none of them remembers what you already know.',
+      idea: 'Four ways to play on a real globe: find, choose, type and explore freely. Progress stays on your own machine as a file.',
+      implementation:
+        'Vue 3 and TypeScript, the globe with globe.gl on Three.js. Map data comes from Natural Earth and a script builds it into compact JSON files. Flags and the state coats of arms are openly licensed.',
+      challenges: [],
+      learnings: []
+    }
+  },
+  {
+    slug: 'battery-widget',
+    name: 'Battery Widget',
+    tagline: 'The exact battery level of AirPods and iPhone as a small widget on Windows.',
+    categories: ['desktop', 'tools'],
+    stack: ['Tauri', 'Rust', 'Vue 3', 'TypeScript', 'Tailwind CSS', 'Bluetooth LE'],
+    year: 2026,
+    visibility: 'public',
+    repoUrl: `${GITHUB_OWNER}/NEXRON-airpods-battery-windows`,
+    liveUrl: `${GITHUB_OWNER}/NEXRON-airpods-battery-windows/releases/latest`,
+    status: 'shipped',
+    shots: [
+      { src: batteryLight, label: 'Widget in light mode' },
+      { src: batteryDark, label: 'Widget in dark mode' },
+      { src: batteryLow, label: 'Low battery warning' },
+      {
+        src: batterySetup,
+        label: 'Before the keys are set up'
+      }
+    ],
+    shotOrientation: 'landscape',
+    detail: {
+      overview:
+        'A small always-on-top widget that shows the exact battery level of the left and right AirPod, the case and the iPhone. Like the battery widget on iOS, only on Windows 10 and 11.',
+      problem:
+        'Windows does not know the battery level of AirPods at all. Current firmware no longer sends it in plain text, so other tools only show 0 % or rough steps of ten.',
+      idea: 'The real values are still in the Bluetooth advert, encrypted with a key from your own Apple account. With that key they can be decrypted locally.',
+      implementation:
+        'Tauri 2 with a Rust core: a BLE scanner on the Windows API, AES decryption of the AirPods packets, and every Bluetooth device whose battery Windows already knows. Vue 3 draws the rings and the rendered 3D models. No network access, the keys never leave the PC.',
       challenges: [],
       learnings: []
     }
@@ -70,10 +99,7 @@ export const projects: ProjectProps[] = [
   {
     slug: 'tokenscope',
     name: 'NEXRON-TokenScope',
-    tagline: {
-      de: 'Lokales Dashboard für die verbleibenden Kontingente von Claude Code und Codex.',
-      en: 'Local dashboard for the remaining Claude Code and Codex usage quotas.'
-    },
+    tagline: 'Local dashboard for the remaining Claude Code and Codex usage quotas.',
     categories: ['tools', 'fullstack', 'desktop'],
     stack: ['Vue 3', 'TypeScript', 'FastAPI', 'Python', 'Tauri', 'Rust', 'SQLite'],
     year: 2026,
@@ -82,28 +108,19 @@ export const projects: ProjectProps[] = [
     liveUrl: null,
     status: 'shipped',
     shots: [
-      { src: tokenscopeDashboard, label: { de: 'Übersicht', en: 'Dashboard' } },
-      { src: tokenscopeUsage, label: { de: 'Verbrauch', en: 'Usage' } },
-      { src: tokenscopeSettings, label: { de: 'Einstellungen', en: 'Settings' } }
+      { src: tokenscopeDashboard, label: 'Dashboard' },
+      { src: tokenscopeUsage, label: 'Usage' },
+      { src: tokenscopeSettings, label: 'Settings' }
     ],
     shotOrientation: 'landscape',
     detail: {
-      overview: {
-        de: 'Ein kleiner FastAPI-Dienst liest die Nutzungsdaten, die Claude Code und Codex ohnehin lokal auf der Platte halten, normalisiert sie und liefert sie über eine eigene API aus. Das Vue-Frontend spricht ausschließlich mit diesem Backend, nie direkt mit einem Anbieter und nie mit einem Token.',
-        en: 'A small FastAPI service reads the usage data that Claude Code and Codex already keep on disk, normalises it and serves it through its own API. The Vue frontend only ever talks to that backend, never directly to a provider and never to a token.'
-      },
-      problem: {
-        de: 'Beide CLIs verbrauchen Kontingent, aber keine zeigt verlässlich, wie viel noch übrig ist und wann zurückgesetzt wird.',
-        en: 'Both CLIs consume quota, but neither reliably shows how much is left or when it resets.'
-      },
-      idea: {
-        de: 'Ein dauerhaft sichtbares Kiosk-Display statt eines weiteren Browser-Tabs. Zielgerät ist ein Raspberry Pi mit 7"-Touchdisplay bei 1024 × 600, auf dem Desktop läuft es genauso.',
-        en: 'A permanently visible kiosk display instead of yet another browser tab. The target device is a Raspberry Pi with a 7" touchscreen at 1024 × 600, and it runs on a desktop just as well.'
-      },
-      implementation: {
-        de: 'Poller, Cache und SQLite im FastAPI-Backend, das ausschließlich auf 127.0.0.1 lauscht. Die Daten stammen aus zwei Quellen: den OAuth-Usage-Endpunkten für Restkontingent und Reset-Zeitpunkt sowie den lokalen JSONL-Logs beider CLIs für den Verbrauch je Projekt und Modell. Fällt der Endpunkt aus, dienen frische rate_limits aus den Codex-Rollout-Logs als Rückfallebene. Tauri verpackt das Ganze als Desktop-App.',
-        en: 'Poller, cache and SQLite in the FastAPI backend, which listens on 127.0.0.1 only. Data comes from two sources: the OAuth usage endpoints for remaining quota and reset time, plus both CLIs’ local JSONL logs for per-project and per-model consumption. If the endpoint fails, fresh rate_limits from the Codex rollout logs act as a fallback. Tauri wraps it all as a desktop app.'
-      },
+      overview:
+        'A small FastAPI service reads the usage data that Claude Code and Codex already keep on disk, normalises it and serves it through its own API. The Vue frontend only ever talks to that backend, never directly to a provider and never to a token.',
+      problem:
+        'Both CLIs consume quota, but neither reliably shows how much is left or when it resets.',
+      idea: 'A permanently visible kiosk display instead of yet another browser tab. The target device is a Raspberry Pi with a 7" touchscreen at 1024 × 600, and it runs on a desktop just as well.',
+      implementation:
+        'Poller, cache and SQLite in the FastAPI backend, which listens on 127.0.0.1 only. Data comes from two sources: the OAuth usage endpoints for remaining quota and reset time, plus both CLIs’ local JSONL logs for per-project and per-model consumption. If the endpoint fails, fresh rate_limits from the Codex rollout logs act as a fallback. Tauri wraps it all as a desktop app.',
       challenges: [],
       learnings: []
     }
@@ -111,10 +128,7 @@ export const projects: ProjectProps[] = [
   {
     slug: 'mellow',
     name: 'NEXRON-mellow',
-    tagline: {
-      de: 'Schlanker lokaler Zeiterfasser für Aufgaben, Sitzungen und Notizen.',
-      en: 'Lightweight local time tracker for tasks, sessions and notes.'
-    },
+    tagline: 'Lightweight local time tracker for tasks, sessions and notes.',
     categories: ['desktop', 'tools'],
     stack: ['Tauri', 'Vue 3', 'TypeScript', 'Rust', 'Tailwind CSS', 'shadcn-vue', 'Pinia'],
     year: 2026,
@@ -123,70 +137,50 @@ export const projects: ProjectProps[] = [
     liveUrl: null,
     status: 'shipped',
     shots: [
-      { src: mellowDashboard, label: { de: 'Übersicht', en: 'Dashboard' } },
-      { src: mellowTodos, label: { de: 'Aufgaben', en: 'Tasks' } },
-      { src: mellowPomodoro, label: { de: 'Pomodoro-Timer', en: 'Pomodoro timer' } },
-      { src: mellowSettings, label: { de: 'Einstellungen', en: 'Settings' } }
+      { src: mellowDashboard, label: 'Dashboard' },
+      { src: mellowTodos, label: 'Tasks' },
+      { src: mellowPomodoro, label: 'Pomodoro timer' },
+      { src: mellowSettings, label: 'Settings' }
     ],
     shotOrientation: 'landscape',
     detail: {
-      overview: {
-        de: 'Aufgaben verwalten, Arbeitssitzungen tracken, Zeiten manuell nachtragen und Notizen mit Markdown schreiben. Alle Daten bleiben lokal, die App ist mehrsprachig und zeigt aktive wie abgeschlossene Aufgaben übersichtlich getrennt.',
-        en: 'Manage tasks, track work sessions, add manual time entries and write notes in Markdown. All data stays local, the app is multilingual and keeps active and completed tasks clearly separated.'
-      },
-      problem: {
-        de: 'Zeiterfassung, die in der Cloud lebt und ein Abo braucht, ist für die eigene Arbeit deutlich zu viel Apparat.',
-        en: 'Time tracking that lives in the cloud and needs a subscription is far too much machinery for tracking your own work.'
-      },
-      idea: {
-        de: 'Ein Werkzeug für den eigenen Gebrauch bauen: schnell, offline, ohne Konto.',
-        en: 'Build a tool for personal use: fast, offline, no account.'
-      },
-      implementation: {
-        de: 'Tauri-Shell mit Rust-Kern, davor Vue 3 mit Pinia-Stores je Domäne (Tasks, Timer, Pomodoro, Settings) und shadcn-vue als UI-Basis. Enthält einen Pomodoro-Timer mit eigener Statistik sowie Markdown-Editor und -Vorschau.',
-        en: 'Tauri shell with a Rust core, fronted by Vue 3 with one Pinia store per domain (tasks, timer, pomodoro, settings) and shadcn-vue as the UI base. Includes a Pomodoro timer with its own statistics plus a Markdown editor and preview.'
-      },
+      overview:
+        'Manage tasks, track work sessions, add manual time entries and write notes in Markdown. All data stays local, the app is multilingual and keeps active and completed tasks clearly separated.',
+      problem:
+        'Time tracking that lives in the cloud and needs a subscription is far too much machinery for tracking your own work.',
+      idea: 'Build a tool for personal use: fast, offline, no account.',
+      implementation:
+        'Tauri shell with a Rust core, fronted by Vue 3 with one Pinia store per domain (tasks, timer, pomodoro, settings) and shadcn-vue as the UI base. Includes a Pomodoro timer with its own statistics plus a Markdown editor and preview.',
       challenges: [],
       learnings: []
     }
   },
   {
-    slug: 'mimi',
-    name: 'NEXRON-mimi',
-    tagline: {
-      de: 'Kleine Desktop-App zum schnellen Transkribieren, Speichern und Kopieren von Text.',
-      en: 'Small desktop app for quickly transcribing, saving and copying text.'
-    },
-    categories: ['desktop', 'ai', 'tools'],
-    stack: ['Tauri', 'Rust', 'Vue 3', 'TypeScript', 'Tailwind CSS'],
-    year: 2026,
-    visibility: 'public',
-    repoUrl: `${GITHUB_OWNER}/NEXRON-mimi`,
+    slug: 'tracki',
+    name: 'NEXRON-Tracki',
+    tagline: 'Fitness tracking as a full-stack application, prepared as a PWA.',
+    categories: ['fullstack', 'web'],
+    stack: ['Vue 3', 'Tailwind CSS', 'shadcn-vue', 'vue-router', 'NestJS', 'PostgreSQL', 'Docker'],
+    year: 2025,
+    visibility: 'private',
+    repoUrl: null,
     liveUrl: null,
     status: 'shipped',
     shots: [
-      { src: mimiDashboard, label: { de: 'Aufnahme', en: 'Recording' } },
-      { src: mimiHistory, label: { de: 'Verlauf', en: 'History' } },
-      { src: mimiSettings, label: { de: 'Einstellungen', en: 'Settings' } }
+      { src: trackiDashboard, label: 'Dashboard' },
+      { src: trackiWorkout, label: 'Workout' },
+      { src: trackiCalculator, label: 'Fitness calculator' },
+      { src: trackiSettings, label: 'Settings' }
     ],
     shotOrientation: 'portrait',
     detail: {
-      overview: {
-        de: 'Sprache aufnehmen, transkribieren, Text speichern und kopieren. Mehr macht Mimi bewusst nicht.',
-        en: 'Record speech, transcribe it, save and copy the text. Mimi deliberately does nothing more.'
-      },
-      problem: {
-        de: 'Für einen kurzen Gedanken eine große Transkriptions-Suite zu öffnen, dauert länger als das Tippen.',
-        en: 'Opening a large transcription suite for one short thought takes longer than typing it.'
-      },
-      idea: {
-        de: 'Einfachheit und Geschwindigkeit als eigentliches Feature.',
-        en: 'Simplicity and speed as the actual feature.'
-      },
-      implementation: {
-        de: 'Transkription und Persistenz liegen in Rust (transcribe.rs, db.rs), die Oberfläche ist ein schlankes Vue-3-Frontend mit Aufnahme-, Verlaufs- und Einstellungsansicht sowie einem Pegelmesser während der Aufnahme.',
-        en: 'Transcription and persistence live in Rust (transcribe.rs, db.rs); the surface is a lean Vue 3 frontend with record, history and settings views plus a live level meter while recording.'
-      },
+      overview:
+        'Modern fitness tracking web app with authentication and CRUD features, prepared as a Progressive Web App for mobile and desktop.',
+      problem:
+        'The largest of the projects. The point here was keeping frontend, API and database cleanly separated while still running them as one product.',
+      idea: 'Carry a complete full-stack application all the way from database to installable app.',
+      implementation:
+        'Vue 3 with Tailwind, shadcn-vue and vue-router on the frontend; NestJS with PostgreSQL on the backend; Docker for running it.',
       challenges: [],
       learnings: []
     }

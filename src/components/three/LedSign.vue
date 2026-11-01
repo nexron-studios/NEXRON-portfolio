@@ -4,6 +4,7 @@ import { Vector3 } from 'three'
 import { useThreeScene, type SceneContext, type SceneHandle } from '@/composables/useThreeScene'
 import { useSceneDrag } from '@/composables/useSceneDrag'
 import { useModelLoadState } from '@/composables/useModelLoadState'
+import { createHalftoneComposer } from '@/three/halftone'
 import { createSceneLighting } from '@/three/lighting'
 import { createLedSign, SIGN_HALF_HEIGHT, SIGN_HALF_WIDTH, type LedSign } from '@/three/ledSign'
 import { STAGE_BLEED, bleedRadius, fitBoxDistance } from '@/utils/framing'
@@ -11,7 +12,9 @@ import { useUiStore } from '@/stores/ui'
 import NxrSceneLoader from '@/components/ui/NxrSceneLoader.vue'
 
 /**
- * The NEXRON LED sign, turning slowly in chrome.
+ * The NEXRON LED sign, turning slowly in chrome, set as live halftone: the
+ * frame goes through `createHalftoneComposer`, so the dots swim over the
+ * plate as it turns, in the print style of the rest of the page.
  *
  * The model file is four megabytes, so the component is mounted only once the
  * block is near the viewport — that gate sits in `AboutSection`, since a
@@ -46,6 +49,7 @@ const setupScene = (context: SceneContext): SceneHandle => {
   camera.lookAt(0, 0, 0)
 
   scene.add(createSceneLighting())
+  const halftone = createHalftoneComposer(renderer, scene, camera)
 
   // The model lands well after the frame drawn on mount. With reduced motion
   // there is no loop to pick it up, so the scene is asked for one more frame.
@@ -80,7 +84,7 @@ const setupScene = (context: SceneContext): SceneHandle => {
       )
     }
     camera.position.z = distance
-    renderer.render(scene, camera)
+    halftone.render()
   }
 
   // `useThreeScene` renders exactly one frame and starts no loop under reduced
@@ -101,10 +105,12 @@ const setupScene = (context: SceneContext): SceneHandle => {
     const aspect = width / Math.max(height, 1)
     camera.position.z = fitCamera(aspect)
     camera.updateProjectionMatrix()
+    halftone.setSize(width, height)
   }
 
   const dispose = (): void => {
     sign.dispose()
+    halftone.dispose()
     signRef.value = null
   }
 

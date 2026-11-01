@@ -1,55 +1,41 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, watchEffect } from 'vue'
+import { onBeforeUnmount, onMounted, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Earth } from '@respeak/lucide-motion-vue'
+import { RouterLink } from 'vue-router'
+import { ArrowRight, ArrowUpRight } from '@respeak/lucide-motion-vue'
+import { projects } from '@/data/projects'
 import { identity, socials } from '@/data/socials'
 import { brandIcons, isMotionBrand } from '@/components/ui/brand'
-import { useLocalizedText } from '@/composables/useLocalizedText'
-import { useUiStore } from '@/stores/ui'
-import TetrisBackdrop from '@/components/layout/TetrisBackdrop.vue'
-import ThemeSwitcher from '@/components/layout/ThemeSwitcher.vue'
-import LanguageSwitcher from '@/components/layout/LanguageSwitcher.vue'
-import NxrLinkCard from '@/components/ui/NxrLinkCard.vue'
+import { useIconMotion } from '@/composables/useIconMotion'
+import { shortProjectName } from '@/utils/projectName'
 import NxrLogo from '@/components/ui/NxrLogo.vue'
+import ProjectMedia from '@/components/ui/ProjectMedia.vue'
 
 /**
- * The page behind the NFC tag: personal links and socials, as one column of
- * thumb-sized rows.
+ * The page behind the NFC tag, built for the ten seconds after someone taps
+ * a phone against it: who this is, the two things they most likely want
+ * (the website, a message), every account, then the newest work.
  *
- * Chrome-free on purpose — `App.vue` carries no header or footer, so a view
- * simply does not import them (`ProjectDetailView` does the same). That also
- * means the theme and language switchers have to be placed here, since their
- * usual home is the header.
- *
- * No WebGL. The backdrop is the 2D canvas the rest of the site uses, because
- * this page is opened from a tag on mobile data and a Three.js chunk is the
- * wrong thing to make someone wait for.
+ * Opened on a phone on mobile data, so it carries nothing heavy (three small
+ * screenshots, lazy); and it sets its own `noindex`, because the route is
+ * unlisted and a crawler has to agree.
  */
 const { t } = useI18n()
-const { localized } = useLocalizedText()
-const uiStore = useUiStore()
+const { iconMotion } = useIconMotion()
 
-/**
- * Stagger between rows. Zero under reduced motion: `main.css` collapses the
- * *duration* of every transition but not its delay, so a delay left in place
- * would hold each row invisible and then pop it in.
- */
-const STAGGER_MS = 40
+const LATEST_PROJECTS = 3
 
-const staggerDelay = (index: number): string =>
-  uiStore.prefersReducedMotion ? '0ms' : `${index * STAGGER_MS}ms`
+const latestProjects = projects.slice(0, LATEST_PROJECTS)
 
-const socialRows = computed(() =>
-  socials.map((social) => ({
-    key: social.id,
+const mail = socials.find((social) => social.brand === 'mail')
+
+const socialTiles = socials
+  .filter((social) => social.brand !== 'mail')
+  .map((social) => ({
+    ...social,
     icon: brandIcons[social.brand],
-    isMotionIcon: isMotionBrand(social.brand),
-    label: social.label,
-    handle: social.handle ?? '',
-    note: localized(social.note),
-    href: social.href
+    isMotionIcon: isMotionBrand(social.brand)
   }))
-)
 
 const BASE_TITLE = 'Jonas Glatz – Developer, AI & Design'
 
@@ -57,11 +43,6 @@ watchEffect(() => {
   document.title = `${t('links.title')} – ${identity.name}`
 })
 
-/**
- * The route is unlisted, which only holds if a crawler agrees. `index.html`
- * carries every meta tag statically and there is no head management here, so
- * the tag is hung and removed by hand for the lifetime of this view.
- */
 let robotsMeta: HTMLMetaElement | null = null
 
 onMounted(() => {
@@ -79,67 +60,105 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <!--
-    `pb` carries the phone's home-bar inset: the last row is a link, and on iOS
-    the gesture area would otherwise sit on top of it.
-  -->
-  <div
-    class="relative min-h-svh pb-[calc(3rem+env(safe-area-inset-bottom,0px))]"
-    :style="{ paddingTop: 'calc(3rem + env(safe-area-inset-top, 0px))' }"
+  <!-- The padding carries the phone's safe areas: the last row is a link,
+       and on iOS the home bar would otherwise sit on it. -->
+  <main
+    class="mx-auto flex min-h-svh w-full max-w-[34rem] flex-col px-gutter pt-[calc(2rem+env(safe-area-inset-top,0px))] pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))]"
   >
-    <TetrisBackdrop />
+    <NxrLogo :title="identity.brand" class="h-7 w-auto self-center" />
 
-    <div class="relative z-10 mx-auto w-full max-w-[34rem] px-gutter">
-      <header class="text-center">
-        <NxrLogo :title="identity.brand" class="mx-auto h-7 w-auto text-ink" />
+    <h1
+      v-reveal.wipe
+      class="mt-12 text-center text-[clamp(3rem,15vw,4.75rem)] leading-[0.88] font-black tracking-[-0.06em] uppercase"
+    >
+      {{ identity.name }}<span class="nx-cursor text-violet">.</span>
+    </h1>
+    <p v-reveal="1" class="mt-4 text-center text-lead font-semibold text-violet">
+      {{ identity.role }}
+    </p>
+    <p
+      v-reveal="2"
+      class="mx-auto mt-3 max-w-[36ch] text-center text-base text-balance text-ink-muted"
+    >
+      {{ t('links.intro') }}
+    </p>
 
-        <h1 class="mt-8 font-display text-3xl font-bold text-balance text-ink">
-          {{ identity.name }}
-        </h1>
-
-        <p class="mt-3 font-mono text-sm tracking-wide text-dev">
-          {{ localized(identity.role) }}
-        </p>
-
-        <p class="nx-meta mt-4">{{ identity.location }}</p>
-      </header>
-
-      <section aria-labelledby="links-socials" class="mt-12">
-        <h2 id="links-socials" class="nx-meta border-b border-line pb-3 text-dev">
-          {{ t('links.title') }}
-        </h2>
-
-        <TransitionGroup tag="ul" name="rise" appear class="mt-4 grid grid-cols-1 gap-3">
-          <li key="website">
-            <NxrLinkCard
-              :icon="Earth"
-              is-motion-icon
-              :label="t('links.website')"
-              :note="t('links.website_note')"
-              :to="{ name: 'home' }"
-            />
-          </li>
-          <li
-            v-for="(row, index) in socialRows"
-            :key="row.key"
-            :style="{ transitionDelay: staggerDelay(index) }"
-          >
-            <NxrLinkCard
-              :icon="row.icon"
-              :is-motion-icon="row.isMotionIcon"
-              :label="row.label"
-              :handle="row.handle"
-              :note="row.note"
-              :href="row.href"
-            />
-          </li>
-        </TransitionGroup>
-      </section>
-
-      <div class="mt-10 flex items-center justify-center gap-3">
-        <ThemeSwitcher />
-        <LanguageSwitcher />
-      </div>
+    <!-- The two things most people came for. -->
+    <div v-reveal="3" class="mt-8 grid grid-cols-2 gap-2">
+      <RouterLink
+        :to="{ name: 'home' }"
+        class="group flex min-h-14 touch-manipulation items-center justify-between gap-3 bg-dev px-4 font-bold text-on-dev"
+      >
+        {{ t('links.website') }}
+        <ArrowRight v-bind="iconMotion" triggerTarget="parent" class="size-5" aria-hidden="true" />
+      </RouterLink>
+      <a
+        v-if="mail"
+        :href="mail.href"
+        class="group flex min-h-14 touch-manipulation items-center justify-between gap-3 bg-ink px-4 font-bold text-void"
+      >
+        {{ t('links.write') }}
+        <ArrowUpRight
+          v-bind="iconMotion"
+          triggerTarget="parent"
+          class="size-5"
+          aria-hidden="true"
+        />
+      </a>
     </div>
-  </div>
+
+    <h2 v-reveal class="mt-12 text-sm font-semibold tracking-[0.06em] text-ink-faint uppercase">
+      {{ t('links.elsewhere') }}
+    </h2>
+    <ul class="mt-3 grid grid-cols-2 gap-2">
+      <li
+        v-for="(tile, index) in socialTiles"
+        :key="tile.id"
+        v-reveal="index % 2"
+        :class="{ 'col-span-2': index === socialTiles.length - 1 && socialTiles.length % 2 === 1 }"
+      >
+        <a
+          :href="tile.href"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex h-full min-h-20 touch-manipulation flex-col justify-between gap-3 bg-panel p-4 transition-colors duration-(--nx-dur-fast) hover:bg-ink hover:text-void"
+        >
+          <component
+            :is="tile.icon"
+            v-bind="tile.isMotionIcon ? iconMotion : {}"
+            class="size-6"
+            aria-hidden="true"
+          />
+          <span>
+            <span class="block font-bold">{{ tile.label }}</span>
+            <span class="block truncate text-sm opacity-70">{{ tile.handle ?? tile.note }}</span>
+          </span>
+        </a>
+      </li>
+    </ul>
+
+    <h2 v-reveal class="mt-12 text-sm font-semibold tracking-[0.06em] text-ink-faint uppercase">
+      {{ t('links.latest') }}
+    </h2>
+    <ul class="mt-3 flex flex-col gap-2">
+      <li v-for="(project, index) in latestProjects" :key="project.slug" v-reveal="index">
+        <RouterLink
+          :to="{ name: 'project-detail', params: { slug: project.slug } }"
+          class="group flex touch-manipulation items-center gap-4 bg-panel p-2 pr-4 transition-colors duration-(--nx-dur-fast) hover:bg-raised"
+        >
+          <div class="w-24 shrink-0"><ProjectMedia :project /></div>
+          <span class="min-w-0 flex-1">
+            <span class="block font-bold uppercase transition-colors group-hover:text-link">
+              {{ shortProjectName(project.name) }}
+            </span>
+            <span class="line-clamp-2 text-sm text-ink-muted">{{ project.tagline }}</span>
+          </span>
+        </RouterLink>
+      </li>
+    </ul>
+
+    <p class="mt-auto pt-12 text-sm text-ink-faint">
+      {{ identity.brand }} · {{ identity.location }}
+    </p>
+  </main>
 </template>

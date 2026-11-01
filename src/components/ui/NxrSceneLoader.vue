@@ -18,7 +18,7 @@ const { t } = useI18n()
     role="status"
     aria-live="polite"
   >
-    <span class="nx-meta flex items-center gap-2 text-ink-faint">
+    <span class="flex items-center gap-2 text-base text-night-muted">
       <LoaderCircle class="size-4 shrink-0 animate-spin" aria-hidden="true" />
       {{ t('global.loading') }}
     </span>

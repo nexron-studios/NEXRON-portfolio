@@ -1,5 +1,3 @@
-import type { LocalizedText } from '@/types/i18n.type'
-
 export const projectCategoryList = ['web', 'desktop', 'ai', 'fullstack', '3d', 'tools'] as const
 export type ProjectCategory = (typeof projectCategoryList)[number]
 
@@ -16,24 +14,24 @@ export interface ProjectShotProps {
   /** Imported from `src/assets/projects/<slug>/`, never a path string. */
   src: string
   /** What the screen shows. Doubles as the caption and the alt text. */
-  label: LocalizedText
+  label: string
 }
 
 export interface ProjectDetailProps {
-  overview: LocalizedText
+  overview: string
   /** What was actually annoying enough to build something about. */
-  problem: LocalizedText
-  idea: LocalizedText
-  implementation: LocalizedText
-  challenges: LocalizedText[]
-  learnings: LocalizedText[]
+  problem: string
+  idea: string
+  implementation: string
+  challenges: string[]
+  learnings: string[]
 }
 
 export interface ProjectProps {
   /** URL segment under /projects/ — must be unique and kebab-case. */
   slug: string
   name: string
-  tagline: LocalizedText
+  tagline: string
   categories: ProjectCategory[]
   /** Display order is meaningful: most characteristic technology first. */
   stack: string[]

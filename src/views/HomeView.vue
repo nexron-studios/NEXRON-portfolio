@@ -1,73 +1,46 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AppFooter from '@/components/layout/AppFooter.vue'
-import AppHeader from '@/components/layout/AppHeader.vue'
-import SocialCards from '@/components/layout/SocialCards.vue'
-import TetrisBackdrop from '@/components/layout/TetrisBackdrop.vue'
-import SectionFrame from '@/components/layout/SectionFrame.vue'
+import SiteFooter from '@/components/layout/SiteFooter.vue'
+import SiteHeader from '@/components/layout/SiteHeader.vue'
 import AboutSection from '@/components/sections/AboutSection.vue'
 import ContactSection from '@/components/sections/ContactSection.vue'
 import HeroSection from '@/components/sections/HeroSection.vue'
 import JourneySection from '@/components/sections/JourneySection.vue'
-import ProjectsSection from '@/components/sections/ProjectsSection.vue'
-import StackSection from '@/components/sections/StackSection.vue'
-import { framedSections, sectionIds } from '@/data/sections'
-import { useScrollProgress } from '@/composables/useScrollProgress'
-import { useScrollSpy } from '@/composables/useScrollSpy'
+import WorkSection from '@/components/sections/WorkSection.vue'
+import ScrollMarquee from '@/components/ui/ScrollMarquee.vue'
 
 /**
- * Order, anchors and sheet numbers all come from `src/data/sections.ts`; this
- * only says which component belongs to which id. Reordering the page is a
- * one-line change in the register, and the numbers cannot drift.
+ * The page, in the order of its argument (see `data/sections.ts`): the claim,
+ * the work that proves it, who is behind it, the path that led here, and how
+ * to reach him.
  */
-const sectionComponents: Record<string, Component> = {
-  about: AboutSection,
-  journey: JourneySection,
-  stack: StackSection,
-  projects: ProjectsSection,
-  contact: ContactSection
-}
-
 const { t } = useI18n()
-
-useScrollSpy(sectionIds)
-
-// Publishes `--nx-progress` on the root element. Nothing else writes it, so
-// without this call the reading rule along the header's lower edge sits at
-// `scaleX(0)` for the life of the page.
-useScrollProgress()
 </script>
 
 <template>
-  <div class="relative">
-    <TetrisBackdrop />
-
+  <div>
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-60 focus:bg-dev focus:px-4 focus:py-2 focus:font-mono focus:text-meta focus:text-void"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-60 focus:bg-dev focus:px-4 focus:py-2 focus:text-on-dev"
     >
       {{ t('global.skip_to_content') }}
     </a>
 
-    <AppHeader />
+    <SiteHeader />
 
     <main id="main">
       <HeroSection />
-
-      <SectionFrame
-        v-for="section in framedSections"
-        :id="section.id"
-        :key="section.id"
-        :index="section.index"
-        :title="t(section.labelKey)"
-      >
-        <component :is="sectionComponents[section.id]" />
-      </SectionFrame>
+      <WorkSection />
+      <AboutSection />
+      <JourneySection />
+      <ScrollMarquee
+        :items="t('home.band_build').split(' / ')"
+        :direction="-1"
+        class="mt-[clamp(4rem,7vw,7rem)]"
+      />
+      <ContactSection />
     </main>
 
-    <SocialCards />
-
-    <AppFooter />
+    <SiteFooter />
   </div>
 </template>

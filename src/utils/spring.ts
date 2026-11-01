@@ -47,27 +47,3 @@ export const relaxSpring = (
 
 export const clampTo = (value: number, limit: number): number =>
   Math.min(limit, Math.max(-limit, value))
-
-/**
- * A limit the value eases into instead of hitting.
- *
- * **Currently used by no scene**, and kept deliberately. The hero ran on it for
- * a while and is back on `clampTo`, because tracking the pointer at anything
- * other than one to one is what made it feel unlike the LED sign. The function
- * is the only rubber-banding in the repo and the wish it answers — a drag that
- * runs out of travel gradually rather than going dead — is a recurring one, so
- * the next round starts from a specced implementation rather than from scratch.
- *
- * `clampTo` stops dead: the object tracks the pointer one-to-one and then simply
- * refuses to move, which reads as the drag having broken. This gives way
- * gradually — one-to-one near the middle, progressively more resistance towards
- * the edge. The same rubber-banding a scroll view uses at the end of its
- * content, and the reason a drag can no longer arrive at the wall with speed
- * on it.
- *
- * The limit is approached asymptotically and never crossed. It can be *reached*
- * exactly: past roughly twenty times the limit `Math.tanh` saturates at 1, which
- * is a distance no gesture covers and still on the right side of the wall.
- */
-export const softLimit = (value: number, limit: number): number =>
-  limit <= 0 ? 0 : limit * Math.tanh(value / limit)

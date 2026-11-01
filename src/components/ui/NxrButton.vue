@@ -1,7 +1,10 @@
 <script setup lang="ts">
 /**
- * The standard action. Renders as an anchor when `href` is given, otherwise as
- * a button — so a link stays a link and keeps its native behaviour.
+ * The one action of a screen. Square, flat, filled with the accent; the
+ * `plain` variant is an ink outline-free text action for the second choice.
+ *
+ * Renders as an anchor when `href` is given, otherwise as a button, so a
+ * link stays a link and keeps its native behaviour.
  */
 const {
   variant = 'primary',
@@ -9,7 +12,7 @@ const {
   type = 'button',
   isDisabled = false
 } = defineProps<{
-  variant?: 'primary' | 'ghost'
+  variant?: 'primary' | 'plain'
   href?: string | null
   type?: 'button' | 'submit'
   isDisabled?: boolean
@@ -23,11 +26,11 @@ const {
     :type="href ? undefined : type"
     :disabled="href ? undefined : isDisabled"
     :aria-disabled="isDisabled ? 'true' : undefined"
-    class="group relative inline-flex items-center justify-center gap-2.5 rounded-md px-5 py-3 font-mono text-meta tracking-[0.16em] uppercase transition-all duration-[--nx-dur-fast] disabled:pointer-events-none disabled:opacity-40"
+    class="group inline-flex min-h-12 items-center justify-center gap-3 px-6 text-base font-semibold tracking-[-0.01em] transition-[background-color,color,transform] duration-(--nx-dur-fast) active:translate-y-px disabled:pointer-events-none disabled:opacity-40"
     :class="
       variant === 'primary'
-        ? 'bg-dev text-white shadow-[0_6px_20px_-8px_var(--color-dev)] hover:bg-creative hover:shadow-[0_8px_26px_-8px_var(--color-creative)]'
-        : 'border border-line text-ink-muted hover:border-dev hover:text-dev'
+        ? 'bg-dev text-on-dev hover:bg-ink hover:text-void'
+        : 'bg-raised text-ink hover:bg-ink hover:text-void'
     "
   >
     <slot />

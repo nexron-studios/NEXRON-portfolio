@@ -1,13 +1,6 @@
-import type { LocalizedText } from '@/types/i18n.type'
-
 /**
- * Which part of the profile a technology belongs to — one per chamber of the
- * tech-stack pit.
- *
- * Drives colour, and does so without widening the palette: `dev` is the cyan
- * signal, `creative` the violet one, and the two additions sit *between* them
- * on the same axis — `ai` is a dev/creative blend, `infra` a desaturated dev.
- * Four readable chambers, still only two hues. See `tokens.css`.
+ * Which part of the profile a technology or a service belongs to. Used to
+ * group, no longer to colour: the page has one accent.
  */
 export const skillDomainList = ['dev', 'ai', 'creative', 'infra'] as const
 export type SkillDomain = (typeof skillDomainList)[number]
@@ -20,33 +13,13 @@ export interface SkillProps {
 
 export interface SkillGroupProps {
   id: string
-  label: LocalizedText
+  label: string
   domain: SkillDomain
   skills: SkillProps[]
 }
 
-/**
- * One chamber of the pit with everything it holds, as text.
- *
- * The written list is rendered from these so it carries the same four names in
- * the same order as the chambers above it — the list is the pit spelled out,
- * not a second, differently-sorted inventory.
- */
+/** One of the four areas with every group that belongs to it, in order. */
 export interface SkillDomainSectionProps {
   domain: SkillDomain
   groups: SkillGroupProps[]
-}
-
-/**
- * A technology that also appears as a floating object in the orb scene.
- * Kept separate from `SkillProps` because the scene needs far fewer of
- * them — a crowded orb field reads as noise.
- */
-export interface OrbSkillProps {
-  name: string
-  domain: SkillDomain
-  /** Relative size, 0.6–1.4. Bigger = more central to the profile. */
-  weight: number
-  /** One line shown on hover — what it is and what Jonas uses it for. */
-  blurb: LocalizedText
 }

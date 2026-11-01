@@ -1,5 +1,3 @@
-import type { LocalizedText } from '@/types/i18n.type'
-
 export const experienceKindList = ['education', 'work', 'studio'] as const
 export type ExperienceKind = (typeof experienceKindList)[number]
 
@@ -9,7 +7,7 @@ export interface ExperienceProps {
   /** Institution or company. */
   organization: string
   /** Omitted where the title already is the role — a school-leaving certificate. */
-  role?: LocalizedText
+  role?: string
   /** Omitted where the place adds nothing the organisation does not already say. */
   location?: string
   /** ISO `YYYY-MM`. */
@@ -17,7 +15,7 @@ export interface ExperienceProps {
   /** ISO `YYYY-MM`, or null for "ongoing" — disambiguated by `isOngoing`. */
   endedAt: string | null
   isOngoing: boolean
-  summary: LocalizedText
+  summary: string
   /** Optional canonical page for the programme or position. */
   href?: string
   /**

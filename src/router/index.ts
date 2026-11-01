@@ -22,7 +22,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/links',
     name: 'links',
-    component: () => import('@/views/LinksView.vue')
+    component: () => import('@/views/LinksView.vue'),
+    // The sky drifts here: a short page with nothing to scroll would
+    // otherwise hold the stars still.
+    meta: { isStarDrift: true }
   },
   {
     path: '/:pathMatch(.*)*',

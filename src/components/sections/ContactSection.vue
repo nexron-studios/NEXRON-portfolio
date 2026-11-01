@@ -1,66 +1,72 @@
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useIntersectionObserver } from '@vueuse/core'
-import { ArrowUpRight, LoaderCircle, Send } from '@respeak/lucide-motion-vue'
+import { AtSign, LoaderCircle, Send } from '@respeak/lucide-motion-vue'
 import { identity } from '@/data/socials'
 import { useContactForm } from '@/composables/useContactForm'
 import { useIconMotion } from '@/composables/useIconMotion'
 import ContactFormField from '@/components/sections/ContactFormField.vue'
+import MatrixRain from '@/components/ui/MatrixRain.vue'
 import NxrButton from '@/components/ui/NxrButton.vue'
 
+/**
+ * The close of the argument: one sentence, the form, and a mail link that
+ * does not print the address (it only appears once someone clicks). The
+ * other places Jonas can be found are the cards in the footer. Behind it all
+ * the Matrix rain, faint.
+ */
 const MESSAGE_ROWS = 5
 
 const { t } = useI18n()
 const { iconMotion } = useIconMotion()
-
 const { values, errors, isSubmitting, isConfigured, handleBlur, revalidate, submit } =
   useContactForm()
-
-const PeekCharacter = defineAsyncComponent(() => import('@/components/three/PeekCharacter.vue'))
-
-// Decoration behind the form, so neither the chunk nor the model is fetched
-// until the block is within reach of the viewport — same gate as the LED sign.
-const peekStage = ref<HTMLElement | null>(null)
-const isPeekNear = ref(false)
-
-const { stop: stopPeekObserver } = useIntersectionObserver(
-  peekStage,
-  (entries) => {
-    if (!entries[0]?.isIntersecting) return
-    isPeekNear.value = true
-    stopPeekObserver()
-  },
-  { rootMargin: '400px' }
-)
 </script>
 
 <template>
-  <div class="grid gap-12 lg:grid-cols-12 lg:gap-10">
-    <div class="lg:col-span-5">
-      <h3 class="font-display text-section font-bold text-balance">
-        {{ t('contact.heading') }}<br />
-        <span class="text-dev">{{ t('contact.heading_accent') }}</span>
-      </h3>
+  <section
+    id="contact"
+    aria-labelledby="contact-heading"
+    class="relative overflow-hidden px-gutter py-[clamp(3rem,10vw,9rem)] md:mt-section"
+  >
+    <!-- The rain is the ground of this section, faded out at both edges so
+         it starts and ends in the page instead of in a hard line. -->
+    <MatrixRain
+      class="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] opacity-35"
+    />
 
-      <p class="mt-6 max-w-md leading-relaxed text-pretty text-ink-muted">
-        {{ t('contact.intro') }}
-      </p>
-    </div>
+    <div class="relative grid gap-x-10 gap-y-14 lg:grid-cols-12">
+      <div class="lg:col-span-6">
+        <h2 id="contact-heading" v-reveal class="text-section font-bold">
+          {{ t('contact.title') }}
+        </h2>
+        <p
+          v-reveal.wipe="1"
+          class="mt-6 max-w-[14ch] text-[clamp(2.5rem,5vw,4.75rem)] leading-[0.92] font-black tracking-[-0.05em] text-balance"
+        >
+          {{ t('contact.heading') }}
+        </p>
+        <p v-reveal="2" class="mt-6 max-w-[40ch] text-lead font-medium text-pretty">
+          {{ t('contact.intro') }}
+        </p>
 
-    <div ref="peekStage" class="relative lg:col-span-6 lg:col-start-7">
-      <!--
-        The clipping edge is pulled down past the first label, because the label
-        has no surface of its own — only the input below it does (`bg-panel`).
-        Cutting at the form's top edge would leave the figure ending in mid-air.
-      -->
-      <div
-        class="pointer-events-none absolute inset-x-0 bottom-[calc(100%-3rem)] z-0 hidden h-48 overflow-hidden lg:block"
-      >
-        <PeekCharacter v-if="isPeekNear" />
+        <a
+          v-reveal="3"
+          :href="`mailto:${identity.email}`"
+          class="group mt-10 inline-flex items-center gap-3 text-lead font-bold text-link transition-colors duration-(--nx-dur-fast) hover:text-link"
+        >
+          <AtSign v-bind="iconMotion" triggerTarget="parent" class="size-6" aria-hidden="true" />
+          <span class="underline decoration-2 underline-offset-4">{{
+            t('contact.write_mail')
+          }}</span>
+        </a>
       </div>
 
-      <form novalidate class="relative z-10 flex flex-col gap-5" @submit.prevent="submit">
+      <form
+        v-reveal="2"
+        novalidate
+        class="flex flex-col gap-6 lg:col-span-5 lg:col-start-8"
+        @submit.prevent="submit"
+      >
         <ContactFormField
           v-model="values.name"
           field="name"
@@ -92,34 +98,24 @@ const { stop: stopPeekObserver } = useIntersectionObserver(
           @input="revalidate('message')"
         />
 
-        <!--
-          With no endpoint configured the form would silently do nothing, so
-          it says so and points at the links instead of pretending to send.
-        -->
-        <p
-          v-if="!isConfigured"
-          class="nx-meta flex items-center gap-2 border border-dashed border-line-strong px-3 py-2.5 text-ink-faint"
-        >
-          <span aria-hidden="true" class="h-1 w-1 bg-building" />
+        <!-- With no endpoint the form would silently do nothing, so it says
+             so and points at the address instead of pretending to send. -->
+        <p v-if="!isConfigured" class="text-base text-ink-muted">
           {{ t('contact.not_configured') }}
         </p>
 
-        <div class="mt-2">
+        <div>
           <NxrButton type="submit" :is-disabled="isSubmitting || !isConfigured">
-            <LoaderCircle
-              v-if="isSubmitting"
-              class="size-4 shrink-0 animate-spin"
-              aria-hidden="true"
-            />
+            {{ isSubmitting ? t('contact.sending') : t('contact.send') }}
+            <LoaderCircle v-if="isSubmitting" class="size-4.5 animate-spin" aria-hidden="true" />
             <Send
               v-else
               v-bind="iconMotion"
               triggerTarget="closest:button"
               clip
-              class="size-4 shrink-0"
+              class="size-4.5"
               aria-hidden="true"
             />
-            {{ isSubmitting ? t('contact.sending') : t('contact.send') }}
           </NxrButton>
         </div>
 
@@ -128,5 +124,5 @@ const { stop: stopPeekObserver } = useIntersectionObserver(
         </p>
       </form>
     </div>
-  </div>
+  </section>
 </template>

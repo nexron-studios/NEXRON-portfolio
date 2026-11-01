@@ -58,18 +58,20 @@ export const SIGN_HALF_HEIGHT = 0.5
 
 /**
  * The sign is a face, not a sculpture: its back is an unlit shell nobody was
- * meant to look at. So it never turns past this — it sways within the front
- * half and a drag runs into a wall rather than carrying on round.
+ * meant to look at. So it never turns past this: it sways within a narrow
+ * front arc and a drag runs into a wall rather than carrying on round.
+ * About 34°; at the earlier 63° a drag laid the letters almost flat, which
+ * Jonas found too much.
  */
-const FRONT_LIMIT = 1.1
+const FRONT_LIMIT = 0.6
 
 /** The idle motion: a sway across the front, not a revolution. */
-const SWAY_AMPLITUDE = 0.42
+const SWAY_AMPLITUDE = 0.24
 /** Radians per second of phase — one sway out and back takes about 45 seconds. */
 const SWAY_RATE = 0.14
 /** The much slower nod on top of it, so highlights travel instead of strobing. */
 const NOD_RATE = 0.09
-const NOD_AMPLITUDE = 0.14
+const NOD_AMPLITUDE = 0.08
 
 /** How far a drag may push on top of the sway before the face would turn away. */
 const MAX_SPIN_OFFSET = FRONT_LIMIT - SWAY_AMPLITUDE
@@ -79,10 +81,10 @@ const MAX_SPIN_OFFSET = FRONT_LIMIT - SWAY_AMPLITUDE
  * range is under a radian, and a sensitive drag would spend most of its travel
  * pressed against the limit.
  */
-const TURN_PER_WIDTH = 1.6
+const TURN_PER_WIDTH = 1
 /** Vertical drags tilt rather than turn, and far less — the sign never flips. */
-const TILT_PER_HEIGHT = 1.2
-const TILT_LIMIT = 0.5
+const TILT_PER_HEIGHT = 0.7
+const TILT_LIMIT = 0.22
 
 /**
  * Return-to-path, as a spring rather than a decay.
@@ -116,7 +118,7 @@ export interface LedSign {
 }
 
 const STILL_POSE_X = 0.12
-const STILL_POSE_Y = 0.6
+const STILL_POSE_Y = 0.3
 
 /** Centres the model on the origin and scales its longest edge to `TARGET_SIZE`. */
 const fitToTarget = (model: Object3D): void => {

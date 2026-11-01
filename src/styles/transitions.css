@@ -14,29 +14,6 @@
   opacity: 0;
 }
 
-.rise-enter-active,
-.rise-leave-active {
-  transition:
-    opacity var(--nx-dur) var(--ease-out-expo),
-    transform var(--nx-dur) var(--ease-out-expo);
-}
-.rise-enter-from,
-.rise-leave-to {
-  opacity: 0;
-  transform: translateY(0.75rem);
-}
-
-/* Panels arrive by unmasking left-to-right, like a plot being drawn. */
-.plot-enter-active {
-  transition:
-    opacity var(--nx-dur-slow) var(--ease-out-expo),
-    clip-path var(--nx-dur-slow) var(--ease-out-expo);
-}
-.plot-enter-from {
-  opacity: 0;
-  clip-path: inset(0 100% 0 0);
-}
-
 .route-enter-active,
 .route-leave-active {
   transition: opacity var(--nx-dur) var(--ease-out-expo);
@@ -44,4 +21,19 @@
 .route-enter-from,
 .route-leave-to {
   opacity: 0;
+}
+
+/* The floating glass nav drops in from above the viewport edge. */
+.drop-enter-active,
+.drop-leave-active {
+  transition:
+    opacity var(--nx-dur) var(--ease-out-expo),
+    transform var(--nx-dur) var(--ease-out-expo);
+}
+/* `transform`, not `translate`: the pill is centred with Tailwind's
+   `-translate-x-1/2`, which owns the `translate` property. */
+.drop-enter-from,
+.drop-leave-to {
+  opacity: 0;
+  transform: translateY(-1.25rem);
 }

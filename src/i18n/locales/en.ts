@@ -1,7 +1,8 @@
 export default {
   global: {
+    not_found: 'This page does not exist.',
+    home: 'To the home page',
     loading: 'Loading',
-    back: 'Back',
     open_repository: 'Open repository',
     open_live: 'Live demo',
     private_repository: 'Private repository',
@@ -9,84 +10,64 @@ export default {
     close: 'Close'
   },
   nav: {
-    index: 'Index',
+    home: 'To the home page',
+    label: 'Main navigation',
     about: 'About',
     projects: 'Projects',
     journey: 'Journey',
-    stack: 'Tech stack',
     contact: 'Contact',
-    language: 'Language',
-    theme: 'Appearance',
-    theme_dark: 'Dark',
-    theme_light: 'Light',
-    menu_open: 'Open menu',
-    menu_close: 'Close menu'
+    menu: 'Menu',
+    close: 'Close'
+  },
+  /** The marquee band before Contact; ` / ` separates the items. */
+  home: {
+    band_build: "Let's build something / Get in touch"
   },
   hero: {
-    explore_projects: 'Explore projects',
-    about_me: 'About me',
-    location: 'Location',
-    scroll_hint: 'Scroll',
-    links_label: 'Links',
-    kicker: 'Founder portfolio',
-    scene_alt:
-      'A 3D figure of Jonas on a lit podium, surrounded by his laptop, controller, phone and headphones'
+    /** `{name}`, `{studio}` and `{work}` are slots, set highlighted. */
+    intro: "I'm {name}. Under {studio} I build {work}, and design them myself.",
+    intro_work: 'desktop tools, web apps and AI applications',
+    cta: 'See the projects',
+    contact: 'Contact'
   },
   about: {
     title: 'About',
-    heading: "Hey, I'm Jonas.",
-    lead: 'I build software, train models and have been into design for a long time.',
-    terminal_hint: 'typing allowed',
-    terminal_label: 'Terminal input',
-    /** `{study}` is filled by a slot — the degree renders as a link. */
-    body_1: 'I studied {study} at Offenburg University.',
+    heading_top: "Hey, I'm",
+    heading_name: 'Jonas',
+    /** The `{…}` parts are filled by slots and set in violet, as emphasis. */
+    lead: 'I build {software}, train {models} and have been into {design} for a long time.',
+    lead_software: 'software',
+    lead_models: 'models',
+    lead_design: 'design',
+    /** `{study}` is the degree as a link; `{thesis}` is emphasis. */
+    body_1:
+      'I study {study} at Offenburg University and am writing my bachelor thesis on {thesis}.',
     study_link: 'Applied Artificial Intelligence',
-    body_2:
-      'I have worked with the Adobe stack for several years. Blender then pulled me further into 3D, deepened during an internship and by designing for clubs.',
+    thesis_topic: 'AI and XR',
     body_3:
-      'What draws me in is the seam: bringing AI, design and development together in one project instead of settling into a single corner.',
-    studio_label: 'The trade',
+      'What draws me in is the seam: {seam} together in one project instead of settling into a single corner.',
+    seam: 'bringing AI, design and development',
     services_label: 'What I offer',
-    mark_alt: 'Rotating NEXRON Studios sign in chrome'
-  },
-  /**
-   * The terminal transcript stays untranslated — a prompt is a prompt in
-   * either language — but the game it opens is ordinary UI and is not.
-   */
-  tetris: {
-    title: 'Tetris',
-    close: 'Close game',
-    score: 'Score',
-    best: 'Best',
-    level: 'Level',
-    lines: 'Lines',
-    next: 'Next up',
-    paused: 'Paused',
-    game_over: 'Game over',
-    final_score: '{score} points',
-    restart: 'Play again',
-    move_left: 'Move left',
-    move_right: 'Move right',
-    rotate: 'Rotate',
-    soft_drop: 'Soft drop',
-    hard_drop: 'Hard drop',
-    pause: 'Pause',
-    settings: 'Settings',
-    sound_on: 'Sound on',
-    sound_off: 'Sound off',
-    volume: 'Volume'
+    tools_label: 'Tools I work with',
+    domain_dev: 'Development',
+    domain_ai: 'AI & Data',
+    domain_creative: '3D & Creative',
+    domain_infra: 'Infrastructure',
+    sign_alt: 'The NEXRON Studios sign in chrome, drag to turn'
   },
   projects: {
+    all: 'All projects',
+    next: 'Next project',
+    download: 'Download',
+    code_public: 'Public on GitHub',
+    detail_year: 'Year',
+    detail_kind: 'Kind',
+    detail_status: 'Status',
+    detail_code: 'Code',
+    detail_story: 'How it came about',
     title: 'Projects',
-    filter_all: 'All',
-    enlarge: 'Enlarge {screen}',
-    gallery_label: 'Screens of {project}',
-    previous_screen: 'Previous screen',
-    next_screen: 'Next screen',
-    filter_label: 'Filter by category',
-    clients_label: 'Clients',
-    view_detail: 'Open project',
-    empty: 'No projects in this category.',
+    intro:
+      'My own projects so far. Each one planned, designed and built by me, from the first screen to the release.',
     status_shipped: 'completed',
     status_building: 'building',
     status_experiment: 'experiment',
@@ -107,27 +88,17 @@ export default {
   },
   journey: {
     title: 'Journey',
-    ongoing: 'ongoing',
-    kind_education: 'Education',
+    intro: 'From the workshop floor to AI and XR: the stations that got me here.',
+    ongoing: 'today',
     kind_work: 'Work',
+    kind_education: 'Education',
     kind_studio: 'Studio'
-  },
-  stack: {
-    title: 'Tech stack',
-    show_all: 'All technologies in the four areas',
-    core: 'core',
-    domain_dev: 'Development',
-    domain_ai: 'AI & Data',
-    domain_creative: '3D & Creative',
-    domain_infra: 'Infrastructure'
   },
   contact: {
     title: 'Contact',
-    heading: 'Have an idea?',
-    heading_accent: "Let's build something.",
-    intro:
-      'For business enquiries, collaborations or a project you want built: write to me. And if you just want to know how something here works, that too.',
-    mail: 'Mail',
+    heading: "Have an idea? Let's build something.",
+    intro: 'For requests, collaborations or a project you would like built: write to me.',
+    write_mail: 'Or write an email',
     name: 'Name',
     email: 'Email',
     message: 'Message',
@@ -142,17 +113,17 @@ export default {
     error_message_required: 'Please enter a message.',
     error_message_short: 'A few more words would help.'
   },
-  socials: {
-    heading: 'Also findable here.'
-  },
   links: {
     title: 'Links',
-    website: 'My website',
-    website_note: 'Portfolio, projects and contact'
+    intro: 'I build web apps, desktop tools and AI applications under NEXRON Studios.',
+    website: 'Website',
+    write: 'Write me',
+    latest: 'Latest projects',
+    elsewhere: 'Find me here'
   },
   footer: {
+    elsewhere: 'Also findable here.',
     built_with: 'Built with Vue, TypeScript and Three.js',
-    imprint: 'Imprint',
-    privacy: 'Privacy'
+    back_to_top: 'Back to top'
   }
 }

@@ -7,6 +7,12 @@ import type { ContactField } from '@/composables/useContactForm'
  * `aria-describedby` wiring between the two. Exists so the three fields share
  * one definition of what a field looks like rather than three copies of the
  * same utility string.
+ *
+ * Clawd, the Claude Code mascot (traced pixel for pixel from Jonas' own
+ * `clawd-static-base.gif` in the TokenScope project), waits in the site's
+ * blue behind the field's top edge, far right, and climbs up while the field
+ * has focus. Focus moving to another field drops it here and raises the one
+ * there; pure CSS (`focus-within`), so nothing tracks the active field.
  */
 const {
   field,
@@ -36,46 +42,77 @@ const value = defineModel<string>({ required: true })
 const fieldId = computed(() => `contact-${field}`)
 const errorId = computed(() => `${fieldId.value}-error`)
 
+// A tone step, not an outline: the field is a lighter plate on the ground,
+// and focus or an error draws a solid bar under it.
 const controlClass = computed(() => [
-  'mt-2 w-full border bg-panel px-3.5 py-3 font-mono text-sm text-ink transition-colors',
-  'placeholder:text-ink-faint/60 focus:outline-none',
-  error ? 'border-building' : 'border-line focus:border-dev'
+  'w-full bg-panel px-4 py-3.5 text-base text-ink transition-[box-shadow] duration-(--nx-dur-fast)',
+  'placeholder:text-ink-faint focus:outline-none',
+  error
+    ? 'shadow-[inset_0_-3px_0_var(--color-ink)]'
+    : 'focus:shadow-[inset_0_-3px_0_var(--color-dev)]'
 ])
 </script>
 
 <template>
-  <div>
-    <label :for="fieldId" class="nx-meta block">{{ label }}</label>
+  <div class="group/field">
+    <label :for="fieldId" class="block text-base font-semibold">{{ label }}</label>
 
-    <textarea
-      v-if="rows"
-      :id="fieldId"
-      v-model="value"
-      :name="field"
-      :rows
-      class="resize-y"
-      :class="controlClass"
-      :aria-invalid="Boolean(error)"
-      :aria-describedby="error ? errorId : undefined"
-      @blur="emit('blur')"
-      @input="emit('input')"
-    />
+    <div class="relative mt-2">
+      <span
+        aria-hidden="true"
+        class="pointer-events-none absolute right-4 bottom-full overflow-hidden"
+      >
+        <svg
+          viewBox="0 0 15 9"
+          shape-rendering="crispEdges"
+          class="block h-6 w-auto translate-y-full text-dev transition-transform duration-(--nx-dur) ease-(--ease-out-expo) group-focus-within/field:translate-y-0"
+        >
+          <g fill="currentColor">
+            <rect x="2" y="0" width="11" height="7" />
+            <rect x="0" y="3" width="2" height="2" />
+            <rect x="13" y="3" width="2" height="2" />
+            <rect x="3" y="7" width="1" height="2" />
+            <rect x="5" y="7" width="1" height="2" />
+            <rect x="9" y="7" width="1" height="2" />
+            <rect x="11" y="7" width="1" height="2" />
+          </g>
+          <g class="fill-void">
+            <rect x="4" y="2" width="1" height="2" />
+            <rect x="10" y="2" width="1" height="2" />
+          </g>
+        </svg>
+      </span>
 
-    <input
-      v-else
-      :id="fieldId"
-      v-model="value"
-      :type
-      :name="field"
-      :autocomplete
-      :class="controlClass"
-      :aria-invalid="Boolean(error)"
-      :aria-describedby="error ? errorId : undefined"
-      @blur="emit('blur')"
-      @input="emit('input')"
-    />
+      <textarea
+        v-if="rows"
+        :id="fieldId"
+        v-model="value"
+        :name="field"
+        :rows
+        class="resize-y"
+        :class="controlClass"
+        :aria-invalid="Boolean(error)"
+        :aria-describedby="error ? errorId : undefined"
+        @blur="emit('blur')"
+        @input="emit('input')"
+      />
 
-    <p v-if="error" :id="errorId" class="nx-meta mt-2 text-building">
+      <input
+        v-else
+        :id="fieldId"
+        v-model="value"
+        :type
+        :name="field"
+        :autocomplete
+        :class="controlClass"
+        :aria-invalid="Boolean(error)"
+        :aria-describedby="error ? errorId : undefined"
+        @blur="emit('blur')"
+        @input="emit('input')"
+      />
+    </div>
+
+    <p v-if="error" :id="errorId" class="mt-2 text-base font-medium text-ink">
       {{ error }}
     </p>
   </div>

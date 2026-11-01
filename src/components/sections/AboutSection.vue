@@ -1,221 +1,290 @@
 <script setup lang="ts">
 import { defineAsyncComponent, ref } from 'vue'
-import { I18nT, useI18n } from 'vue-i18n'
+import { useI18n, I18nT } from 'vue-i18n'
 import { useIntersectionObserver } from '@vueuse/core'
-import type { TerminalLineProps } from '@/types/terminal.type'
-import type { SkillDomain } from '@/types/skill.type'
-import { services, studioIntro } from '@/data/studio'
+import { Box, Brain, Code, Cpu } from '@respeak/lucide-motion-vue'
+import fadeArt from '@/assets/art/fade.png'
+import shrineArt from '@/assets/art/shrine.png'
+import wireArt from '@/assets/art/wire.png'
 import { STUDY_HREF } from '@/data/experience'
+import { skillGroups } from '@/data/skills'
 import { identity } from '@/data/socials'
-import { projects } from '@/data/projects'
-import { pitSkills } from '@/data/skills'
-import { useLocalizedText } from '@/composables/useLocalizedText'
-import NxrDialog from '@/components/ui/NxrDialog.vue'
-import NxrSceneLoader from '@/components/ui/NxrSceneLoader.vue'
-import NxrTerminal from '@/components/ui/NxrTerminal.vue'
+import { services, studioIntro } from '@/data/studio'
+import { groupByDomain } from '@/utils/skillGrouping'
+import { useIconMotion } from '@/composables/useIconMotion'
+import DitherArt from '@/components/ui/DitherArt.vue'
+import SkillIcon from '@/components/ui/SkillIcon.vue'
+import type { SkillDomain } from '@/types/skill.type'
 
+/**
+ * Who is behind the work: the text in the left columns, Rodin's Thinker in
+ * ASCII filling the right, then the trade (NEXRON Studios) with what it offers as
+ * four big words with their marks, and every technology across the four
+ * areas, each with its logo.
+ *
+ * No ground of its own: the star field runs behind this section like behind
+ * the rest of the page (it used to be a black poster that hid the stars).
+ */
 const { t } = useI18n()
-const { localized } = useLocalizedText()
+const { iconMotion } = useIconMotion()
 
-/** What the terminal commands are allowed to know about the page. */
-const terminalContext = {
-  projectCount: projects.length,
-  skillCount: pitSkills.length,
-  email: identity.email
+const serviceIcons: Record<SkillDomain, typeof Code> = {
+  dev: Code,
+  infra: Cpu,
+  ai: Brain,
+  creative: Box
 }
 
-// The chunk and the model file arrive one after the other; the same loader
-// stands in for both, so the stage never sits empty and then fills in.
-const LedSign = defineAsyncComponent({
-  loader: () => import('@/components/three/LedSign.vue'),
-  loadingComponent: NxrSceneLoader
-})
-const PeekCharacter = defineAsyncComponent(() => import('@/components/three/PeekCharacter.vue'))
+/** The four areas are labels, not controls, so they take the violet. */
+const domainTone: Record<SkillDomain, string> = {
+  dev: 'text-violet',
+  infra: 'text-violet',
+  ai: 'text-violet',
+  creative: 'text-violet'
+}
 
-// Same reasoning as the sign below, and the same gate: a decorative WebGL scene
-// has no business existing until the block it belongs to is within reach.
-const peekStage = ref<HTMLElement | null>(null)
-const isPeekNear = ref(false)
+const domainSections = groupByDomain(skillGroups)
+/**
+ * The chrome NEXRON sign, the one 3D object left on the site. Three.js is
+ * the heaviest chunk there is, so neither it nor the model is fetched until
+ * the stage is within reach of the viewport.
+ */
+const LedSign = defineAsyncComponent(() => import('@/components/three/LedSign.vue'))
 
-const { stop: stopPeekObserver } = useIntersectionObserver(
-  peekStage,
+const signStage = ref<HTMLElement | null>(null)
+const isSignNear = ref(false)
+
+const { stop: stopSignObserver } = useIntersectionObserver(
+  signStage,
   (entries) => {
     if (!entries[0]?.isIntersecting) return
-    isPeekNear.value = true
-    stopPeekObserver()
+    isSignNear.value = true
+    stopSignObserver()
   },
   { rootMargin: '400px' }
 )
-
-// The sign's model file is four megabytes. It is decoration over copy that
-// stands on its own, so neither the chunk nor the model is fetched until the
-// block is within reach of the viewport.
-const markStage = ref<HTMLElement | null>(null)
-const isMarkStageNear = ref(false)
-
-const { stop: stopMarkObserver } = useIntersectionObserver(
-  markStage,
-  (entries) => {
-    if (!entries[0]?.isIntersecting) return
-    isMarkStageNear.value = true
-    stopMarkObserver()
-  },
-  { rootMargin: '400px' }
-)
-
-// Lazy for the same reason as the 3D mark: most visitors never type `tetris`,
-// and a game nobody opened has no business in the first payload.
-const NxrTetrisGame = defineAsyncComponent(() => import('@/components/ui/NxrTetrisGame.vue'))
-
-const isTetrisOpen = ref(false)
-
-const domainClass: Record<SkillDomain, string> = {
-  dev: 'text-dev',
-  ai: 'text-ai',
-  creative: 'text-creative',
-  infra: 'text-infra'
-}
-
-// Deliberately untranslated: a shell prompt is a shell prompt in either
-// language.
-const terminalLines: TerminalLineProps[] = [
-  { command: 'whoami', output: ['Jonas Glatz'] },
-  { command: 'current-focus', output: ['AI · Software · 3D & Design'] },
-  {
-    command: 'cat philosophy.json',
-    output: ['{', '  "mode": "building",', '  "method": "learn by doing"', '}']
-  },
-  { command: 'coffee --status', output: ['running'] }
-]
 </script>
 
 <template>
-  <div class="flex flex-col gap-20">
+  <section
+    id="about"
+    aria-labelledby="about-heading"
+    class="mt-section overflow-x-clip pb-[clamp(3rem,9vw,9rem)]"
+  >
     <!--
-      The first sentence carries the weight; the rest sits in a narrow column
-      beside the terminal, short enough to take in at a glance. A measurement
-      strip used to break the two apart, but it repeated the role, the location
-      and the start of the degree — all three already stated in the hero.
+      The poster: the Thinker in ASCII fills the right half from the top of
+      the section to the bottom of the text; the greeting is set at poster
+      size over the left half, its full stop blinking like a cursor. On a
+      phone the Thinker follows the text instead of sitting beside it.
     -->
-    <div>
-      <h3 class="max-w-3xl font-display text-section font-bold text-balance">
-        {{ t('about.heading') }}
-        <span class="text-dev">{{ t('about.lead') }}</span>
-      </h3>
+    <div
+      class="relative flex flex-col px-gutter pt-[clamp(2rem,9vw,8rem)] lg:block lg:min-h-[54rem]"
+    >
+      <!-- A shrine in halftone, from Jonas' collage: the robed figure with
+           the raised hand under a crown of thorns, two angels and a knight
+           beside it, four-pointed stars around them. It replaced Rodin's Thinker, which read as dull. The
+           source is thresholded, so the photographed figure in the middle
+           breaks into black gaps like the cut-out figures beside it. The
+           top fades in a little and the bottom out, so the picture neither
+           starts nor ends in a hard cut. -->
+      <DitherArt
+        :src="shrineArt"
+        :cell="4"
+        :strength="0.85"
+        is-outlined
+        class="pointer-events-none relative order-last mt-12 aspect-[1179/956] w-full [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_62%,transparent)] lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:aspect-auto lg:w-[56%]"
+      />
 
-      <div class="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-10">
-        <div class="flex flex-col gap-5 leading-relaxed text-ink-muted lg:col-span-6 xl:col-span-5">
-          <!-- `I18nT` rather than a stitched-together sentence: the degree is a
-               link, and the clause it sits in lands in a different place in
-               German than in English. -->
-          <I18nT keypath="about.body_1" tag="p" class="text-pretty" scope="global">
+      <!-- The white thorn wire from the same collage, behind the copy on
+           wide screens; the copy comes later and stays on top. -->
+      <DitherArt
+        :src="wireArt"
+        :cell="4"
+        :strength="0.85"
+        is-outlined
+        class="pointer-events-none absolute top-[18%] left-[14%] hidden aspect-[610/765] w-[31%] [mask-image:linear-gradient(to_bottom,black_70%,transparent)] lg:block"
+      />
+
+      <!-- A soft dark pool under the copy, so the wire and the shrine step
+           back where the text sits and the eye lands on the words first. -->
+      <span
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-y-0 left-0 hidden w-[64%] bg-[radial-gradient(ellipse_58%_46%_at_28%_42%,var(--color-void)_45%,transparent)] lg:block"
+      />
+
+      <div class="relative lg:w-[50%]">
+        <h2
+          id="about-heading"
+          v-reveal.wipe
+          class="text-[clamp(3.25rem,8.6vw,9.5rem)] leading-[0.84] font-black tracking-[-0.055em] uppercase"
+        >
+          {{ t('about.heading_top') }}<br />{{ t('about.heading_name')
+          }}<span class="nx-cursor text-violet">.</span>
+        </h2>
+
+        <p
+          v-reveal="1"
+          class="mt-10 max-w-[30ch] text-[clamp(1.25rem,1.9vw,1.875rem)] leading-[1.25] font-semibold text-pretty"
+        >
+          <!-- The three things he does, in violet: emphasis, not links. -->
+          <I18nT keypath="about.lead" tag="span" scope="global">
+            <template #software>
+              <span class="text-violet">{{ t('about.lead_software') }}</span>
+            </template>
+            <template #models>
+              <span class="text-violet">{{ t('about.lead_models') }}</span>
+            </template>
+            <template #design>
+              <span class="text-violet">{{ t('about.lead_design') }}</span>
+            </template>
+          </I18nT>
+        </p>
+
+        <div v-reveal="2" class="mt-8 flex max-w-[52ch] flex-col gap-4 text-pretty text-ink-muted">
+          <!-- `I18nT`: the degree inside the sentence is a link. -->
+          <I18nT keypath="about.body_1" tag="p" scope="global">
             <template #study>
               <a
                 :href="STUDY_HREF"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-ink underline decoration-line-strong underline-offset-4 transition-colors hover:text-dev hover:decoration-dev"
+                class="nx-link text-ink"
               >
                 {{ t('about.study_link') }}
               </a>
             </template>
+            <template #thesis>
+              <strong class="font-semibold text-violet">{{ t('about.thesis_topic') }}</strong>
+            </template>
           </I18nT>
-          <p class="text-pretty">{{ t('about.body_2') }}</p>
-          <p class="text-pretty">{{ t('about.body_3') }}</p>
-        </div>
-
-        <!-- Offset into the last columns rather than filling the row — the
-             empty column is what keeps the layout from reading as a slab. -->
-        <div ref="peekStage" class="relative lg:col-span-6 lg:col-start-7">
-          <!--
-            The figure rises out of the terminal's top edge. `overflow-hidden`
-            is the edge it climbs out of; the panel below covers the cut. `z-0`
-            rather than a negative z on purpose — the section is only
-            `position: relative`, so a negative z would escape it and land in
-            the same layer as the page backdrop.
-          -->
-          <!--
-            `h-48`, not `h-40`, with `TOP_MARGIN_SHARE` in `three/peekCharacter.ts`
-            raised to match: the figure is fitted to this box, and the cap's
-            front stands half the model's depth towards the camera, where
-            perspective made it cross the top edge at rest. Together the two
-            keep the figure the same size and give the head room to look up.
-          -->
-          <div
-            class="pointer-events-none absolute inset-x-0 bottom-full z-0 hidden h-48 overflow-hidden lg:block"
-          >
-            <PeekCharacter v-if="isPeekNear" />
-          </div>
-
-          <NxrTerminal
-            class="relative z-10"
-            :lines="terminalLines"
-            :context="terminalContext"
-            @action="isTetrisOpen = true"
-          />
-
-          <NxrDialog
-            :open="isTetrisOpen"
-            :title="t('tetris.title')"
-            :close-label="t('tetris.close')"
-            @close="isTetrisOpen = false"
-          >
-            <NxrTetrisGame />
-          </NxrDialog>
+          <I18nT keypath="about.body_3" tag="p" scope="global">
+            <template #seam>
+              <strong class="font-semibold text-violet">{{ t('about.seam') }}</strong>
+            </template>
+          </I18nT>
         </div>
       </div>
     </div>
 
-    <!-- The trade itself: the mark, then what it actually does -->
-    <div class="grid gap-12 border-t border-line pt-12 lg:grid-cols-12 lg:gap-10">
-      <div class="lg:col-span-4">
-        <p class="nx-meta">{{ t('about.studio_label') }}</p>
+    <!-- The studio: the chrome sign and what the trade is, side by side. -->
+    <div
+      class="mt-[clamp(4rem,8vw,7rem)] grid items-center gap-x-10 gap-y-6 px-gutter lg:grid-cols-12"
+    >
+      <!-- The canvas overhangs this box on every side (`LedSign` bleeds
+           by 20 %), so a tilted sign still has room. -->
+      <div ref="signStage" v-reveal class="relative mx-[8%] h-36 sm:h-44 lg:col-span-5 lg:mx-[6%]">
+        <LedSign v-if="isSignNear" />
+        <span class="sr-only">{{ t('about.sign_alt') }}</span>
+      </div>
+      <div v-reveal="1" class="lg:col-span-6 lg:col-start-7">
+        <h3 class="text-section font-bold">{{ identity.brand }}</h3>
+        <p class="mt-4 max-w-[56ch] text-lead text-pretty text-ink-muted">
+          {{ studioIntro }}
+        </p>
+      </div>
+    </div>
 
-        <!--
-          Shallower than it was (`h-56 sm:h-64 lg:h-72`): the sign is a 3.4:1
-          plate fitted by width, so most of a tall box was air above and below
-          it, which read as a gap between the mark and its text. The canvas
-          overhangs the box by `STAGE_BLEED`, so a tilt still has room.
+    <div class="mt-[clamp(5rem,10vw,9rem)] px-gutter">
+      <h3 v-reveal class="text-section font-bold">{{ t('about.services_label') }}</h3>
 
-          Capped at `max-w-56` on a phone: the sign is fitted to the box's
-          width, and a full-width box put it edge to edge across the screen,
-          twice the size of the brand name it introduces. The box, not a fit
-          share in the scene, is the knob — the sign fills whatever it is given.
-        -->
-        <div
-          ref="markStage"
-          class="relative mt-2 h-24 w-full max-w-56 sm:h-44 sm:max-w-none lg:h-52"
+      <!-- An index of four rows between hairlines, each word set on a violet
+           halftone that runs out to the right, like a marker in print. It
+           comes up with hover, the word steps aside. -->
+      <ul class="mt-10 flex flex-col border-b border-ink/10">
+        <li
+          v-for="(service, index) in services"
+          :key="service.id"
+          v-reveal="index % 2"
+          class="group/row relative grid items-center gap-x-10 gap-y-3 border-t border-ink/10 py-[clamp(1.5rem,2.6vw,2.25rem)] lg:grid-cols-12"
         >
-          <LedSign v-if="isMarkStageNear" />
-          <span class="sr-only">{{ t('about.mark_alt') }}</span>
-        </div>
-
-        <p class="relative z-10 mt-2 font-display text-xl font-bold tracking-tight">
-          {{ identity.brand }}
-        </p>
-        <p class="relative z-10 mt-3 leading-relaxed text-pretty text-ink-muted">
-          {{ localized(studioIntro) }}
-        </p>
-      </div>
-
-      <div class="lg:col-span-8 lg:col-start-5">
-        <p class="nx-meta">{{ t('about.services_label') }}</p>
-
-        <ul class="mt-6 grid gap-3 sm:grid-cols-2">
-          <li
-            v-for="service in services"
-            :key="service.id"
-            class="nx-panel relative p-5 transition-colors duration-[--nx-dur-fast] hover:border-line-strong sm:min-h-44 sm:p-7"
+          <DitherArt
+            :src="fadeArt"
+            :cell="7"
+            tone="violet"
+            :strength="0.5"
+            fit="cover"
+            class="pointer-events-none absolute inset-y-0 left-0 w-full opacity-60 transition-opacity duration-(--nx-dur-fast) ease-out group-hover/row:opacity-100 lg:w-[62%]"
+          />
+          <!-- The number sits in the row's top left corner, clear of the word. -->
+          <span
+            class="absolute top-3 left-3 text-sm font-bold text-ink-muted tabular-nums"
+            aria-hidden="true"
           >
-            <h4 class="nx-meta" :class="domainClass[service.domain]">
-              {{ localized(service.label) }}
-            </h4>
-            <p class="mt-4 leading-relaxed text-pretty text-ink-muted">
-              {{ localized(service.summary) }}
-            </p>
-          </li>
-        </ul>
+            0{{ index + 1 }}
+          </span>
+          <span
+            class="group relative flex items-center gap-[0.3em] text-[clamp(2.25rem,5.4vw,5.5rem)] leading-[0.95] font-bold tracking-[-0.05em] transition-transform duration-(--nx-dur-fast) ease-out group-hover/row:translate-x-3 lg:col-span-7"
+          >
+            <component
+              :is="serviceIcons[service.domain]"
+              v-bind="iconMotion"
+              triggerTarget="parent"
+              class="size-[0.7em] shrink-0"
+              :class="domainTone[service.domain]"
+              aria-hidden="true"
+            />
+            {{ service.label }}
+          </span>
+          <p class="relative max-w-[52ch] text-pretty text-ink-muted lg:col-span-5">
+            {{ service.summary }}
+          </p>
+        </li>
+      </ul>
+    </div>
+
+    <!-- The stack: four areas as numbered columns over a faint violet glow,
+         every tool a chip with its mark that lifts and lights up on hover. -->
+    <div class="relative mt-[clamp(5rem,10vw,9rem)] px-gutter">
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-x-0 -inset-y-24 bg-[radial-gradient(ellipse_55%_45%_at_50%_55%,color-mix(in_oklab,var(--color-violet)_13%,transparent),transparent)]"
+      />
+
+      <div class="relative">
+        <h3 v-reveal class="text-section font-bold">{{ t('about.tools_label') }}</h3>
+
+        <div class="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 xl:grid-cols-4">
+          <section
+            v-for="(section, index) in domainSections"
+            :key="section.domain"
+            v-reveal="index"
+            class="border-t-2 border-violet/60 pt-5"
+          >
+            <div class="flex items-baseline justify-between gap-4">
+              <h4 class="text-lead font-bold" :class="domainTone[section.domain]">
+                {{ t(`about.domain_${section.domain}`) }}
+              </h4>
+              <span class="text-sm font-semibold text-ink-faint tabular-nums" aria-hidden="true">
+                0{{ index + 1 }}
+              </span>
+            </div>
+
+            <div v-for="group in section.groups" :key="group.id" class="mt-6">
+              <h5 class="text-sm font-semibold tracking-[0.06em] text-ink-faint uppercase">
+                {{ group.label }}
+              </h5>
+              <ul class="mt-3 flex flex-wrap gap-2">
+                <!-- The reveal owns the item's transition, the hover the chip's. -->
+                <li
+                  v-for="(skill, skillIndex) in group.skills"
+                  :key="skill.name"
+                  v-reveal="Math.min(skillIndex, 8)"
+                >
+                  <span
+                    class="group/chip flex items-center gap-2 rounded-md bg-ink/8 px-3 py-1.5 text-base font-medium ring-1 ring-ink/10 transition-[background-color,translate] duration-(--nx-dur-fast) ease-out hover:-translate-y-0.5 hover:bg-ink/14"
+                  >
+                    <SkillIcon
+                      :name="skill.name"
+                      class="size-4 shrink-0 transition-colors duration-(--nx-dur-fast) group-hover/chip:text-violet"
+                    />
+                    {{ skill.name }}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>

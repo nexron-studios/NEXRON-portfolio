@@ -1,54 +1,78 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, watchEffect } from 'vue'
+import { computed, onBeforeUnmount, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import { ArrowLeft, ArrowUpRight } from '@respeak/lucide-motion-vue'
-import { getProjectBySlug } from '@/data/projects'
-import { useLocalizedText } from '@/composables/useLocalizedText'
+import { getProjectBySlug, projects } from '@/data/projects'
 import { useIconMotion } from '@/composables/useIconMotion'
-import AppFooter from '@/components/layout/AppFooter.vue'
-import TetrisBackdrop from '@/components/layout/TetrisBackdrop.vue'
-import NxrBlueprintVisual from '@/components/ui/NxrBlueprintVisual.vue'
-import NxrProjectGallery from '@/components/ui/NxrProjectGallery.vue'
-import NxrStatusBadge from '@/components/ui/NxrStatusBadge.vue'
+import { shortProjectName } from '@/utils/projectName'
+import SiteFooter from '@/components/layout/SiteFooter.vue'
+import SiteHeader from '@/components/layout/SiteHeader.vue'
+import NxrButton from '@/components/ui/NxrButton.vue'
+import ProjectMedia from '@/components/ui/ProjectMedia.vue'
 
+/**
+ * One project, told the way the home page argues: the name set large, one
+ * sentence, the facts in a row, then the screens big and the story beside
+ * them. It closes on the next project's name, so the reader can keep going
+ * without returning to the list.
+ */
 const { slug } = defineProps<{ slug: string }>()
 
 const { t } = useI18n()
-const { localized } = useLocalizedText()
 const { iconMotion } = useIconMotion()
 
 const project = computed(() => getProjectBySlug(slug))
+
+const nextProject = computed(() => {
+  const index = projects.findIndex((entry) => entry.slug === slug)
+  return projects[(index + 1) % projects.length]!
+})
 
 const detailBlocks = computed(() => {
   const detail = project.value?.detail
   if (!detail) return []
 
   return [
-    { key: 'overview', label: t('projects.detail_overview'), body: localized(detail.overview) },
-    { key: 'problem', label: t('projects.detail_problem'), body: localized(detail.problem) },
-    { key: 'idea', label: t('projects.detail_idea'), body: localized(detail.idea) },
+    { key: 'overview', label: t('projects.detail_overview'), body: detail.overview },
+    { key: 'problem', label: t('projects.detail_problem'), body: detail.problem },
+    { key: 'idea', label: t('projects.detail_idea'), body: detail.idea },
     {
       key: 'implementation',
       label: t('projects.detail_implementation'),
-      body: localized(detail.implementation)
+      body: detail.implementation
     }
   ]
 })
 
-/** Empty until Jonas fills them in — the section hides rather than showing a stub. */
-const challenges = computed(() => project.value?.detail?.challenges.map(localized) ?? [])
-const learnings = computed(() => project.value?.detail?.learnings.map(localized) ?? [])
+const PHONE_SCREENS = 3
+
+/**
+ * Screens after the first frame. A phone app is shown in groups of three
+ * on the accent, the same way the frame shows it; a desktop app one by one.
+ */
+const restGroups = computed(() => {
+  const current = project.value
+  if (!current) return []
+  if (current.shotOrientation === 'portrait') {
+    const rest = current.shots.slice(PHONE_SCREENS)
+    return rest.length ? [rest] : []
+  }
+  return current.shots.slice(1).map((shot) => [shot])
+})
+
+/** Three screens sit in one row; two or four in pairs; one alone. */
+const restColumns = computed(() => {
+  const count = restGroups.value.length
+  if (count === 3) return 'md:grid-cols-3'
+  return count > 1 ? 'md:grid-cols-2' : ''
+})
 
 const BASE_TITLE = 'Jonas Glatz – Developer, AI & Design'
 
 watchEffect(() => {
   const current = project.value
-  document.title = current ? `${current.name} – Jonas Glatz` : BASE_TITLE
-})
-
-onMounted(() => {
-  window.scrollTo({ top: 0 })
+  document.title = current ? `${shortProjectName(current.name)} – Jonas Glatz` : BASE_TITLE
 })
 
 onBeforeUnmount(() => {
@@ -57,166 +81,150 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="relative min-h-screen">
-    <TetrisBackdrop />
+  <div>
+    <SiteHeader />
 
-    <div class="mx-auto w-full max-w-[68rem] px-gutter py-16">
+    <main id="main" class="px-gutter pt-[clamp(6.5rem,14vh,9rem)]">
       <RouterLink
-        to="/#projects"
-        class="nx-meta group inline-flex items-center gap-2 text-ink-faint transition-colors hover:text-dev"
+        :to="{ name: 'home', hash: '#projects' }"
+        class="group inline-flex items-center gap-2 text-base font-semibold hover:underline hover:decoration-2 hover:underline-offset-4"
       >
-        <ArrowLeft
-          v-bind="iconMotion"
-          triggerTarget="parent"
-          class="size-3.5 shrink-0"
-          aria-hidden="true"
-        />
-        {{ t('global.back') }}
+        <ArrowLeft v-bind="iconMotion" triggerTarget="parent" class="size-4.5" aria-hidden="true" />
+        {{ t('projects.all') }}
       </RouterLink>
 
       <template v-if="project">
-        <header class="mt-10 border-b border-line pb-8">
-          <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <NxrStatusBadge :status="project.status" />
-            <span class="nx-meta">{{ project.year }}</span>
-            <span class="nx-meta">
-              {{
-                project.categories.map((category) => t(`projects.category_${category}`)).join(' · ')
-              }}
-            </span>
-          </div>
-
-          <h1 class="mt-5 font-display text-section font-bold text-balance">
-            {{ project.name }}
+        <header class="mt-10 grid items-end gap-x-10 gap-y-8 lg:grid-cols-12">
+          <h1
+            class="text-[clamp(3.25rem,10vw,10rem)] leading-[0.86] font-black tracking-[-0.06em] break-words uppercase lg:col-span-8"
+          >
+            {{ shortProjectName(project.name) }}
           </h1>
-
-          <p class="mt-4 max-w-2xl text-lg leading-relaxed text-pretty text-ink-muted">
-            {{ localized(project.tagline) }}
+          <p class="max-w-[38ch] text-lead font-medium text-pretty lg:col-span-4">
+            {{ project.tagline }}
           </p>
+        </header>
 
-          <div class="mt-7 flex flex-wrap items-center gap-3">
-            <a
+        <div class="mt-12 grid items-end gap-x-10 gap-y-8 lg:grid-cols-12">
+          <dl class="grid grid-cols-2 gap-x-8 gap-y-5 text-base sm:grid-cols-4 lg:col-span-8">
+            <div>
+              <dt class="text-ink-faint">{{ t('projects.detail_year') }}</dt>
+              <dd class="font-semibold">{{ project.year }}</dd>
+            </div>
+            <div>
+              <dt class="text-ink-faint">{{ t('projects.detail_kind') }}</dt>
+              <dd class="font-semibold">
+                {{
+                  project.categories
+                    .map((category) => t(`projects.category_${category}`))
+                    .join(', ')
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-ink-faint">{{ t('projects.detail_status') }}</dt>
+              <dd class="font-semibold">{{ t(`projects.status_${project.status}`) }}</dd>
+            </div>
+            <div>
+              <dt class="text-ink-faint">{{ t('projects.detail_code') }}</dt>
+              <dd class="font-semibold">
+                {{ project.repoUrl ? t('projects.code_public') : t('global.private_repository') }}
+              </dd>
+            </div>
+          </dl>
+
+          <div class="flex flex-wrap gap-3 lg:col-span-4 lg:justify-end">
+            <NxrButton v-if="project.liveUrl" :href="project.liveUrl">
+              {{
+                project.liveUrl.includes('/releases')
+                  ? t('projects.download')
+                  : t('global.open_live')
+              }}
+              <ArrowUpRight
+                v-bind="iconMotion"
+                triggerTarget="parent"
+                class="size-4.5"
+                aria-hidden="true"
+              />
+            </NxrButton>
+            <NxrButton
               v-if="project.repoUrl"
               :href="project.repoUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="nx-meta inline-flex items-center gap-2 border border-line px-4 py-2.5 text-ink-muted transition-colors hover:border-dev hover:text-dev"
+              :variant="project.liveUrl ? 'plain' : 'primary'"
             >
               {{ t('global.open_repository') }}
               <ArrowUpRight
                 v-bind="iconMotion"
                 triggerTarget="parent"
-                class="size-3.5 shrink-0"
+                class="size-4.5"
                 aria-hidden="true"
               />
-            </a>
-            <a
-              v-if="project.liveUrl"
-              :href="project.liveUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="nx-meta inline-flex items-center gap-2 border border-dev bg-dev/10 px-4 py-2.5 text-dev"
-            >
-              {{ t('global.open_live') }}
-              <ArrowUpRight
-                v-bind="iconMotion"
-                triggerTarget="parent"
-                class="size-3.5 shrink-0"
-                aria-hidden="true"
-              />
-            </a>
-            <span
-              v-if="!project.repoUrl"
-              class="nx-meta flex items-center gap-2 border border-line px-4 py-2.5 text-ink-faint"
-            >
-              <span aria-hidden="true" class="h-1 w-1 bg-ink-faint" />
-              {{ t('global.private_repository') }}
-            </span>
-          </div>
-        </header>
-
-        <!--
-          The gallery is the hero where there are screens: a fixed 21:9 band
-          above it would either repeat the lead shot or crop a phone screen to
-          a strip. Projects without screenshots keep the generated blueprint.
-        -->
-        <div class="mt-10">
-          <NxrProjectGallery
-            v-if="project.shots.length > 0"
-            :shots="project.shots"
-            :orientation="project.shotOrientation"
-            :project-name="project.name"
-          />
-          <div v-else class="relative aspect-[21/9] max-h-80 overflow-hidden border border-line">
-            <NxrBlueprintVisual :seed="project.slug" :category="project.categories[0] ?? 'web'" />
+            </NxrButton>
           </div>
         </div>
 
-        <div class="mt-14 grid gap-12 lg:grid-cols-12">
-          <div class="flex flex-col gap-10 lg:col-span-8">
-            <section v-for="block in detailBlocks" :key="block.key">
-              <h2 class="nx-meta flex items-center gap-4 text-dev">
-                {{ block.label }}
-                <span class="h-px flex-1 bg-line" />
-              </h2>
-              <p class="mt-4 text-lg leading-relaxed text-pretty text-ink-muted">
-                {{ block.body }}
-              </p>
-            </section>
+        <div class="mt-12">
+          <ProjectMedia :project is-eager />
+        </div>
 
-            <section v-if="challenges.length > 0">
-              <h2 class="nx-meta flex items-center gap-4 text-dev">
-                {{ t('projects.detail_challenges') }}
-                <span class="h-px flex-1 bg-line" />
-              </h2>
-              <ul class="mt-4 flex flex-col gap-3">
-                <li
-                  v-for="(entry, index) in challenges"
-                  :key="index"
-                  class="border-l border-line pl-4 text-ink-muted"
-                >
-                  {{ entry }}
-                </li>
-              </ul>
-            </section>
-
-            <section v-if="learnings.length > 0">
-              <h2 class="nx-meta flex items-center gap-4 text-dev">
-                {{ t('projects.detail_learnings') }}
-                <span class="h-px flex-1 bg-line" />
-              </h2>
-              <ul class="mt-4 flex flex-col gap-3">
-                <li
-                  v-for="(entry, index) in learnings"
-                  :key="index"
-                  class="border-l border-line pl-4 text-ink-muted"
-                >
-                  {{ entry }}
-                </li>
-              </ul>
-            </section>
+        <section
+          v-if="detailBlocks.length"
+          :aria-label="t('projects.detail_story')"
+          class="mt-[clamp(4rem,8vw,7rem)] flex flex-col gap-10"
+        >
+          <div
+            v-for="(block, index) in detailBlocks"
+            :key="block.key"
+            v-reveal="index % 2"
+            class="grid gap-x-10 gap-y-3 lg:grid-cols-12"
+          >
+            <h2 class="text-section font-bold lg:col-span-4">{{ block.label }}</h2>
+            <p class="max-w-[62ch] text-lead text-pretty lg:col-span-7 lg:col-start-6">
+              {{ block.body }}
+            </p>
           </div>
 
-          <aside class="lg:col-span-4">
-            <h2 class="nx-meta text-dev">{{ t('projects.detail_stack') }}</h2>
-            <ul class="mt-4 flex flex-col">
-              <li
-                v-for="tech in project.stack"
-                :key="tech"
-                class="border-b border-line py-2.5 font-mono text-sm text-ink-muted"
-              >
-                {{ tech }}
-              </li>
-            </ul>
-          </aside>
+          <div v-reveal class="grid gap-x-10 gap-y-3 lg:grid-cols-12">
+            <h2 class="text-section font-bold lg:col-span-4">{{ t('projects.detail_stack') }}</h2>
+            <p class="text-lead lg:col-span-7 lg:col-start-6">{{ project.stack.join(', ') }}</p>
+          </div>
+        </section>
+
+        <div
+          v-if="restGroups.length"
+          class="mt-[clamp(4rem,8vw,7rem)] grid gap-6"
+          :class="restColumns"
+        >
+          <figure v-for="(group, index) in restGroups" :key="group[0]!.src" v-reveal="index % 3">
+            <ProjectMedia :project :shots="group" />
+            <figcaption class="mt-3 text-base text-ink-muted">
+              {{ group.map((shot) => shot.label).join(', ') }}
+            </figcaption>
+          </figure>
         </div>
+
+        <RouterLink
+          :to="{ name: 'project-detail', params: { slug: nextProject.slug } }"
+          class="group mt-section mb-[clamp(4rem,8vw,7rem)] block"
+        >
+          <span class="text-lead font-medium text-ink-muted">{{ t('projects.next') }}</span>
+          <span
+            class="mt-2 flex items-center gap-4 text-[clamp(2.75rem,8vw,8rem)] leading-[0.9] font-black tracking-[-0.06em] uppercase group-hover:text-link"
+          >
+            {{ shortProjectName(nextProject.name) }}
+            <ArrowUpRight
+              v-bind="iconMotion"
+              triggerTarget="parent"
+              class="size-[0.6em] shrink-0"
+              aria-hidden="true"
+            />
+          </span>
+        </RouterLink>
       </template>
 
-      <p v-else class="mt-16 font-mono text-sm text-ink-muted">
-        {{ t('projects.not_found') }}
-      </p>
-    </div>
+      <p v-else class="mt-10 mb-section text-lead">{{ t('projects.not_found') }}</p>
+    </main>
 
-    <AppFooter />
+    <SiteFooter />
   </div>
 </template>

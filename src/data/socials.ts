@@ -1,5 +1,3 @@
-import type { LocalizedText } from '@/types/i18n.type'
-
 export const brandList = ['github', 'linkedin', 'instagram', 'spotify', 'mail'] as const
 export type Brand = (typeof brandList)[number]
 
@@ -15,7 +13,7 @@ export interface SocialLinkProps {
   /** Picks the mark rendered on the card. */
   brand: Brand
   /** What the account actually is, since two of them are Instagram. */
-  note: LocalizedText
+  note: string
 }
 
 export const socials: SocialLinkProps[] = [
@@ -25,7 +23,7 @@ export const socials: SocialLinkProps[] = [
     handle: 'nexron-studios',
     href: 'https://github.com/nexron-studios',
     brand: 'github',
-    note: { de: 'Code und Projekte', en: 'Code and projects' }
+    note: 'Code and projects'
   },
   {
     id: 'linkedin',
@@ -33,7 +31,7 @@ export const socials: SocialLinkProps[] = [
     handle: 'jonasglatz',
     href: 'https://de.linkedin.com/in/jonasglatz',
     brand: 'linkedin',
-    note: { de: 'Beruflicher Werdegang', en: 'Professional profile' }
+    note: 'Professional profile'
   },
   {
     id: 'instagram-nexron',
@@ -41,7 +39,7 @@ export const socials: SocialLinkProps[] = [
     handle: 'nexronstudios',
     href: 'https://www.instagram.com/nexronstudios/',
     brand: 'instagram',
-    note: { de: 'Firmenaccount', en: 'Company account' }
+    note: 'Company account'
   },
   {
     id: 'instagram-personal',
@@ -49,7 +47,7 @@ export const socials: SocialLinkProps[] = [
     handle: 'jonasglatz',
     href: 'https://www.instagram.com/jonasglatz/',
     brand: 'instagram',
-    note: { de: 'Privat', en: 'Personal' }
+    note: 'Personal'
   },
   {
     // No handle, and the `?si=` share token is stripped from the URL: both name
@@ -59,30 +57,25 @@ export const socials: SocialLinkProps[] = [
     label: 'Spotify',
     href: 'https://open.spotify.com/user/mr_funnykuchen',
     brand: 'spotify',
-    note: { de: 'Was ich sonst so höre', en: 'What else I listen to' }
+    note: 'What else I listen to'
   },
   {
     id: 'mail',
     label: 'Mail',
-    handle: 'nexronstudios@gmail.com',
     href: 'mailto:nexronstudios@gmail.com',
     brand: 'mail',
-    note: { de: 'Firmenmail', en: 'Company mail' }
+    note: 'Company mail'
   }
 ]
-
-/**
- * The three that belong above the fold. The full set gets its own card grid
- * above the footer; repeating all six in the hero would turn the spec strip
- * into a link dump.
- */
-export const heroSocialIds = ['github', 'linkedin', 'mail']
 
 /**
  * What the phone menu shows under the navigation: the ones someone would look
  * for while already on the site. Spotify and the private Instagram stay in
  * the card grid.
  */
+/** The three that sit under the hero sentence. */
+export const heroSocialIds = ['github', 'linkedin', 'mail']
+
 export const menuSocialIds = ['github', 'linkedin', 'instagram-nexron', 'mail']
 
 export const socialsById = (ids: string[]): SocialLinkProps[] =>
@@ -93,8 +86,8 @@ export interface IdentityProps {
   brand: string
   location: string
   email: string
-  role: LocalizedText
-  tagline: LocalizedText
+  role: string
+  tagline: string
 }
 
 export const identity: IdentityProps = {
@@ -102,12 +95,6 @@ export const identity: IdentityProps = {
   brand: 'NEXRON Studios',
   location: 'Baden-Württemberg, DE',
   email: 'nexronstudios@gmail.com',
-  role: {
-    de: 'Developer · KI · 3D & Design',
-    en: 'Developer · AI · 3D & Design'
-  },
-  tagline: {
-    de: 'Projekte bauen, Technologie erkunden, durch Machen lernen.',
-    en: 'Building projects, exploring technology and learning by doing.'
-  }
+  role: 'Developer · AI · 3D & Design',
+  tagline: 'Building projects, exploring technology and learning by doing.'
 }
