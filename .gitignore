@@ -149,3 +149,5 @@ vite.config.ts.timestamp-*
 .taste-skill
 # Local Obsidian vault link
 .obsidian-vault
+
+doc/
