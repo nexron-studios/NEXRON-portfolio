@@ -61,11 +61,15 @@ const restGroups = computed(() => {
   return current.shots.slice(1).map((shot) => [shot])
 })
 
-/** Three screens sit in one row; two or four in pairs; one alone. */
+/**
+ * Three screens sit in one row; two or four in pairs. A single one takes the
+ * size of one tile of the row of three, centred: alone at full width it
+ * filled the screen (Tracki's last phone screen on a wall of violet).
+ */
 const restColumns = computed(() => {
   const count = restGroups.value.length
-  if (count === 3) return 'md:grid-cols-3'
-  return count > 1 ? 'md:grid-cols-2' : ''
+  if (count === 3 || count === 1) return 'md:grid-cols-3'
+  return 'md:grid-cols-2'
 })
 
 const BASE_TITLE = 'Jonas Glatz – Developer, AI & Design'
@@ -198,7 +202,12 @@ onBeforeUnmount(() => {
           class="mt-[clamp(4rem,8vw,7rem)] grid gap-6"
           :class="restColumns"
         >
-          <figure v-for="(group, index) in restGroups" :key="group[0]!.src" v-reveal="index % 3">
+          <figure
+            v-for="(group, index) in restGroups"
+            :key="group[0]!.src"
+            v-reveal="index % 3"
+            :class="{ 'md:col-start-2': restGroups.length === 1 }"
+          >
             <ProjectMedia :project :shots="group" />
             <figcaption class="mt-3 text-base text-ink-muted">
               {{ group.map((shot) => shot.label).join(', ') }}
