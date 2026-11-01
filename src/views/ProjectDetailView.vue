@@ -96,7 +96,7 @@ onBeforeUnmount(() => {
       <template v-if="project">
         <header class="mt-10 grid items-end gap-x-10 gap-y-8 lg:grid-cols-12">
           <h1
-            class="text-[clamp(3.25rem,10vw,10rem)] leading-[0.86] font-black tracking-[-0.06em] break-words uppercase lg:col-span-8"
+            class="text-[clamp(2.75rem,6vw,6.5rem)] leading-[0.88] font-black tracking-[-0.055em] break-words uppercase lg:col-span-8"
           >
             {{ shortProjectName(project.name) }}
           </h1>
@@ -163,7 +163,10 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <div class="mt-12">
+        <!-- The lead screen is capped so the whole 16:10 frame fits in about
+             70 % of the screen height: full width it stood 1200 px tall on a
+             wide monitor, and a small screenshot floated lost inside it. -->
+        <div class="mx-auto mt-12 w-full max-w-[min(72rem,112svh)]">
           <ProjectMedia :project is-eager />
         </div>
 
