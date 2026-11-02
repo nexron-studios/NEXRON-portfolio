@@ -87,26 +87,25 @@ const { stop: stopSignObserver } = useIntersectionObserver(
            source is thresholded, so the photographed figure in the middle
            breaks into black gaps like the cut-out figures beside it. The
            top fades in a little and the bottom out, so the picture neither
-           starts nor ends in a hard cut. -->
+           starts nor ends in a hard cut. The fade sits on the frame, so the
+           knight in front fades with the shrine. -->
       <div
-        class="pointer-events-none relative order-last mt-12 aspect-[1179/956] w-full lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:aspect-auto lg:w-[56%]"
+        class="pointer-events-none relative order-last mt-12 aspect-[1179/956] w-full [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_62%,transparent)] lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:aspect-auto lg:w-[56%]"
       >
         <DitherArt
           :src="shrineArt"
           :cell="4"
           :strength="0.85"
           is-outlined
-          class="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_62%,transparent)]"
+          class="absolute inset-0"
         />
         <!-- A knight kneeling at the shrine's foot, from Jonas' mockup, in
              the shrine's halftone. The cut-out was grain, which the dots
              averaged into one grey field, so its source is blurred to tones
-             and darkened in the mids. Its alpha is his silhouette: a void
-             shape in it hides the shrine, or its dots would show through
-             his dark armour. -->
-        <div
-          class="absolute bottom-0 left-[2%] aspect-[342/464] w-[30%] [mask-image:linear-gradient(to_bottom,black_88%,transparent)]"
-        >
+             and thresholded (175/245) to the brightness of the shrine's
+             lower half. Its alpha is his silhouette: a void shape in it
+             hides the shrine, or its dots would show through his armour. -->
+        <div class="absolute bottom-0 left-[2%] aspect-[342/464] w-[30%]">
           <span
             aria-hidden="true"
             class="absolute inset-0 bg-void [mask-size:100%_100%]"

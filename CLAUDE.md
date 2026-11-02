@@ -144,9 +144,12 @@ copy so the text keeps the focus. A kneeling knight (`knight-kneeling.png`,
 cut from a later mockup of Jonas', 2026-11-02) sits in front of the
 shrine's lower left in the same halftone (`cell` 3, he is small). The
 cut-out was grain, which the dots averaged into one bright grey field, so
-the source is blurred 1 px to tones and darkened (levels from 0.2, gamma
-1.5). Shown as the plain picture he was far too bright and off-style
-(Jonas). Its alpha is his silhouette; a `void` shape masked by it hides the
+the source is blurred 1 px to tones and then thresholded (175 black, 245
+white) to the brightness of the shrine's lower half (mean ~82, a fifth pure
+white); a soft gamma curve left three times the shrine's mid-greys, and the
+shrine's own 155/230 left him too white (Jonas). The bottom fade sits on the
+frame around both, so he fades out with the shrine. Shown as the plain
+picture he was far too bright and off-style. Its alpha is his silhouette; a `void` shape masked by it hides the
 shrine, whose dots would otherwise show through his dark armour.
 
 **Print textures** (`DitherArt`, since 2026-11-01): the sibling of
