@@ -14,8 +14,12 @@ import { nextDropRow, pickGlyph } from '@/utils/matrixRain'
  * row, then leaves exactly that glyph behind in ink, so nothing flickers.
  *
  * Canvas 2D at 20 frames a second, and only while it is on screen. The trail
- * comes from painting the ground over the last frame at low opacity rather
- * than tracking every glyph, which is what keeps it cheap. Under reduced
+ * comes from erasing the last frame at low opacity (`destination-out`) rather
+ * than tracking every glyph, which is what keeps it cheap. The canvas stays
+ * transparent, so the page ground and the stars show through. Painting the
+ * ground colour at 4 % instead rounded to pure black on the transparent
+ * bitmap, and the masked edges of that black field showed as horizontal
+ * bands. Under reduced
  * motion one still frame is drawn and nothing moves.
  *
  * Decoration only: `aria-hidden`, no pointer events.
@@ -46,7 +50,6 @@ let dpr = 1
 let frame = 0
 let last = 0
 let isOnScreen = false
-let ground = '#0c0c0c'
 let ink = '#f3f3f1'
 let head = '#8b5cf6'
 
@@ -55,7 +58,6 @@ const colWidth = (): number => cell * 0.72
 const readColors = (): void => {
   if (!root.value) return
   const style = getComputedStyle(root.value)
-  ground = style.getPropertyValue('--color-void').trim() || ground
   ink = style.getPropertyValue('--color-ink').trim() || ink
   head = style.getPropertyValue('--color-violet').trim() || head
 }
@@ -69,6 +71,7 @@ const reset = (): void => {
   dpr = Math.min(window.devicePixelRatio || 1, 2)
   target.width = Math.round(width * dpr)
   target.height = Math.round(height * dpr)
+  // Resizing the bitmap clears it, which is the empty start we want.
 
   const columns = Math.ceil(width / colWidth())
   const rows = Math.ceil(height / cell)
@@ -82,16 +85,15 @@ const reset = (): void => {
   const context = target.getContext('2d')
   if (!context) return
   context.setTransform(dpr, 0, 0, dpr, 0, 0)
-  context.fillStyle = ground
-  context.fillRect(0, 0, width, height)
 }
 
 const step = (context: CanvasRenderingContext2D): void => {
   const rows = Math.ceil(height / cell)
 
+  context.globalCompositeOperation = 'destination-out'
   context.globalAlpha = TRAIL_FADE
-  context.fillStyle = ground
   context.fillRect(0, 0, width, height)
+  context.globalCompositeOperation = 'source-over'
   context.globalAlpha = 1
   context.font = `600 ${cell * 0.8}px ui-monospace, monospace`
   context.textBaseline = 'top'
@@ -115,8 +117,7 @@ const step = (context: CanvasRenderingContext2D): void => {
 }
 
 const drawStill = (context: CanvasRenderingContext2D): void => {
-  context.fillStyle = ground
-  context.fillRect(0, 0, width, height)
+  context.clearRect(0, 0, width, height)
   context.font = `600 ${cell * 0.8}px ui-monospace, monospace`
   context.textBaseline = 'top'
   for (let column = 0; column < drops.length; column++) {
