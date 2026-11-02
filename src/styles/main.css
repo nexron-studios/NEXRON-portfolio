@@ -10,7 +10,14 @@
     box-sizing: border-box;
   }
 
+  /* Past 1920 × 1080 the rem grows with the screen, so type and spacing keep
+     pace with the art, which is sized in vw and %. Without it a 2560 or 4K
+     screen showed the 1920 text inside 4K-sized pictures that ran into each
+     other. min() of width and height keeps an ultrawide from blowing type up.
+     Media queries resolve rem against the browser default, so breakpoints
+     do not move. */
   html {
+    font-size: max(100%, min(100vw / 120, 100vh / 67.5));
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
