@@ -54,7 +54,7 @@ const categoryLine = (index: number): string =>
     </div>
 
     <ul
-      class="relative mt-[clamp(2.5rem,5vw,4rem)] grid gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+      class="relative mt-[clamp(2.5rem,5vw,4rem)] grid gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3"
     >
       <li v-for="(project, index) in projects" :key="project.slug" v-reveal="index % 3">
         <RouterLink

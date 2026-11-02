@@ -14,7 +14,7 @@ Design (redesign of 2026-11-01, branch `feat/redesign`): **dark only**,
 near-black ground, off-white ink, two accents with one job each (see
 `tokens.css`): blue = clickable, violet = emphasis, never swapped. The hero is
 two monument lines fitted to the full width under two ASCII angels; the page
-order is hero, Projects (five equal cards in one row on wide screens; no
+order is hero, Projects (six equal cards, three per row from `lg`; no
 large lead card), About (text, services and the full tech stack, over the star field),
 Journey, Contact over the Matrix rain, footer with social cards.
 `.taste-skill/` holds the before/after inspector runs of that redesign.

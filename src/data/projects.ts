@@ -1,4 +1,7 @@
 import type { ProjectProps } from '@/types/project.type'
+import agentDetail from '@/assets/projects/agentdashboard/detail.webp'
+import agentOverview from '@/assets/projects/agentdashboard/overview.webp'
+import agentRecent from '@/assets/projects/agentdashboard/recent.webp'
 import batteryDark from '@/assets/projects/battery/hero-dark.png'
 import batteryLight from '@/assets/projects/battery/hero-light.png'
 import batteryLow from '@/assets/projects/battery/low-dark.png'
@@ -121,6 +124,35 @@ export const projects: ProjectProps[] = [
       idea: 'A permanently visible kiosk display instead of yet another browser tab. The target device is a Raspberry Pi with a 7" touchscreen at 1024 × 600, and it runs on a desktop just as well.',
       implementation:
         'Poller, cache and SQLite in the FastAPI backend, which listens on 127.0.0.1 only. Data comes from two sources: the OAuth usage endpoints for remaining quota and reset time, plus both CLIs’ local JSONL logs for per-project and per-model consumption. If the endpoint fails, fresh rate_limits from the Codex rollout logs act as a fallback. Tauri wraps it all as a desktop app.',
+      challenges: [],
+      learnings: []
+    }
+  },
+  {
+    slug: 'agent-dashboard',
+    name: 'NEXRON Agent Dashboard',
+    tagline: 'Live overview of every Claude Code session running on your machine.',
+    categories: ['desktop', 'tools', 'ai'],
+    stack: ['Tauri', 'Rust', 'Vue 3', 'TypeScript', 'Tailwind CSS', 'Python'],
+    year: 2026,
+    visibility: 'public',
+    repoUrl: `${GITHUB_OWNER}/agentdashboard`,
+    liveUrl: null,
+    status: 'building',
+    shots: [
+      { src: agentOverview, label: 'Running sessions as cards' },
+      { src: agentDetail, label: 'Detail view of a session' },
+      { src: agentRecent, label: 'Recent sessions, grouped by day' }
+    ],
+    shotOrientation: 'landscape',
+    detail: {
+      overview:
+        'A desktop app that shows every running Claude Code session as a card: whether it is working, done or waiting for approval, the first and latest prompt, the last step, running subagents and how full the context window is. A detail view lists every prompt, tool usage, tokens per model and a timeline.',
+      problem:
+        'With several Claude Code sessions open at once you keep clicking through terminal tabs just to find the one that is waiting for you.',
+      idea: 'One window next to the terminal that answers "who needs me?" at a glance, and one click that takes you straight to that session: its terminal tab, its VS Code window or its project folder.',
+      implementation:
+        'Tauri 2 with a Rust core that reads Claude Code’s own files and never writes to them: live sessions from each profile’s session files, content from the JSONL transcripts, read incrementally so polling every two seconds stays cheap. Multiple Claude accounts are told apart by colour, and herdr tabs are matched by process ID. Vue 3 and Tailwind on the front. A dependency-free Python version runs in the terminal.',
       challenges: [],
       learnings: []
     }
