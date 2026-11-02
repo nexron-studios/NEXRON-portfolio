@@ -72,6 +72,12 @@ this repo differ from them on purpose:
   the tagline beside it off the screen as well. Checked on 2026-11-02 by
   scanning every route at 320, 360, 390, 768, 1024, 1280, 1440 and 1920 px
   for text past the viewport edge.
+- **Past 1920 × 1080 the whole page scales.** `html` font-size is
+  `max(100%, min(100vw / 120, 100vh / 67.5))`, so rem-sized type and spacing
+  grow with the vw- and %-sized art; before (2026-11-02) a 2560 or 4K screen
+  showed 1920 text inside 4K pictures that ran into each other. Media
+  queries still resolve rem against the browser default. Trade-off: on such
+  screens browser zoom does little until the 100 % floor takes over.
 - **Monument lines are fitted by CSS, not script.** The hero `h1` is an
   inline-size container; each line is `font-size: calc(100cqi / --nx-ems)`,
   where `--nx-ems` is that line's width in ems, measured once in the browser
@@ -134,7 +140,14 @@ beside it; mapped straight it was one big white field. The white thorn
 wire (`wire.png`, same collage, copy masked out) lies behind the text on
 `lg` screens only. Both carry `is-outlined` (dots on the rim in
 `ink-dim`, as on the angels), and a radial pool in `void` sits under the
-copy so the text keeps the focus.
+copy so the text keeps the focus. A kneeling knight (`knight-kneeling.png`,
+cut from a later mockup of Jonas', 2026-11-02) sits in front of the
+shrine's lower left in the same halftone (`cell` 3, he is small). The
+cut-out was grain, which the dots averaged into one bright grey field, so
+the source is blurred 1 px to tones and darkened (levels from 0.2, gamma
+1.5). Shown as the plain picture he was far too bright and off-style
+(Jonas). Its alpha is his silhouette; a `void` shape masked by it hides the
+shrine, whose dots would otherwise show through his dark armour.
 
 **Print textures** (`DitherArt`, since 2026-11-01): the sibling of
 `AsciiArt` for texture instead of characters, from Jonas's moodboard of
@@ -175,7 +188,10 @@ target that is clipped away completely. `.nx-grain` lays film grain over the
 page.
 
 **The Matrix rain** (`MatrixRain`, behind Contact) is a 2D canvas at 20 fps,
-only while on screen; trails come from repainting the ground at low opacity.
+only while on screen; trails come from erasing the last frame at low opacity.
+The canvas stays transparent and the trail is erased with `destination-out`:
+fading by painting `void` at 4 % rounded to pure black on the transparent
+bitmap, and its masked edges showed as horizontal bands (2026-11-02).
 Slow on purpose (3 to 8 rows a second) and ASCII only: no katakana, Jonas
 does not want Asian characters on the page. Its pure rules (glyph pick, drop
 restart) live in `src/utils/matrixRain.ts`.
