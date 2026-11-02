@@ -4,6 +4,7 @@ import { useI18n, I18nT } from 'vue-i18n'
 import { useIntersectionObserver } from '@vueuse/core'
 import { Box, Brain, Code, Cpu } from '@respeak/lucide-motion-vue'
 import fadeArt from '@/assets/art/fade.png'
+import kneelingKnightArt from '@/assets/art/knight-kneeling.png'
 import shrineArt from '@/assets/art/shrine.png'
 import wireArt from '@/assets/art/wire.png'
 import { STUDY_HREF } from '@/data/experience'
@@ -87,13 +88,39 @@ const { stop: stopSignObserver } = useIntersectionObserver(
            breaks into black gaps like the cut-out figures beside it. The
            top fades in a little and the bottom out, so the picture neither
            starts nor ends in a hard cut. -->
-      <DitherArt
-        :src="shrineArt"
-        :cell="4"
-        :strength="0.85"
-        is-outlined
-        class="pointer-events-none relative order-last mt-12 aspect-[1179/956] w-full [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_62%,transparent)] lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:aspect-auto lg:w-[56%]"
-      />
+      <div
+        class="pointer-events-none relative order-last mt-12 aspect-[1179/956] w-full lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:aspect-auto lg:w-[56%]"
+      >
+        <DitherArt
+          :src="shrineArt"
+          :cell="4"
+          :strength="0.85"
+          is-outlined
+          class="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_62%,transparent)]"
+        />
+        <!-- A knight kneeling at the shrine's foot, from Jonas' mockup, in
+             the shrine's halftone. The cut-out was grain, which the dots
+             averaged into one grey field, so its source is blurred to tones
+             and darkened in the mids. Its alpha is his silhouette: a void
+             shape in it hides the shrine, or its dots would show through
+             his dark armour. -->
+        <div
+          class="absolute bottom-0 left-[2%] aspect-[342/464] w-[30%] [mask-image:linear-gradient(to_bottom,black_88%,transparent)]"
+        >
+          <span
+            aria-hidden="true"
+            class="absolute inset-0 bg-void [mask-size:100%_100%]"
+            :style="{ maskImage: `url(${kneelingKnightArt})` }"
+          />
+          <DitherArt
+            :src="kneelingKnightArt"
+            :cell="3"
+            :strength="0.85"
+            is-outlined
+            class="absolute inset-0"
+          />
+        </div>
+      </div>
 
       <!-- The white thorn wire from the same collage, behind the copy on
            wide screens; the copy comes later and stays on top. -->
