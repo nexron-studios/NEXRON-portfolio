@@ -88,6 +88,15 @@ this repo differ from them on purpose:
   (5.58 and 6.68). Change the words or the face and re-measure. A JS fitter
   was tried and overshot when fonts arrived late. Tracking must sit on the
   line itself in `em`; inherited from a parent it arrives as fixed pixels.
+- **The hero fits the first screen, in three steps.** The lines keep the full
+  width, so their height follows the width and a 2:1 window (4K with browser
+  bars) ran out of height: the links fell off the screen. From `md`, first the
+  top padding gives way down to 6 rem. Then copy, buttons and links move into
+  one row (a `min-width` that turns negative when the height is short, because
+  a media query cannot compare height with width plus rem). Past 20:9 the lines
+  stop short of the right edge, the only case where they do. The `26.2vw`,
+  `21.5rem`, `27.5rem` and `19.5rem` are measured; re-measure when the copy
+  block changes. 16:9 is pixel-identical to before.
 - **`v-reveal` only hides content under `<html class="js">`**, which the
   inline script in `index.html` sets.
 

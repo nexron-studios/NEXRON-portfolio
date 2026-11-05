@@ -20,7 +20,7 @@ import NxrButton from '@/components/ui/NxrButton.vue'
  * links. (A block of four facts used to sit beside them; it only repeated
  * what the sentence, the role and the page below already say.)
  *
- * Both lines span the full width at every size, by CSS alone: the `h1` is an
+ * Both lines span the full width up to 20:9, by CSS alone: the `h1` is an
  * inline-size container and each line's font size is the container width
  * divided by how many ems that line is wide (`--nx-ems`, measured once in
  * the browser). No script measures anything, so nothing can overshoot when a
@@ -47,15 +47,24 @@ const heroSocials = socialsById(heroSocialIds).map((social) => ({
 </script>
 
 <template>
+  <!-- The headline's height follows the width, so a window wider than 16:9
+       (4K with browser bars) has no room left for the links. From md the top
+       padding gives way first: 26.2vw is the headline, 21.5rem everything
+       below it. -->
   <section
     id="top"
-    class="relative flex min-h-svh flex-col justify-center overflow-hidden px-gutter pt-[clamp(6rem,14vh,9rem)] pb-[clamp(1.5rem,4vh,2.5rem)] md:justify-start"
+    class="relative flex min-h-svh flex-col justify-center overflow-hidden px-gutter pt-[clamp(6rem,14vh,9rem)] pb-[clamp(1.5rem,4vh,2.5rem)] md:justify-start md:pt-[clamp(6rem,min(14vh,100svh-26.2vw-21.5rem),9rem)]"
   >
     <!-- On phones this block is the angels' box, so they sit behind the
          headline wherever the centred layout puts it; from md it is static
          and they span the whole hero. -->
     <div class="max-md:relative">
-      <h1 class="nx-monument relative font-black select-none">
+      <!-- Past the ultrawide brake on rem (20:9) even the row does not fit under
+           full-width lines, so only there the lines stop short: 0.262 is their
+           height per width, 19.5rem the rest of the hero. -->
+      <h1
+        class="nx-monument relative font-black select-none md:[@media(min-aspect-ratio:20/9)]:max-w-[calc((100svh-19.5rem)/0.262)]"
+      >
         <span class="sr-only">{{ identity.name }}, </span>
 
         <span
@@ -112,31 +121,39 @@ const heroSocials = socialsById(heroSocialIds).map((social) => ({
       </p>
     </div>
 
-    <div class="relative pt-12 text-center md:mt-auto md:text-left">
-      <div class="mx-auto max-w-xl md:mx-0">
-        <!-- The three parts that say who and what are set apart: the name
-             in full weight, the studio in blue, the work in violet. -->
-        <I18nT
-          v-reveal="2"
-          keypath="hero.intro"
-          tag="p"
-          scope="global"
-          class="mx-auto max-w-[38ch] text-lead font-medium text-pretty md:mx-0"
-        >
-          <template #name>
-            <strong class="font-black">{{ identity.name }}</strong>
-          </template>
-          <template #studio>
-            <strong class="font-bold text-violet">{{ identity.brand }}</strong>
-          </template>
-          <template #work>
-            <strong class="font-bold text-violet">{{ t('hero.intro_work') }}</strong>
-          </template>
-        </I18nT>
+    <div class="relative pt-12 text-center md:mt-auto md:pt-6 md:text-left">
+      <!-- Stacked while the free height holds it. Below that the min-width
+           goes negative, counts as 0, and the three parts share one row: the
+           same sum as the top padding, 27.5rem being its 21.5rem plus the
+           6rem floor. -->
+      <div
+        class="mx-auto max-w-xl md:mx-0 md:flex md:max-w-none md:flex-wrap md:items-end md:gap-x-12 md:gap-y-8 md:*:min-w-[min(100%,(100svh-26.2vw-27.5rem)*999)]"
+      >
+        <div>
+          <!-- The three parts that say who and what are set apart: the name
+               in full weight, the studio in blue, the work in violet. -->
+          <I18nT
+            v-reveal="2"
+            keypath="hero.intro"
+            tag="p"
+            scope="global"
+            class="mx-auto max-w-[38ch] text-lead font-medium text-pretty md:mx-0"
+          >
+            <template #name>
+              <strong class="font-black">{{ identity.name }}</strong>
+            </template>
+            <template #studio>
+              <strong class="font-bold text-violet">{{ identity.brand }}</strong>
+            </template>
+            <template #work>
+              <strong class="font-bold text-violet">{{ t('hero.intro_work') }}</strong>
+            </template>
+          </I18nT>
+        </div>
 
         <div
           v-reveal="3"
-          class="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start"
+          class="mt-8 flex flex-wrap items-center justify-center gap-3 md:mt-0 md:justify-start"
         >
           <NxrButton href="#projects" @click="goTo('projects', $event)">
             {{ t('hero.cta') }}
@@ -154,7 +171,7 @@ const heroSocials = socialsById(heroSocialIds).map((social) => ({
 
         <ul
           v-reveal="4"
-          class="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-3 text-base font-semibold md:justify-start"
+          class="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-3 text-base font-semibold md:mt-0 md:justify-start"
         >
           <li v-for="social in heroSocials" :key="social.id">
             <a
