@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { ProjectProps, ProjectShotProps } from '@/types/project.type'
 
 /**
@@ -25,6 +25,20 @@ const {
 }>()
 
 const PHONE_SCREENS = 3
+/** Inner shape of the frame. A wider picture fills its width, any other its height. */
+const FRAME_ASPECT = 16 / 10
+
+const shotImage = ref<HTMLImageElement | null>(null)
+const isShotWide = ref(true)
+
+/**
+ * `max-w-full` alone never grows a picture past its own pixels, so on a large
+ * screen a small shot sat shrunken in the middle of its frame.
+ */
+const handleShotLoad = (): void => {
+  if (!shotImage.value) return
+  isShotWide.value = shotImage.value.naturalWidth / shotImage.value.naturalHeight >= FRAME_ASPECT
+}
 
 const isPortrait = computed(() => project.shotOrientation === 'portrait')
 
@@ -59,11 +73,14 @@ const visibleShots = computed(() => {
          a print on a mat, at its own aspect ratio. -->
     <div v-else-if="visibleShots[0]" class="absolute inset-[5%] flex items-center justify-center">
       <img
+        ref="shotImage"
         :src="visibleShots[0].src"
         :alt="visibleShots[0].label"
         :loading="isEager ? 'eager' : 'lazy'"
         decoding="async"
         class="max-h-full max-w-full rounded-[clamp(0.25rem,0.6vw,0.625rem)] object-contain shadow-[0_1.5rem_3rem_-1.5rem_rgb(0_0_0/0.45)]"
+        :class="isShotWide ? 'w-full' : 'h-full'"
+        @load="handleShotLoad"
       />
     </div>
   </div>

@@ -3,6 +3,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
+import { pageScale } from '@/utils/pageScale'
 
 /**
  * A live 3D scene set as halftone, the GL sibling of `DitherArt`: the frame is
@@ -18,7 +19,7 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
  * follows the brightness a reader sees rather than linear light.
  */
 
-/** Side of one grid cell in CSS px. */
+/** Side of one grid cell in CSS px at the 1920 layout. */
 const CELL_PX = 6
 /** Below 1 on purpose: the chrome is bright, and more would fill every cell. */
 const GAIN = 0.95
@@ -88,7 +89,7 @@ export const createHalftoneComposer = (
     composer.setPixelRatio(ratio)
     composer.setSize(width, height)
     halftone.uniforms.resolution!.value.set(width * ratio, height * ratio)
-    halftone.uniforms.cell!.value = CELL_PX * ratio
+    halftone.uniforms.cell!.value = CELL_PX * pageScale() * ratio
   }
 
   const size = renderer.getSize(new Vector2())

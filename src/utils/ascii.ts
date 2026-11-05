@@ -107,6 +107,24 @@ export const edgeCells = (
   return edge
 }
 
+/**
+ * When each cell of the grid finishes decoding, in ms: top rows first over
+ * `sweep`, plus a random wait of up to `spread` so the rows do not snap.
+ */
+export const decodeDelays = (
+  cols: number,
+  rows: number,
+  sweep: number,
+  spread: number,
+  random: () => number
+): Float32Array<ArrayBuffer> => {
+  const delays = new Float32Array(cols * rows)
+  for (let index = 0; index < delays.length; index++) {
+    delays[index] = (Math.floor(index / cols) / rows) * sweep + random() * spread
+  }
+  return delays
+}
+
 /** A block of cells: columns and rows from (inclusive) to (exclusive). */
 export interface CellRangeProps {
   colFrom: number

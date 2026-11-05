@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   ASCII_RAMP,
   cellRangeAround,
+  decodeDelays,
   edgeCells,
   asciiLevel,
   detailCells,
@@ -12,6 +13,16 @@ import {
   luminanceOf,
   quarterIndex
 } from '../ascii'
+
+describe('decodeDelays', () => {
+  it('should finish upper rows before lower ones', () => {
+    expect(Array.from(decodeDelays(1, 2, 600, 1000, () => 0))).toEqual([0, 300])
+  })
+
+  it('should add the random wait on top of the sweep', () => {
+    expect(Array.from(decodeDelays(2, 1, 600, 1000, () => 0.5))).toEqual([500, 500])
+  })
+})
 
 describe('asciiLevel', () => {
   it('should drop the dark ground to empty', () => {

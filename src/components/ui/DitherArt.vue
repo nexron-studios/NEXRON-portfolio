@@ -3,6 +3,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useEventListener, useIntersectionObserver, useResizeObserver } from '@vueuse/core'
 import { useUiStore } from '@/stores/ui'
 import { edgeCells, isWithinReach, levelsOf } from '@/utils/ascii'
+import { pageScale } from '@/utils/pageScale'
 import {
   glintBoost,
   halftoneRadius,
@@ -40,7 +41,7 @@ const {
 } = defineProps<{
   src: string
   mode?: DitherMode
-  /** Side of one grid cell in CSS px. */
+  /** Side of one grid cell in CSS px at the 1920 layout. */
   cell?: number
   tone?: 'ink' | 'violet'
   /** Overall opacity, 0 to 1. */
@@ -72,6 +73,8 @@ const LENS_EASE = 0.15
 const AMBIENT_FRAME_MS = 66
 
 let image: HTMLImageElement | null = null
+let growth = 1
+let cellPx = cell
 let levels = new Float32Array(0)
 let edge = new Uint8Array(0)
 let cols = 0
@@ -93,8 +96,10 @@ let outline = ''
 const sample = (): void => {
   const element = root.value
   if (!element || !image?.complete || image.naturalWidth === 0) return
-  cols = Math.ceil(element.clientWidth / cell)
-  rows = Math.ceil(element.clientHeight / cell)
+  growth = pageScale()
+  cellPx = cell * growth
+  cols = Math.ceil(element.clientWidth / cellPx)
+  rows = Math.ceil(element.clientHeight / cellPx)
   if (cols === 0 || rows === 0) return
 
   const probe = document.createElement('canvas')
@@ -144,7 +149,7 @@ const draw = (now: number): boolean => {
   // Before it is first seen nothing is drawn yet, so the reveal has a start.
   const hasStarted = revealStart >= 0
   const elapsed = uiStore.prefersReducedMotion ? Infinity : hasStarted ? now - revealStart : 0
-  const pixel = cell * BAYER_FILL
+  const pixel = cellPx * BAYER_FILL
   let isRevealing = false
   lensAmount += (lensTarget - lensAmount) * LENS_EASE
   const isLensMoving = Math.abs(lensTarget - lensAmount) > 0.004
@@ -165,15 +170,16 @@ const draw = (now: number): boolean => {
       const glint = isAmbientOn ? glintBoost(col, row, cols, rows, seconds) : 1
       const level = base * wind * glint
       if (level <= 0) continue
-      let x = col * cell + cell / 2
-      let y = row * cell + cell / 2
+      let x = col * cellPx + cellPx / 2
+      let y = row * cellPx + cellPx / 2
       if (isLensOn) {
         const dx = x - pointerX
         const dy = y - pointerY
         const distance = Math.hypot(dx, dy)
-        if (distance < LENS_RADIUS) {
-          const t = 1 - distance / LENS_RADIUS
-          const push = (t * t * (3 - 2 * t) * lensAmount * LENS_PUSH) / Math.max(distance, 1)
+        if (distance < LENS_RADIUS * growth) {
+          const t = 1 - distance / (LENS_RADIUS * growth)
+          const push =
+            (t * t * (3 - 2 * t) * lensAmount * LENS_PUSH * growth) / Math.max(distance, 1)
           x += dx * push
           y += dy * push
         }
@@ -183,7 +189,7 @@ const draw = (now: number): boolean => {
         if (isBayerLit(level, col, row)) shape.rect(x - pixel / 2, y - pixel / 2, pixel, pixel)
         continue
       }
-      const radius = halftoneRadius(level, cell)
+      const radius = halftoneRadius(level, cellPx)
       if (radius < 0.35) continue
       shape.moveTo(x + radius, y)
       shape.arc(x, y, radius, 0, Math.PI * 2)
@@ -236,7 +242,7 @@ useEventListener(
     if (!bounds) return
     pointerX = event.clientX - bounds.left
     pointerY = event.clientY - bounds.top
-    const isNear = isWithinReach(pointerX, pointerY, bounds, LENS_RADIUS)
+    const isNear = isWithinReach(pointerX, pointerY, bounds, LENS_RADIUS * growth)
     if (!isNear && lensTarget === 0) return
     lensTarget = isNear ? 1 : 0
     if (!frame) frame = requestAnimationFrame(tick)

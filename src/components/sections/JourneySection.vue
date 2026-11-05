@@ -142,7 +142,7 @@ const monogram = (organization: string): string =>
                line reads as running between stations, not through logos.
                Unlit it waits small and grey; the fill pops it. -->
           <span
-            class="relative z-10 flex size-12 items-center justify-center overflow-hidden rounded-full ring-[5px] ring-void transition-[scale,filter,box-shadow] duration-(--nx-dur-slow) ease-(--ease-out-expo)"
+            class="relative z-10 flex size-12 items-center justify-center overflow-hidden rounded-full ring-[0.3125rem] ring-void transition-[scale,filter,box-shadow] duration-(--nx-dur-slow) ease-(--ease-out-expo)"
             :class="[
               entry.logo && !entry.isLogoFullBleed ? 'bg-white' : 'bg-raised',
               isLit(index)

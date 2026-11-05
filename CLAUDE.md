@@ -72,12 +72,16 @@ this repo differ from them on purpose:
   the tagline beside it off the screen as well. Checked on 2026-11-02 by
   scanning every route at 320, 360, 390, 768, 1024, 1280, 1440 and 1920 px
   for text past the viewport edge.
-- **Past 1920 × 1080 the whole page scales.** `html` font-size is
-  `max(100%, min(100vw / 120, 100vh / 67.5))`, so rem-sized type and spacing
-  grow with the vw- and %-sized art; before (2026-11-02) a 2560 or 4K screen
-  showed 1920 text inside 4K pictures that ran into each other. Media
-  queries still resolve rem against the browser default. Trade-off: on such
-  screens browser zoom does little until the 100 % floor takes over.
+- **Past 1920 px the page is the 1920 layout, enlarged.** `html` font-size is
+  `max(100%, min(100vw / 120, 100vh / 54))`, so rem, vw and % grow together.
+  The vh term only brakes an ultrawide; at `100vh / 67.5` (2026-11-02) it also
+  caught every 16:9 screen with browser bars, and at 3840 × 2000 142 of 198
+  elements drifted, up to 17 % of the width, while F11 looked fine. Anything
+  in plain px misses the scaling: canvas grids, dots, glyphs and lens radii
+  multiply by `pageScale()`, and props like `cell` and `fontSize` mean CSS px
+  at the 1920 layout. Media queries still resolve rem against the browser
+  default. Trade-off: on such screens browser zoom does little until the
+  100 % floor takes over. Check it in a window with bars, not only full screen.
 - **Monument lines are fitted by CSS, not script.** The hero `h1` is an
   inline-size container; each line is `font-size: calc(100cqi / --nx-ems)`,
   where `--nx-ems` is that line's width in ems, measured once in the browser

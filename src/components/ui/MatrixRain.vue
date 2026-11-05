@@ -2,6 +2,7 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useIntersectionObserver, useResizeObserver } from '@vueuse/core'
 import { useUiStore } from '@/stores/ui'
+import { pageScale } from '@/utils/pageScale'
 import { nextDropRow, pickGlyph } from '@/utils/matrixRain'
 
 /**
@@ -25,7 +26,7 @@ import { nextDropRow, pickGlyph } from '@/utils/matrixRain'
  * Decoration only: `aria-hidden`, no pointer events.
  */
 const { cell = 18 } = defineProps<{
-  /** Height of one glyph row in CSS pixels. */
+  /** Height of one glyph row in CSS px at the 1920 layout. */
   cell?: number
 }>()
 
@@ -47,13 +48,14 @@ let glyphs: string[] = []
 let width = 0
 let height = 0
 let dpr = 1
+let rowPx = cell
 let frame = 0
 let last = 0
 let isOnScreen = false
 let ink = '#f3f3f1'
 let head = '#8b5cf6'
 
-const colWidth = (): number => cell * 0.72
+const colWidth = (): number => rowPx * 0.72
 
 const readColors = (): void => {
   if (!root.value) return
@@ -69,12 +71,13 @@ const reset = (): void => {
   width = element.clientWidth
   height = element.clientHeight
   dpr = Math.min(window.devicePixelRatio || 1, 2)
+  rowPx = cell * pageScale()
   target.width = Math.round(width * dpr)
   target.height = Math.round(height * dpr)
   // Resizing the bitmap clears it, which is the empty start we want.
 
   const columns = Math.ceil(width / colWidth())
-  const rows = Math.ceil(height / cell)
+  const rows = Math.ceil(height / rowPx)
   // Start most columns inside the field, so the rain is already falling when
   // it comes into view: at this pace a drop started above it takes seconds
   // to arrive.
@@ -88,14 +91,14 @@ const reset = (): void => {
 }
 
 const step = (context: CanvasRenderingContext2D): void => {
-  const rows = Math.ceil(height / cell)
+  const rows = Math.ceil(height / rowPx)
 
   context.globalCompositeOperation = 'destination-out'
   context.globalAlpha = TRAIL_FADE
   context.fillRect(0, 0, width, height)
   context.globalCompositeOperation = 'source-over'
   context.globalAlpha = 1
-  context.font = `600 ${cell * 0.8}px ui-monospace, monospace`
+  context.font = `600 ${rowPx * 0.8}px ui-monospace, monospace`
   context.textBaseline = 'top'
 
   for (let column = 0; column < drops.length; column++) {
@@ -107,27 +110,27 @@ const step = (context: CanvasRenderingContext2D): void => {
     if (nextRow !== row) {
       // The head moves on: its glyph settles into the trail colour, in place.
       context.fillStyle = ink
-      context.fillText(glyphs[column]!, x, row * cell)
+      context.fillText(glyphs[column]!, x, row * rowPx)
       glyphs[column] = pickGlyph(Math.random())
       if (nextRow < 0 || nextRow > rows) continue
     }
     context.fillStyle = head
-    context.fillText(glyphs[column]!, x, nextRow * cell)
+    context.fillText(glyphs[column]!, x, nextRow * rowPx)
   }
 }
 
 const drawStill = (context: CanvasRenderingContext2D): void => {
   context.clearRect(0, 0, width, height)
-  context.font = `600 ${cell * 0.8}px ui-monospace, monospace`
+  context.font = `600 ${rowPx * 0.8}px ui-monospace, monospace`
   context.textBaseline = 'top'
   for (let column = 0; column < drops.length; column++) {
-    const end = Math.floor(Math.random() * (height / cell))
+    const end = Math.floor(Math.random() * (height / rowPx))
     for (let index = 0; index < STILL_ROWS; index++) {
       const row = end - index
       if (row < 0) break
       context.globalAlpha = 1 - index / STILL_ROWS
       context.fillStyle = index === 0 ? head : ink
-      context.fillText(pickGlyph(Math.random()), column * colWidth(), row * cell)
+      context.fillText(pickGlyph(Math.random()), column * colWidth(), row * rowPx)
     }
   }
   context.globalAlpha = 1

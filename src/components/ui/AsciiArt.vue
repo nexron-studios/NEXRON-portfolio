@@ -4,6 +4,7 @@ import { useEventListener, useIntersectionObserver, useResizeObserver } from '@v
 import { useUiStore } from '@/stores/ui'
 import {
   cellRangeAround,
+  decodeDelays,
   detailCells,
   edgeCells,
   glyphForLevel,
@@ -15,25 +16,22 @@ import {
 } from '@/utils/ascii'
 import { DEFAULT_PALETTE, probeLevels, readPalette, softenImage } from '@/utils/asciiSource'
 import { glintBoost, glintColumns, isGlintPassing } from '@/utils/dither'
+import { pageScale } from '@/utils/pageScale'
 
 /**
  * A picture set as real ASCII art: monospaced characters on a grid, drawn on
  * a canvas so thousands of them stay cheap and crisp.
  *
- * The source is softened before it is sampled (`softness`). Without that, a
- * source that already is character art or halftone (both pieces on the site
- * are) gets sampled on a second, different grid, and the two grids beat into
- * mush. Softened, only the shape and its light are left, and the glyphs are
- * set fresh from that: thin punctuation on the edges, dense symbols at the
- * brightest core.
+ * The source is softened before it is sampled (`softness`): one that already
+ * is character art or halftone, sampled on a second grid, beats into mush.
+ * Softened, only shape and light are left, and the glyphs are set fresh from
+ * that: thin punctuation on the edges, dense symbols at the brightest core.
  *
- * Three things move: on first sight every cell decodes like the Matrix, first
- * a random violet glyph, then its own, top rows a little before bottom ones;
- * afterwards a few glyphs shimmer to a neighbour now and then; and the
- * pointer works as a lens that pushes the glyphs aside and makes the ones
- * near its centre flicker into violet scramble, like the decode replaying
- * under the pointer. (A solid violet disc was tried; it read as a stamp.) The brightest part of the picture (`coreAt`) glows violet
- * too. Under reduced motion it is drawn once, decoded, and holds still.
+ * Three things move: on first sight every cell decodes like the Matrix, top
+ * rows first; afterwards a few glyphs shimmer now and then; and the pointer is
+ * a lens that pushes the glyphs aside and lets those near its centre flicker
+ * into violet scramble. The brightest part (`coreAt`) glows violet too. Under
+ * reduced motion it is drawn once, decoded, and holds still.
  *
  * Where a cell holds detail finer than one glyph (`splitAt`), it is set as
  * four glyphs at half the size, so thin lines and spikes keep their tips.
@@ -53,7 +51,7 @@ const {
   src: string
   /** Alt text. Null marks it as decoration. */
   label?: string | null
-  /** Glyph size in CSS px; the grid follows from it. */
+  /** Glyph size in CSS px at the 1920 layout; the grid follows from it. */
   fontSize?: number
   /** Blur applied to the source before sampling, in source px. */
   softness?: number
@@ -108,6 +106,8 @@ const SHINE_AT = 1.85
 const GLINT_DENSITY = 0.2
 
 let image: HTMLImageElement | null = null
+let growth = 1
+let glyphPx = fontSize
 let levels = new Float32Array(0)
 let jitter = new Int8Array(0)
 let resolveAt = new Float32Array(0)
@@ -167,9 +167,11 @@ const sample = (): void => {
 
   const context = target.getContext('2d')
   if (!context) return
-  context.font = `500 ${fontSize}px ${FONT}`
+  growth = pageScale()
+  glyphPx = fontSize * growth
+  context.font = `500 ${glyphPx}px ${FONT}`
   cellW = context.measureText('M').width
-  cellH = fontSize * LINE_HEIGHT
+  cellH = glyphPx * LINE_HEIGHT
 
   // Fit the picture into the field ("contain"), then cut that rectangle into
   // cells. A cell is taller than wide, so both axes are counted separately.
@@ -187,11 +189,7 @@ const sample = (): void => {
 
   levels = probeLevels(soft, cols, rows, white)
   jitter = new Int8Array(cols * rows)
-  resolveAt = new Float32Array(cols * rows)
-  for (let index = 0; index < resolveAt.length; index++) {
-    const row = Math.floor(index / cols)
-    resolveAt[index] = (row / rows) * DECODE_SWEEP_MS + Math.random() * DECODE_SPREAD_MS
-  }
+  resolveAt = decodeDelays(cols, rows, DECODE_SWEEP_MS, DECODE_SPREAD_MS, Math.random)
   decodeEnd = DECODE_SWEEP_MS + DECODE_SPREAD_MS
 
   // The half-size grid, only where `splitAt` asks for it.
@@ -231,7 +229,7 @@ const shineAt = (index: number, isLive: boolean): number =>
 /** Second pass: the split cells, each as four glyphs at half the size. */
 const drawFine = (context: CanvasRenderingContext2D, queued: number, isLive: boolean): void => {
   if (queued === 0) return
-  context.font = `500 ${fontSize / 2}px ${FONT}`
+  context.font = `500 ${glyphPx / 2}px ${FONT}`
   for (let item = 0; item < queued; item++) {
     const index = queueIndex[item]!
     const isCore = queueCore[item] === 1
@@ -266,11 +264,11 @@ const paintCells = (
     (colTo - colFrom) * cellW,
     (rowTo - rowFrom) * cellH
   )
-  context.font = `500 ${fontSize}px ${FONT}`
+  context.font = `500 ${glyphPx}px ${FONT}`
   context.textBaseline = 'top'
   context.globalAlpha = strength
 
-  const radiusSquared = LENS_RADIUS * LENS_RADIUS
+  const radiusSquared = (LENS_RADIUS * growth) ** 2
   const isLensOn = isLive && lensAmount > 0.01
   const isDecoding = elapsed < decodeEnd
   let queued = 0
@@ -292,13 +290,13 @@ const paintCells = (
         const distanceSquared = dx * dx + dy * dy
         if (distanceSquared < radiusSquared && level > 0) {
           const distance = Math.sqrt(distanceSquared)
-          const t = 1 - distance / LENS_RADIUS
+          const t = 1 - distance / (LENS_RADIUS * growth)
           const lens = t * t * (3 - 2 * t) * lensAmount
           level = Math.min(1, level + lens * LENS_THICKEN)
           isCore = Math.random() < lens * LENS_SPARK
           // The glyphs also give way to the pointer, so the lens reads as a
           // touch on the picture rather than a tint over it.
-          const push = (lens * LENS_PUSH) / Math.max(distance, 1)
+          const push = (lens * LENS_PUSH * growth) / Math.max(distance, 1)
           drawX += dx * push
           drawY += dy * push
         }
@@ -339,7 +337,7 @@ const fullRange = (): CellRangeProps => ({ colFrom: 0, colTo: cols, rowFrom: 0, 
 
 /** The cells the lens can reach, pushed glyphs included, clamped to the grid. */
 const lensRange = (): CellRangeProps =>
-  cellRangeAround(pointerX, pointerY, LENS_RADIUS + LENS_PUSH, grid())
+  cellRangeAround(pointerX, pointerY, (LENS_RADIUS + LENS_PUSH) * growth, grid())
 
 const grid = (): CellGridProps => ({ cols, rows, offsetX, offsetY, cellW, cellH })
 
@@ -448,7 +446,7 @@ useEventListener(
     if (!bounds) return
     pointerX = event.clientX - bounds.left
     pointerY = event.clientY - bounds.top
-    const isNear = isWithinReach(pointerX, pointerY, bounds, LENS_RADIUS)
+    const isNear = isWithinReach(pointerX, pointerY, bounds, LENS_RADIUS * growth)
     if (!isNear && lensTarget === 0) return
     lensTarget = isNear ? 1 : 0
     wake()

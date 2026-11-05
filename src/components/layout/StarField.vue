@@ -2,6 +2,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useEventListener } from '@vueuse/core'
 import { useUiStore } from '@/stores/ui'
+import { pageScale } from '@/utils/pageScale'
 import { pulse, scatterStars, spawnMeteor, type Meteor, type StarProps } from '@/utils/starField'
 
 /**
@@ -45,6 +46,7 @@ let stars: StarProps[] = []
 let width = 0
 let height = 0
 let dpr = 1
+let scale = 1
 let frame = 0
 let ink = '#f3f3f1'
 let violet = '#8b5cf6'
@@ -88,7 +90,7 @@ const drawMeteor = (context: CanvasRenderingContext2D, seconds: number): void =>
     const to = progress - (tail * i) / METEOR_SEGMENTS
     const strength = 1 - i / METEOR_SEGMENTS
     context.globalAlpha = 0.85 * fade * strength
-    context.lineWidth = 0.5 + 1.2 * strength
+    context.lineWidth = (0.5 + 1.2 * strength) * scale
     context.beginPath()
     context.moveTo(meteor.x + meteor.dx * from, meteor.y + meteor.dy * from)
     context.lineTo(meteor.x + meteor.dx * to, meteor.y + meteor.dy * to)
@@ -102,7 +104,7 @@ const draw = (now: number): void => {
   if (!context) return
   const seconds = now / 1000
   const animated = isAnimated()
-  const drift = animated && isDrifting ? seconds * DRIFT_PX_PER_S : 0
+  const drift = animated && isDrifting ? seconds * DRIFT_PX_PER_S * scale : 0
   const scroll = (animated ? window.scrollY : 0) + drift
   if (animated) advanceEvents(seconds)
 
@@ -127,7 +129,7 @@ const draw = (now: number): void => {
     const alpha = DEPTH_ALPHA[star.depth]! * star.brightness * twinkle
     context.globalAlpha = alpha + (1 - alpha) * flash
     context.fillStyle = star.isAccent ? violet : ink
-    const size = DEPTH_SIZE[star.depth]! * (1 + FLARE_GROWTH * flash)
+    const size = DEPTH_SIZE[star.depth]! * scale * (1 + FLARE_GROWTH * flash)
     const nextFont = `500 ${size}px ui-monospace, Consolas, monospace`
     // Setting the font is the slow part of a frame; stars are sorted by depth.
     if (nextFont !== font) context.font = font = nextFont
@@ -148,9 +150,12 @@ const reset = (): void => {
   width = window.innerWidth
   height = window.innerHeight
   dpr = Math.min(window.devicePixelRatio || 1, 2)
+  scale = pageScale()
   target.width = Math.round(width * dpr)
   target.height = Math.round(height * dpr)
-  stars = scatterStars(width, height, DENSITY, Math.random).sort((a, b) => a.depth - b.depth)
+  stars = scatterStars(width, height, DENSITY / scale ** 2, Math.random).sort(
+    (a, b) => a.depth - b.depth
+  )
   flares.clear()
   meteor = null
   const seconds = performance.now() / 1000
