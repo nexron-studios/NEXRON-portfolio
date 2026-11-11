@@ -1,0 +1,9 @@
+{
+  "name": "Portfolio",
+  "tagline": "Software, AI, web and 3D work by Jonas Glatz",
+  "glyph": "../../public/icons/nexron_logo_favicon.svg",
+  "brand": "#8b5cf6",
+  "brand_light": "#8b5cf6",
+  "pattern": "dots",
+  "out": "."
+}

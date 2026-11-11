@@ -1,4 +1,23 @@
-# nexron-portfolio
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/readme-banner-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/brand/readme-banner-light.svg">
+  <img src="docs/brand/readme-banner-dark.svg" alt="Portfolio by NEXRON Studios: software, AI, web and 3D work by Jonas Glatz" width="100%">
+</picture>
+
+<br><br>
+
+<img src="https://img.shields.io/badge/Vue-3-8b5cf6?style=flat-square&labelColor=0c0c0c&logo=vuedotjs&logoColor=f3f3f1" alt="Vue 3">
+<img src="https://img.shields.io/badge/TypeScript-strict-8b5cf6?style=flat-square&labelColor=0c0c0c&logo=typescript&logoColor=f3f3f1" alt="TypeScript">
+<img src="https://img.shields.io/badge/Three.js-scene-8b5cf6?style=flat-square&labelColor=0c0c0c&logo=threedotjs&logoColor=f3f3f1" alt="Three.js scene">
+<img src="https://img.shields.io/badge/Tailwind_CSS-4-8b5cf6?style=flat-square&labelColor=0c0c0c&logo=tailwindcss&logoColor=f3f3f1" alt="Tailwind CSS 4">
+<img src="https://img.shields.io/badge/Vercel-deploy-8b5cf6?style=flat-square&labelColor=0c0c0c&logo=vercel&logoColor=f3f3f1" alt="Deployed on Vercel">
+<img src="https://img.shields.io/badge/license-MIT-8b5cf6?style=flat-square&labelColor=0c0c0c&logoColor=f3f3f1" alt="MIT licence">
+
+</div>
+
+<br>
 
 Personal portfolio of Jonas Glatz – showcasing software, AI, web and creative development projects by NEXRON Studios
 
@@ -84,3 +103,7 @@ Notes:
   `preview.allowedHosts` — without it Vite's host check answers every tunnelled
   request with "Blocked request". The wildcard is deliberate; `true` would
   switch the check off entirely.
+
+<br>
+
+<div align="center"><sub>The portfolio is built by NEXRON Studios. Banner from docs/brand/banner.json; colours from src/styles/tokens.css (violet = emphasis).</sub></div>
