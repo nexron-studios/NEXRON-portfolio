@@ -62,7 +62,7 @@ export const socials: SocialLinkProps[] = [
   {
     id: 'mail',
     label: 'Mail',
-    href: 'mailto:nexronstudios@gmail.com',
+    href: 'mailto:jonas.glatz@nexron-studios.com',
     brand: 'mail',
     note: 'Company mail'
   }
@@ -94,7 +94,7 @@ export const identity: IdentityProps = {
   name: 'Jonas Glatz',
   brand: 'NEXRON Studios',
   location: 'Baden-Württemberg, DE',
-  email: 'nexronstudios@gmail.com',
+  email: 'jonas.glatz@nexron-studios.com',
   role: 'Developer · AI · 3D & Design',
   tagline: 'Building projects, exploring technology and learning by doing.'
 }
