@@ -46,9 +46,9 @@ export interface ProjectProps {
   liveUrl: string | null
   status: ProjectStatus
   /**
-   * Screenshots, in display order — the first one is what the card shows. An
-   * empty list renders the generated blueprint instead, so a project never
-   * waits on an asset to exist.
+   * Screenshots, in display order — the first one is what the card shows.
+   * There is no fallback picture: an empty list leaves the card's frame blank,
+   * so a project goes on the page only once it has at least one shot.
    */
   shots: ProjectShotProps[]
   /**
