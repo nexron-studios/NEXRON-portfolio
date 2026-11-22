@@ -6,10 +6,21 @@ import batteryDark from '@/assets/projects/battery/hero-dark.png'
 import batteryLight from '@/assets/projects/battery/hero-light.png'
 import batteryLow from '@/assets/projects/battery/low-dark.png'
 import batterySetup from '@/assets/projects/battery/setup-dark.png'
+import bullAccounts from '@/assets/projects/bull/settings-accounts.webp'
+import bullChat from '@/assets/projects/bull/chat.webp'
+import bullOverview from '@/assets/projects/bull/overview.webp'
+import bullUsage from '@/assets/projects/bull/usage.webp'
+import forgeDimensions from '@/assets/projects/forge/dimensions.webp'
+import forgeDrawing from '@/assets/projects/forge/drawing.webp'
+import forgeJobs from '@/assets/projects/forge/jobs.webp'
+import forgePart from '@/assets/projects/forge/part.webp'
 import mellowDashboard from '@/assets/projects/mellow/dashboard.webp'
 import mellowPomodoro from '@/assets/projects/mellow/pomodore.webp'
 import mellowSettings from '@/assets/projects/mellow/settings.webp'
 import mellowTodos from '@/assets/projects/mellow/todos.webp'
+import notaMarkup from '@/assets/projects/nota/markup.webp'
+import notaReview from '@/assets/projects/nota/review.webp'
+import notaThread from '@/assets/projects/nota/thread.webp'
 import tokenscopeDashboard from '@/assets/projects/tokenscope/dashboard.webp'
 import tokenscopeSettings from '@/assets/projects/tokenscope/einstellungen.webp'
 import tokenscopeUsage from '@/assets/projects/tokenscope/verbrauch.webp'
@@ -33,6 +44,36 @@ const GITHUB_OWNER = 'https://github.com/nexron-studios'
  * than having something plausible invented for him.
  */
 export const projects: ProjectProps[] = [
+  {
+    slug: 'bull',
+    name: 'NEXRON Bull',
+    tagline: 'Claude Code sessions as chats in tabs, on every account and every machine.',
+    categories: ['desktop', 'ai', 'tools'],
+    stack: ['Tauri', 'Rust', 'Vue 3', 'TypeScript', 'Tailwind CSS', 'SSH'],
+    year: 2026,
+    visibility: 'public',
+    repoUrl: `${GITHUB_OWNER}/NEXRON-Bull`,
+    liveUrl: `${GITHUB_OWNER}/NEXRON-Bull/releases/latest`,
+    status: 'shipped',
+    shots: [
+      { src: bullChat, label: 'A chat waiting for approval' },
+      { src: bullOverview, label: 'Overview of every machine and a year of activity' },
+      { src: bullUsage, label: 'Quota per account and tokens per day' },
+      { src: bullAccounts, label: 'Accounts on this computer and on another machine' }
+    ],
+    shotOrientation: 'landscape',
+    detail: {
+      overview:
+        'A desktop app that shows your Claude Code sessions as chats in tabs. Each tab runs the real Claude Code under the account you pick, on this PC or on another machine over SSH. Approvals, questions and plans become buttons, and every tool call shows up as it happens.',
+      problem:
+        'Claude Code lives in the terminal. With several sessions, several accounts and a second machine you lose track of which one is waiting for you and which account still has quota left.',
+      idea: 'One window for all of it: a chat per session, the account picked per chat, and other machines connected over SSH, where Claude keeps running when the app closes.',
+      implementation:
+        'Tauri 2 with a Rust core that runs Claude Code headless and streams its output into the chat. Vue 3 renders Markdown, diffs and tool calls. Every Claude profile on disk can be an account, and when one hits its limit the chat moves to another account with its session. On other Windows machines a setup assistant installs a small agentd that keeps the sessions alive.',
+      challenges: [],
+      learnings: []
+    }
+  },
   {
     slug: 'weltenbummler',
     name: 'Weltenbummler',
@@ -136,7 +177,7 @@ export const projects: ProjectProps[] = [
     stack: ['Tauri', 'Rust', 'Vue 3', 'TypeScript', 'Tailwind CSS', 'Python'],
     year: 2026,
     visibility: 'public',
-    repoUrl: `${GITHUB_OWNER}/agentdashboard`,
+    repoUrl: `${GITHUB_OWNER}/NEXRON-agentdashboard`,
     liveUrl: null,
     status: 'building',
     shots: [
@@ -153,6 +194,65 @@ export const projects: ProjectProps[] = [
       idea: 'One window next to the terminal that answers "who needs me?" at a glance, and one click that takes you straight to that session: its terminal tab, its VS Code window or its project folder.',
       implementation:
         'Tauri 2 with a Rust core that reads Claude Code’s own files and never writes to them: live sessions from each profile’s session files, content from the JSONL transcripts, read incrementally so polling every two seconds stays cheap. Multiple Claude accounts are told apart by colour, and herdr tabs are matched by process ID. Vue 3 and Tailwind on the front. A dependency-free Python version runs in the terminal.',
+      challenges: [],
+      learnings: []
+    }
+  },
+  {
+    slug: 'forge',
+    name: 'NEXRON Forge',
+    tagline: 'Photo of a technical drawing in, printable part out.',
+    categories: ['ai', '3d', 'fullstack'],
+    stack: ['Vue 3', 'NestJS', 'Python', 'Blender', 'TypeScript', 'SQLite', 'Claude Code'],
+    year: 2026,
+    visibility: 'private',
+    repoUrl: null,
+    liveUrl: null,
+    status: 'building',
+    shots: [
+      { src: forgePart, label: 'Finished part with every checked dimension in 3D' },
+      { src: forgeDimensions, label: 'Confirming the dimensions Claude read from the sketch' },
+      { src: forgeDrawing, label: 'The hand-drawn sketch next to the rendered part' },
+      { src: forgeJobs, label: 'All parts with where the work stands' }
+    ],
+    shotOrientation: 'landscape',
+    detail: {
+      overview:
+        'A small self-hosted web app. You photograph a hand-drawn technical drawing, Claude reads the dimensions, you confirm them, and the part is built in Blender. You get an STL, a 3D view with the dimensions drawn in, and renders.',
+      problem:
+        'Turning a quick sketch with a few dimensions into a printable part means an hour in CAD, for something you could describe in two sentences.',
+      idea: 'Let Claude read the drawing and write the model as code, then measure the result against the dimensions you confirmed. Green means measured on the model and matching.',
+      implementation:
+        'A Vue 3 PWA in front, NestJS with SQLite and a job queue behind it, and a Python pipeline doing the work. Claude Code runs headless and writes a Blender script for each part. The pipeline checks that script before it runs, builds the part in Blender, measures the STL against the confirmed values to 0.1 mm and renders it. Anything off goes back to the same Claude session, for at most three rounds of fixes.',
+      challenges: [],
+      learnings: []
+    }
+  },
+  {
+    slug: 'nota',
+    name: 'NEXRON Nota',
+    tagline: 'Review PDFs in VS Code and hand every comment to Claude with its exact LaTeX line.',
+    categories: ['tools', 'ai'],
+    stack: ['TypeScript', 'VS Code API', 'pdf.js', 'SyncTeX', 'LaTeX', 'esbuild'],
+    year: 2026,
+    visibility: 'private',
+    repoUrl: null,
+    liveUrl: null,
+    status: 'shipped',
+    shots: [
+      { src: notaReview, label: 'Highlights in four colours, each with its LaTeX line' },
+      { src: notaThread, label: 'Claude answers and a rewritten passage marked green' },
+      { src: notaMarkup, label: 'Selecting text opens colours, strike and comment' }
+    ],
+    shotOrientation: 'landscape',
+    detail: {
+      overview:
+        'A PDF viewer for VS Code where you highlight and comment like in Acrobat. One click hands every open comment to Claude Code, each with the LaTeX file and line it belongs to. Claude’s answers and changes come back into the same sidebar.',
+      problem:
+        'Reviewing a LaTeX document with Claude was a loop: upload the PDF, comment in the browser, download it, then tell Claude where each comment belongs.',
+      idea: 'Comment right at the text, in the editor you already write in, and let the tool find the source line. Highlights come in four colours with a fixed meaning: note, error, question and fine.',
+      implementation:
+        'A VS Code extension with a pdf.js webview, in strict TypeScript. SyncTeX maps a selection to its LaTeX line, which is then narrowed to where the marked text really starts. Comments live in a JSON file next to the PDF, and Claude answers in it directly. After a rebuild every highlight is found again by its text, and passages Claude rewrote are marked green.',
       challenges: [],
       learnings: []
     }
